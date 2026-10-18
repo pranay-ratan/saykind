@@ -11,26 +11,35 @@ const SoftAurora = dynamic(() => import("@/components/reactbits/SoftAurora"), { 
 
 /** Still version of the aurora for people who prefer reduced motion: a lavender glow top right, a peach glow bottom left. */
 const STATIC_GLOW =
-  "radial-gradient(60% 50% at 100% 0%, rgba(191,165,212,0.25), transparent 70%), radial-gradient(60% 50% at 0% 100%, rgba(246,201,176,0.25), transparent 70%)";
+  "radial-gradient(75% 65% at 100% 0%, rgba(191,165,212,0.5), transparent 70%), radial-gradient(75% 65% at 0% 100%, rgba(246,201,176,0.5), transparent 70%)";
 
-const HEADLINE = "Find your words. At your pace.";
+const TAGLINE = "Find your words. At your pace.";
+/** How present the aurora is at the start: it fills the whole screen behind the logo, the tagline and Start. */
+const AURORA_OPACITY = 0.75;
+const LOGO_SIZE = 168;
+/** Two lines of the tagline at its largest size, reserved up front so nothing moves when the font arrives. */
+const TAGLINE_MIN_HEIGHT = 104;
 
+/**
+ * The first screen: three equal rows. The logo sits in the vertical middle; the tagline and Start sit in the lower third,
+ * inside the safe area. Nothing else is said here.
+ */
 export default function WelcomeView({ onStart }: { onStart: () => void }) {
   const reduced = useReducedMotion();
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center gap-8 overflow-hidden px-6 text-center" style={{ background: "var(--cream)" }}>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-[0.55]">
+    <div className="relative h-full w-full overflow-hidden" style={{ background: "var(--cream)" }}>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ opacity: AURORA_OPACITY }}>
         {reduced ? (
-          <div className="absolute inset-0" style={{ background: STATIC_GLOW, opacity: 1 }} />
+          <div className="absolute inset-0" style={{ background: STATIC_GLOW }} />
         ) : (
           <SoftAurora
             speed={0.25}
-            scale={1.5}
-            brightness={0.7}
+            scale={2.2}
+            brightness={0.85}
             color1="#bfa5d4"
             color2="#f6c9b0"
-            bandHeight={0.5}
+            bandHeight={0.8}
             bandSpread={1}
             enableMouseInteraction={false}
             mouseInfluence={0}
@@ -44,40 +53,47 @@ export default function WelcomeView({ onStart }: { onStart: () => void }) {
         )}
       </div>
 
-      <div className="relative flex flex-col items-center gap-8">
-        {/* The logo has a white background; multiply lets the cream page show through it. */}
-        <Image src="/saykind-logo.png" alt="Saykind" width={128} height={128} priority style={{ mixBlendMode: "multiply" }} />
-
-        <Headline reduced={reduced} />
-
-        <button
-          type="button"
-          onClick={onStart}
-          className="min-h-[64px] min-w-[200px] rounded-full px-8 text-xl font-bold text-white transition-colors hover:brightness-110 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal bg-deep-coral"
-        >
-          Start
-        </button>
+      <div
+        className="relative grid h-full w-full grid-rows-3"
+        style={{ paddingTop: "env(safe-area-inset-top, 0px)", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      >
+        <div />
+        <div className="flex items-center justify-center">
+          {/* The logo has a white background; multiply lets the cream page and the glow show through it. */}
+          <Image src="/saykind-logo.png" alt="Saykind" width={LOGO_SIZE} height={LOGO_SIZE} priority style={{ mixBlendMode: "multiply" }} />
+        </div>
+        <div className="flex flex-col items-center justify-center gap-7 px-6 pb-4">
+          <div className="flex w-full items-center justify-center" style={{ minHeight: TAGLINE_MIN_HEIGHT }}>
+            <Tagline reduced={reduced} />
+          </div>
+          <button
+            type="button"
+            onClick={onStart}
+            className="min-h-[64px] min-w-[200px] rounded-full bg-deep-coral px-8 text-xl font-bold text-white transition-colors hover:brightness-110 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
+          >
+            Start
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-/** The headline animates word by word. Reduced motion gets plain text with the same size, so nothing shifts. */
-function Headline({ reduced }: { reduced: boolean }): ReactNode {
-  const sizing =
-    "text-[38px] leading-[44px] md:text-[64px] md:leading-[72px] font-bold max-w-[16ch] mx-auto";
+const TAGLINE_CLASS = "font-display font-bold text-[clamp(32px,9cqw,44px)] leading-[1.15] max-w-[16ch] mx-auto";
 
+/** The tagline animates word by word. Reduced motion gets plain text with the same size, so nothing shifts. */
+function Tagline({ reduced }: { reduced: boolean }): ReactNode {
   if (reduced) {
     return (
-      <h1 className={sizing} style={{ color: "var(--plum)", fontFamily: "var(--font-display), Georgia, serif" }}>
-        {HEADLINE}
+      <h1 className={`${TAGLINE_CLASS} text-center`} style={{ color: "var(--plum)" }}>
+        {TAGLINE}
       </h1>
     );
   }
 
   return (
     <SplitText
-      text={HEADLINE}
+      text={TAGLINE}
       tag="h1"
       splitType="words"
       delay={150}
@@ -89,7 +105,7 @@ function Headline({ reduced }: { reduced: boolean }): ReactNode {
       rootMargin="0px"
       textAlign="center"
       trigger="load"
-      className={sizing}
+      className={TAGLINE_CLASS}
       color="#2D1E2F"
     />
   );
