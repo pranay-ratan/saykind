@@ -18,4 +18,11 @@ describe("calm reply", () => {
   it("falls back to a calm question when nothing is left", () => {
     expect(calmReply("Perfect!", "size")).toBe("Got it. Small, medium or large?");
   });
+
+  it("drops cheering, pity, blame and hurrying, keeping the polite part", () => {
+    expect(calmReply("Good job! A large latte. Hot or iced?", "temperature")).toBe("A large latte. Hot or iced?");
+    expect(calmReply("Don't worry. Hot or iced?", "temperature")).toBe("Hot or iced?");
+    expect(calmReply("I can't understand you. Coffee or tea?", "drink")).toBe("Coffee or tea?");
+    expect(calmReply("Just tell me the size.", "size")).toBe("Got it. Small, medium or large?");
+  });
 });

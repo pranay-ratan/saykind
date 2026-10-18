@@ -36,11 +36,11 @@ function cueFor(struggles: number, lastHintUsed: boolean): CueSupport {
 }
 
 function messageFor(direction: "up" | "down" | "stay", cue: CueSupport): string {
-  if (direction === "up") return "You're getting these on the first try. Let's try a new word that's a little bigger.";
-  if (direction === "down") return "Let's take it a little slower together. Here is some help with the sounds.";
-  if (cue === "syllables") return "Let's break the word into parts. Take all the time you need.";
-  if (cue === "firstSound") return "Here's a little help with the first sound. Take your time.";
-  return "Nice practice. Keep going at your own pace.";
+  if (direction === "up") return "Thank you. Here is a new word, a little longer.";
+  if (direction === "down") return "Here is some help with the sounds. Take your time.";
+  if (cue === "syllables") return "The word in parts. Take all the time you need.";
+  if (cue === "firstSound") return "A little help with the first sound. Take your time.";
+  return "Thank you. Keep going at your own pace.";
 }
 
 /**

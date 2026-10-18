@@ -263,7 +263,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
         setRawBoxes(response.raw);
         setFailure(null);
         if (response.objects.length === 0) {
-          setPhotoMessage('I did not see a clear everyday object in that photo. Try another.');
+          setPhotoMessage('No clear object in that photo. Please try another.');
         }
       } catch (error) {
         setPhotoMessage(photoErrorMessage(error));
@@ -359,7 +359,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
           {detection.budgetExhausted && live && (
             <div className="absolute inset-0 flex items-center justify-center bg-plum/50 p-6">
               <div className="w-full max-w-sm rounded-[2rem] bg-cream p-8 text-center text-plum shadow-2xl">
-                <p className="mb-6 text-xl">We have looked for a while. Keep looking when you are ready.</p>
+                <p className="mb-6 text-xl">We have looked for a while. Keep looking whenever you like.</p>
                 <button
                   type="button"
                   onClick={detection.resetBudget}

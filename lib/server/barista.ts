@@ -12,6 +12,7 @@ import {
   type Slot,
 } from "../order";
 import type { ChoiceSlot } from "../support";
+import { TONE_RULES, politeSentences } from "../tone";
 import { baristaChat } from "./llm";
 import { LlmError, type ChatTurn } from "./llm/claude";
 
@@ -57,6 +58,10 @@ HOW YOU TALK
 - Accept fragments as real answers: "latte... large", "um, the... hot", a single word, or half a word. Take what they gave and build on it.
 - Confirm back in a few words what you understood ("A large latte."), then ask the one next question.
 - Never say "perfect". Never say "wrong", "incorrect", "mistake", "good job" or anything about scores, levels or how well they are doing. Light, plain phrases only: "Of course.", "Got it.", "No rush."
+
+DIGNITY
+${TONE_RULES}
+- When you are not sure what they said: "Let me check I have that right." then one yes/no question, or offer the pictures ("You can tap Menu to choose from pictures.").
 
 HOW YOU LISTEN
 - What you receive comes from automatic speech recognition. It can be wrong, partial or empty, and people with aphasia may say a word differently, say part of a word, or say a nearby word. Do NOT assume it is accurate.
@@ -242,8 +247,6 @@ export async function runBaristaTurn(input: TurnInput): Promise<TurnResult> {
   };
 }
 
-const BANNED_WORDS = /\b(perfect(ly)?|wrong|incorrect(ly)?|mistake[sd]?|score[sd]?|good job|well done)\b/i;
-
 const CALM_FALLBACK: Record<Slot, string> = {
   drink: "Of course. Which drink would you like?",
   size: "Got it. Small, medium or large?",
@@ -252,18 +255,18 @@ const CALM_FALLBACK: Record<Slot, string> = {
   none: "Thank you. Have a lovely day!",
 };
 
-/** Safety net for the prompt: sentences with judging or scoring words are dropped, so none ever reaches the customer. */
+/**
+ * Safety net for the prompt: sentences that judge, score, cheer, pity, blame or hurry the person are dropped (lib/tone.ts),
+ * so none ever reaches the customer. If nothing is left, a polite question for the open slot is said instead.
+ */
 export function calmReply(reply: string, expected: Slot): string {
-  if (!BANNED_WORDS.test(reply)) return reply;
-  const sentences = reply.match(/[^.!?]+[.!?]*/g) ?? [reply];
-  const kept = sentences.filter((sentence) => !BANNED_WORDS.test(sentence)).join("").trim();
-  return kept || CALM_FALLBACK[expected];
+  return politeSentences(reply) || CALM_FALLBACK[expected];
 }
 
 /** Used when the model times out or its reply cannot be read: a gentle question, never an error, and the order is untouched. */
 function gentleTurn(input: TurnInput): TurnResult {
   return {
-    reply: "That's okay, take your time. You can say it again, or tap Menu to choose from pictures.",
+    reply: "Let me check I have that right. Take your time: say it again, or tap Menu to choose from pictures.",
     order: input.order,
     nextSlot: nextSlot(input.order),
     unclearStreak: input.unclearStreak + 1,

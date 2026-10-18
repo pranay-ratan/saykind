@@ -124,9 +124,9 @@ function describe(recognition: Recognition, heard: string, word: string, problem
     case "matches":
       return { kind: "heard-match", recognition, heard, canConfirm: false, caveat: CAVEAT, title: "Good practice.", detail: `I heard “${said}”. Ready for the next word, or try once more?` };
     case "differs":
-      return { kind: "heard-different", recognition, heard, canConfirm: true, caveat: CAVEAT, title: "Nice effort.", detail: `I heard “${said}”. Is that what you said? You can try again, listen once more, or carry on.` };
+      return { kind: "heard-different", recognition, heard, canConfirm: true, caveat: CAVEAT, title: "Thank you.", detail: `I heard “${said}”. Let me check I have that right. You can say it again, listen once more, or carry on.` };
     case "nothing":
-      return { kind: "nothing-heard", recognition, heard: "", canConfirm: false, caveat: null, title: "Let's try that once more.", detail: "I couldn't hear anything. Bring the microphone a little closer, then try again." };
+      return { kind: "nothing-heard", recognition, heard: "", canConfirm: false, caveat: null, title: "Let me listen once more.", detail: "I did not catch that. Bring the microphone a little closer, whenever you are ready." };
     default:
       return problemText
         ? { kind: "mic-problem", recognition, heard: "", canConfirm: false, caveat: null, title: "The microphone isn't available.", detail: problemText }

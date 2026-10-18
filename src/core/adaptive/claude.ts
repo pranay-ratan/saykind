@@ -15,6 +15,8 @@ const SYSTEM_PROMPT = [
   '{"nextLevel": number, "cueSupport": "none" | "firstSound" | "syllables", "autoSlow": boolean, "message": string, "careNote": string}',
   "nextLevel changes by at most one step from currentLevel and stays between 1 and 5.",
   "message is short, warm and true. It is the only text the person sees. careNote is a short factual note for their care team.",
+  "message speaks to a capable adult, politely and warmly ('thank you', 'take your time'). Never cheering ('good job', 'well done'), pity ('don't worry'), hurry ('just', 'quickly') or any comment on slowness or ability.",
+  "careNote uses person-first, strength-based language: what the person did and what helped, never 'struggles', 'unable', 'poor' or a diagnosis.",
 ].join("\n");
 
 const DecisionSchema = z.object({

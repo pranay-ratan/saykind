@@ -35,7 +35,7 @@ function needsSupportOf(input: ReportInput): string[] {
   const lines = [...input.level1.words, ...input.level2.words]
     .filter(needsHelp)
     .slice(0, 4)
-    .map((word) => `"${word.word}" took several tries or hints (${plural(word.attempts, "try", "tries")}, ${plural(word.hints, "hint")}).`);
+    .map((word) => `For "${word.word}", the person used several tries or hints (${plural(word.attempts, "try", "tries")}, ${plural(word.hints, "hint")}).`);
   if (input.cafe && input.cafe.followUpsNeeded >= 2) lines.push(`The barista needed to ask again on ${plural(input.cafe.followUpsNeeded, "turn")}.`);
   if (input.cafe && input.cafe.helpRequests >= 1) lines.push(`Opened the Help sheet ${plural(input.cafe.helpRequests, "time")} in the café.`);
   return lines.slice(0, 6);

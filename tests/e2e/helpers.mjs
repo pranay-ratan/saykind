@@ -28,7 +28,7 @@ export const MOCKS = {
     latencyMs: 120,
   },
   "/api/adapt": {
-    decision: { nextLevel: 1, cueSupport: "none", autoSlow: false, message: "Nice practice. Keep going at your own pace.", careNote: "Mock decision." },
+    decision: { nextLevel: 1, cueSupport: "none", autoSlow: false, message: "Thank you. Keep going at your own pace.", careNote: "Mock decision." },
     source: "rules",
   },
 };
