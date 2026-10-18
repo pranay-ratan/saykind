@@ -1,6 +1,6 @@
 # Level 1 redesign experiment: Chair, built with React Bits
 
-**Scope: Level 1, the Chair exercise only.** Every other word in Level 1, and Levels 2, 3 and 4, the caregiver view and the café are untouched. The previous screen is still what those use. A full snapshot of the project before this experiment is at `/Users/dev/Downloads/aphasia-saykind-snapshot-before-reactbits`.
+**Scope: Level 1, the Chair exercise only.** Every other word in Level 1, and Levels 2, 3 and 4, the caregiver view and the café are untouched. The previous screen is still what those use. The project before this experiment is in this repository's history, and is the `main` branch.
 
 ## What was chosen, and why
 

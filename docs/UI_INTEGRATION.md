@@ -14,7 +14,7 @@ The hooks only import React and browser APIs (no React Native), so **any** compo
 import { useExercise, OBJECTS, useCafe, usePhrases, useDiscovery, useCaregiverContact, useCaregiverReport } from "@/lib/saykind";
 ```
 
-Nothing was deleted that others might use: the old welcome and hub screens are gone (the app now opens into the exercise), but a snapshot of the previous version is in `/Users/dev/Downloads/aphasia-saykind-snapshot-before-exercise-first`.
+Nothing was deleted that others might use: the old welcome and hub screens are gone (the app now opens into the exercise), but the previous version is in this repository's git history.
 
 ---
 
