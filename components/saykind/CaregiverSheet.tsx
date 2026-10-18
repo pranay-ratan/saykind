@@ -1,10 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Pressable, StyleSheet, Text, TextInput, View, type ViewStyle } from "react-native";
 import { CloseIcon, CopyIcon, PhoneIcon, ShareIcon } from "@/components/cafe/icons";
 import type { useCaregiverContact } from "@/lib/saykind";
 import { Body, Button, Chip, Heading, IconButton, Label } from "./kit";
+import { useReducedMotion } from "@/lib/use-presence";
 import { color, font, safe } from "./theme";
+
+// Loaded only in the browser. It is the only animation on this sheet, and it is off under reduced motion.
+const Orb = dynamic(() => import("@/components/reactbits/Orb"), { ssr: false });
 
 /**
  * TEMPORARY contact-caregiver sheet, bound to useCaregiverContact(). The person sees the message and can edit or ignore
@@ -12,8 +17,18 @@ import { color, font, safe } from "./theme";
  */
 export default function CaregiverSheet({ open, onClose, contact, onSettings }: { open: boolean; onClose: () => void; contact: ReturnType<typeof useCaregiverContact>; onSettings: () => void }) {
   const { caregiver } = contact;
+  const reduced = useReducedMotion();
   return (
     <View pointerEvents={open ? "auto" : "none"} style={[StyleSheet.absoluteFill, { zIndex: 50 }]} role="dialog" aria-label="Get help from my caregiver" aria-modal={open}>
+      {open ? (
+        <View aria-hidden pointerEvents="none" style={{ position: "absolute", left: 0, right: 0, top: 0, height: "55%", opacity: 0.6 } as ViewStyle}>
+          {reduced ? (
+            <View style={{ flex: 1, backgroundImage: "radial-gradient(60% 60% at 80% 20%, rgba(191,165,212,0.55), transparent 70%), radial-gradient(60% 60% at 20% 80%, rgba(244,194,166,0.55), transparent 70%), radial-gradient(40% 40% at 50% 50%, rgba(61,139,136,0.25), transparent 70%)" } as ViewStyle} />
+          ) : (
+            <Orb colors={["#BFA5D4", "#F4C2A6", "#3D8B88"]} speed={0.25} hoverIntensity={0} rotateOnHover={false} forceHoverState={false} followCursor={false} />
+          )}
+        </View>
+      ) : null}
       <Pressable accessibilityLabel="Close" onPress={onClose} style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(27,36,48,0.4)", opacity: open ? 1 : 0, transitionProperty: "opacity", transitionDuration: "200ms" } as ViewStyle]} />
       <View
         style={
@@ -48,7 +63,7 @@ export default function CaregiverSheet({ open, onClose, contact, onSettings }: {
         </View>
 
         {caregiver.hasPhone ? (
-          <Button label={`Call ${caregiver.name}`} icon={<PhoneIcon className="size-6" />} onPress={contact.callCaregiver} hint="Opens your phone's call screen" style={{ alignSelf: "stretch" }} />
+          <Button label={`Call ${caregiver.name}`} icon={<PhoneIcon className="size-6" />} onPress={contact.callCaregiver} hint="Opens your phone's call screen" style={{ alignSelf: "stretch", minHeight: 80, backgroundColor: "#9A442D" }} />
         ) : (
           <View style={{ gap: 8 }}>
             <Body size={16}>Add a caregiver's phone number once, and this button will start a call to them.</Body>

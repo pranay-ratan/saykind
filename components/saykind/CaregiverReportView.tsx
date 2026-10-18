@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Pressable, ScrollView, Text, View, type ViewStyle } from "react-native";
 import { relativeTime, useCaregiverReport, type WordSummary } from "@/lib/saykind";
 import { color, font } from "./theme";
+import CountUp from "@/components/reactbits/CountUp";
+import { useReducedMotion } from "@/lib/use-presence";
 
 /**
  * TEMPORARY caregiver report, bound to useCaregiverReport() (which has already filtered everything by what the person
@@ -37,9 +39,11 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
 }
 
 function Stat({ value, label }: { value: string; label: string }) {
+  const reduced = useReducedMotion();
+  const count = Number(value);
   return (
     <View style={{ flex: 1, minWidth: 130, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: color.line, backgroundColor: color.bg }}>
-      <Text style={{ fontFamily: font.ui, fontWeight: "800", fontSize: 30, color: color.ink }}>{value}</Text>
+      <Text style={{ fontFamily: font.ui, fontWeight: "800", fontSize: 30, color: color.ink }}>{reduced || !Number.isFinite(count) ? value : <CountUp to={count} duration={0.8} trigger="view" />}</Text>
       <Text style={{ fontFamily: font.ui, fontSize: 14, color: color.inkMuted, marginTop: 2 }}>{label}</Text>
     </View>
   );

@@ -143,8 +143,8 @@ export function DetectionOverlay({
               height={screen.height}
               rx={12}
               fill="transparent"
-              stroke="white"
-              strokeWidth={4}
+              stroke="#E07A5F"
+              strokeWidth={3}
               className="pointer-events-auto cursor-pointer"
               onClick={() => onSelect(track)}
             />
@@ -158,7 +158,7 @@ export function DetectionOverlay({
           type="button"
           onClick={() => onSelect(track)}
           aria-label={`${track.label}. Tap to practice`}
-          className="pointer-events-auto absolute -translate-x-1/2 min-h-[56px] px-5 rounded-full bg-white/95 text-stone-900 text-2xl font-semibold shadow-lg hover:bg-white focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+          className="pointer-events-auto absolute -translate-x-1/2 min-h-[56px] px-5 rounded-full bg-[#FDFBF7] text-[#2D1E2F] text-2xl font-semibold shadow-lg hover:bg-white focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
           style={{
             left: chipAnchor(screen, size, CHIP_GAP_PX, CHIP_HEIGHT_PX).x,
             top: chipAnchor(screen, size, CHIP_GAP_PX, CHIP_HEIGHT_PX).y,

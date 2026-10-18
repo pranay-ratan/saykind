@@ -11,7 +11,7 @@ interface StartScreenProps {
   onChoosePhoto: (file: File) => void;
 }
 
-const PRIMARY_BUTTON = 'min-h-[80px] min-w-[240px] rounded-2xl bg-white px-8 text-2xl font-semibold text-stone-900 shadow-lg hover:bg-stone-100 active:bg-stone-200 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-sky-400 disabled:opacity-60';
+const PRIMARY_BUTTON = 'min-h-[80px] min-w-[240px] rounded-2xl bg-[#9A442D] px-8 text-2xl font-semibold text-white shadow-lg hover:bg-[#7F3823] active:bg-[#6B2F1C] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-sky-400 disabled:opacity-60';
 const SECONDARY_LABEL = 'flex min-h-[64px] cursor-pointer items-center justify-center rounded-xl bg-stone-800 px-6 text-xl font-medium text-white hover:bg-stone-700 active:bg-stone-600 focus-within:outline-4 focus-within:outline-offset-2 focus-within:outline-sky-400';
 
 function PermissionSteps() {

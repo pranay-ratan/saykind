@@ -22,7 +22,7 @@ export const LEVELS: { id: LevelId; title: string; blurb: string; tag?: string }
 export default function LevelMenu({ open, current, onSelect, onClose, onSettings, onCaregiverView }: { open: boolean; current: LevelId; onSelect: (id: LevelId) => void; onClose: () => void; onSettings: () => void; onCaregiverView: () => void }) {
   return (
     <View pointerEvents={open ? "auto" : "none"} style={[StyleSheet.absoluteFill, { zIndex: 60 }]} role="dialog" aria-label="Menu" aria-modal={open}>
-      <Pressable accessibilityLabel="Close menu" onPress={onClose} style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(27,36,48,0.4)", opacity: open ? 1 : 0, transitionProperty: "opacity", transitionDuration: "200ms" } as ViewStyle]} />
+      <Pressable accessibilityRole="button" accessibilityLabel="Close menu" onPress={onClose} style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(27,36,48,0.4)", opacity: open ? 1 : 0, transitionProperty: "opacity", transitionDuration: "200ms" } as ViewStyle]} />
       <View
         style={
           {
