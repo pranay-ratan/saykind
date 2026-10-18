@@ -36,6 +36,7 @@ The app starts without any key. A missing key shows a calm message in the featur
 | `LIVE_MAX_CALLS` | Level 2 detection calls per session before "Keep looking" | You choose | Optional (default `150`) | Default is used. |
 | `LIVE_INTERVAL_MS` | Default time between Level 2 checks, in milliseconds | You choose | Optional (default `1500`) | Default is used. |
 | `ADAPTIVE_PROVIDER` | Level 1 difficulty adjuster: `rules` or `claude` | You choose | Optional (default `rules`, no key needed) | With `claude`, the key is `ANTHROPIC_API_KEY`. Any error falls back to the rules. |
+| `NEXT_PUBLIC_UNLOCK_ALL_LEVELS` | `true` opens every level at once (café and phrases normally open after Level 2 is practiced on this device) | You choose | Optional (default `false`) | Levels 3 and 4 show "Opens after Level 2" until a word is practiced on /level-2. Set at build time on Vercel, so redeploy after changing it. |
 
 ### Generate `TTS_PREWARM_SECRET`
 

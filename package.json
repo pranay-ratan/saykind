@@ -16,7 +16,7 @@
     "check:perceptron": "node scripts/check-perceptron.mjs",
     "check:elevenlabs": "node scripts/check-elevenlabs.mjs",
     "check:env": "node scripts/check-env.mjs",
-    "test:e2e": "node tests/e2e/smoke.mjs"
+    "test:e2e": "node tests/e2e/run.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",

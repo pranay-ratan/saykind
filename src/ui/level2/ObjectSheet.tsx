@@ -24,6 +24,8 @@ interface ObjectSheetProps {
   ttsProvider: TtsProvider;
   visionProvider?: string;
   onClose: () => void;
+  /** Called once the person has played or recorded the word. */
+  onPracticed?: () => void;
 }
 
 const MAX_TYPED_WORD = 30;
@@ -46,6 +48,7 @@ export function ObjectSheet({
   ttsProvider,
   visionProvider,
   onClose,
+  onPracticed,
 }: ObjectSheetProps) {
   const { object, alternatives } = selection;
   const [word, setWord] = useState(object.label);
@@ -77,6 +80,7 @@ export function ObjectSheet({
   function say(text: string, rate: number, type: PracticeEventType): void {
     void speak(text, { rate, provider: ttsProvider });
     logEvent(type, text);
+    onPracticed?.();
   }
 
   // Crop the photo once per opened sheet. The selection is a snapshot, so the
@@ -144,6 +148,7 @@ export function ObjectSheet({
         if (chunks.length === 0) return;
         replaceAttempt(URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' })));
         logEvent('attempt', word);
+        onPracticed?.();
       };
 
       streamRef.current = stream;

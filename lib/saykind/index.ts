@@ -15,4 +15,5 @@ export { learnItemFromDiscovery, registerRecognizer, recognizeObject, hasRecogni
 export { useSettings, setCaregiver, setShareCategory, setKeepPracticeAudio, resetSettings, type Settings } from "./settings";
 export { relativeTime, mightBenefit, useLog, logEvent, summarise, clearLog, type PracticeEvent, type WordSummary, type Recognition, type Level } from "./log";
 export { useSamples, deleteSample, deleteAllSamples, setApproved, saveSample, playSample, type Sample } from "./samples";
-export { useSetProgress, clearProgress } from "./progress";
+export { useSetProgress, clearProgress, markLevel2Complete, useLevel2Complete } from "./progress";
+export { isLevelUnlocked, UNLOCK_ALL_LEVELS, parseLevelReturn, RETURN_FROM_LEVEL2, NEXT_AFTER_LEVEL2 } from "./unlock";

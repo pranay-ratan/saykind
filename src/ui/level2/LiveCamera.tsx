@@ -11,8 +11,10 @@ import { cancelSpeech, prepareVoices } from '../../core/speech';
 import { defaultSettings, loadSettings, saveSettings, type Level2Settings } from '../../core/settings';
 import { DetectClientError, detectObjects, type DetectFailure } from '../../core/vision/detectObjects';
 import type { DetectedObject, DetectResponse } from '../../core/vision/types';
+import { markLevel2Complete } from '@/lib/saykind/progress';
 import { DebugPanel } from './DebugPanel';
 import { DetectionOverlay } from './DetectionOverlay';
+import { FlowButtons } from './FlowButtons';
 import { ObjectSheet, type ObjectSelection } from './ObjectSheet';
 import { SettingsSheet } from './SettingsSheet';
 import { StartScreen } from './StartScreen';
@@ -90,6 +92,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
   const [hintVisible, setHintVisible] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showRawBoxes, setShowRawBoxes] = useState(false);
+  const [practiced, setPracticed] = useState(false);
   const hintTimerRef = useRef<number | null>(null);
 
   const live = camera.status === 'live' && photo === null;
@@ -225,6 +228,11 @@ export function LiveCamera({ config }: LiveCameraProps) {
     [tracks],
   );
 
+  const handlePracticed = useCallback(() => {
+    setPracticed(true);
+    markLevel2Complete();
+  }, []);
+
   const closeSheet = useCallback(() => {
     cancelSpeech();
     setSelection(null);
@@ -337,13 +345,13 @@ export function LiveCamera({ config }: LiveCameraProps) {
           )}
 
           {notice && live && (
-            <p role="status" className="absolute bottom-6 left-4 rounded-xl bg-black/60 px-4 py-3 text-xl">
+            <p role="status" className="absolute bottom-28 left-4 rounded-xl bg-black/60 px-4 py-3 text-xl">
               {notice}
             </p>
           )}
 
           {!online && live && (
-            <p role="status" className="absolute inset-x-4 bottom-6 rounded-xl bg-stone-800/90 px-4 py-4 text-center text-xl">
+            <p role="status" className="absolute inset-x-4 bottom-28 rounded-xl bg-stone-800/90 px-4 py-4 text-center text-xl">
               You are offline. Looking will continue when you are back online.
             </p>
           )}
@@ -375,6 +383,8 @@ export function LiveCamera({ config }: LiveCameraProps) {
         />
       )}
 
+      {!sheetOpen && <FlowButtons canContinue={practiced} />}
+
       <SettingsSheet
         open={settingsOpen}
         settings={settings}
@@ -392,6 +402,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
           ttsProvider={config.ttsProvider}
           visionProvider={provider}
           onClose={closeSheet}
+          onPracticed={handlePracticed}
         />
       )}
     </div>

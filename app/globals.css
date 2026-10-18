@@ -29,6 +29,18 @@
 
   --focus: #8fd0aa;
 
+  /* Saykind UI tokens. Coral is for fills and glows only (plum text on top); deep coral is for buttons and any coral text (white on top). */
+  --cream: #fdfbf7;
+  --plum: #2d1e2f;
+  --muted: #6b5c6d;
+  --coral: #e07a5f;
+  --deep-coral: #9a442d;
+  --deep-teal: #0e6967;
+  --lavender: #bfa5d4;
+  --peach: #f6c9b0;
+  --card-shadow: 0 12px 32px -8px rgba(45, 30, 47, 0.05);
+  --card-border: 1px solid rgba(45, 30, 47, 0.06);
+
   --ease-out: cubic-bezier(0.22, 0.7, 0.2, 1);
   --ease-soft: cubic-bezier(0.32, 0.72, 0.24, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -46,6 +58,14 @@
   --color-terracotta: var(--terracotta);
   --color-moss: var(--moss);
   --color-mint: var(--mint);
+  --color-cream: var(--cream);
+  --color-plum: var(--plum);
+  --color-muted: var(--muted);
+  --color-coral: var(--coral);
+  --color-deep-coral: var(--deep-coral);
+  --color-deep-teal: var(--deep-teal);
+  --color-lavender: var(--lavender);
+  --color-peach: var(--peach);
   --font-sans: var(--font-ui);
   --font-display: var(--font-display);
 }

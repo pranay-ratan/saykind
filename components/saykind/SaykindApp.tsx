@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { StyleSheet, View, type ViewStyle } from "react-native";
 import CafeExperience from "@/components/cafe/CafeExperience";
 import CafeScene from "@/components/cafe/CafeScene";
-import { OBJECTS, logEvent, useCafe, useCaregiverContact, useDiscovery, useExercise } from "@/lib/saykind";
+import { getSetProgress, LEVEL2_SET_ID, isSetComplete } from "@/lib/saykind/progress";
+import { OBJECTS, isLevelUnlocked, logEvent, parseLevelReturn, useCafe, useCaregiverContact, useDiscovery, useExercise, useLevel2Complete } from "@/lib/saykind";
 import type { Order } from "@/lib/order";
 import { useReducedMotion } from "@/lib/use-presence";
 import { unlockWordAudio } from "@/lib/word-audio";
@@ -23,6 +24,8 @@ import WelcomeView from "./WelcomeView";
 
 const IRIS_MS = 1900;
 
+const getLevel2Complete = () => isSetComplete(getSetProgress(LEVEL2_SET_ID));
+
 /**
  * Words that use the redesigned Level 1 screen (components/saykind/level1). The redesign is being reviewed on the Chair first;
  * every other word keeps the previous screen until it is approved. Approving it is a one-line change: list the other ids here
@@ -38,7 +41,10 @@ const REDESIGNED_WORDS: readonly string[] = ["chair"];
  */
 export default function SaykindApp() {
   const router = useRouter();
-  const [welcomed, setWelcomed] = useState(false);
+  // Coming back from /level-2 skips the Welcome screen and opens the menu, with the café marked as next once Level 2 is done.
+  const [returned] = useState(() => parseLevelReturn(window.location.search));
+  const [welcomed, setWelcomed] = useState(returned.fromLevel2);
+  const level2Complete = useLevel2Complete();
   const reduced = useReducedMotion();
   const level1 = useExercise({ id: "level1", level: 1, items: OBJECTS });
   const discovery = useDiscovery();
@@ -47,13 +53,15 @@ export default function SaykindApp() {
 
   const [level, setLevel] = useState<LevelId>(1);
   const [settings, setSettings] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(returned.fromLevel2);
   const [caregiverOpen, setCaregiverOpen] = useState(false);
   const [cafeStage, setCafeStage] = useState<"cafe" | "done">("cafe");
   const [order, setOrder] = useState<Order | null>(null);
   const [irisOpen, setIrisOpen] = useState(false);
   const timers = useRef<number[]>([]);
   const { unlockAudio } = cafe;
+  const levelOpen = (id: LevelId) => isLevelUnlocked(id, { level2Complete });
+  const lockedLevels = ([3, 4] as const).filter((id) => !levelOpen(id));
 
   const later = useCallback((fn: () => void, ms: number) => {
     timers.current.push(window.setTimeout(fn, ms));
@@ -69,7 +77,8 @@ export default function SaykindApp() {
     window.addEventListener("pointerdown", unlock, { once: true });
     const wanted = Number(new URLSearchParams(window.location.search).get("level"));
     const start = window.setTimeout(() => {
-      if (wanted >= 1 && wanted <= 4 && wanted !== 3) setLevel(wanted as LevelId);
+      if (wanted >= 1 && wanted <= 4 && wanted !== 3 && isLevelUnlocked(wanted as LevelId, { level2Complete: getLevel2Complete() })) setLevel(wanted as LevelId);
+      if (returned.fromLevel2) window.history.replaceState(null, "", "/");
     }, 0);
     const pending = timers.current;
     return () => {
@@ -77,7 +86,7 @@ export default function SaykindApp() {
       window.clearTimeout(start);
       pending.forEach((id) => window.clearTimeout(id));
     };
-  }, [unlockAudio]);
+  }, [unlockAudio, returned.fromLevel2]);
 
   /** Into the café. Always called straight from a tap, so the browser allows sound and the microphone. */
   const enterCafe = (withIris = true) => {
@@ -93,6 +102,7 @@ export default function SaykindApp() {
   };
 
   const selectLevel = (id: LevelId) => {
+    if (!levelOpen(id)) return;
     setMenuOpen(false);
     setSettings(false);
     if (id === level && id !== 3) return;
@@ -159,6 +169,8 @@ export default function SaykindApp() {
       <LevelMenu
         open={menuOpen}
         current={level}
+        locked={lockedLevels}
+        next={returned.nextCafe ? 3 : undefined}
         onSelect={selectLevel}
         onClose={() => setMenuOpen(false)}
         onSettings={() => {

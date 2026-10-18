@@ -19,7 +19,7 @@ export const LEVELS: { id: LevelId; title: string; blurb: string; tag?: string }
  * TEMPORARY navigation menu. Opening or closing it never changes anything: exercise progress lives in the controllers,
  * not here. Replace freely.
  */
-export default function LevelMenu({ open, current, onSelect, onClose, onSettings, onCaregiverView }: { open: boolean; current: LevelId; onSelect: (id: LevelId) => void; onClose: () => void; onSettings: () => void; onCaregiverView: () => void }) {
+export default function LevelMenu({ open, current, onSelect, onClose, onSettings, onCaregiverView, locked = [], next }: { open: boolean; current: LevelId; onSelect: (id: LevelId) => void; onClose: () => void; onSettings: () => void; onCaregiverView: () => void; locked?: readonly LevelId[]; next?: LevelId }) {
   return (
     <View pointerEvents={open ? "auto" : "none"} style={[StyleSheet.absoluteFill, { zIndex: 60 }]} role="dialog" aria-label="Menu" aria-modal={open}>
       <Pressable accessibilityRole="button" accessibilityLabel="Close menu" onPress={onClose} style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(27,36,48,0.4)", opacity: open ? 1 : 0, transitionProperty: "opacity", transitionDuration: "200ms" } as ViewStyle]} />
@@ -55,17 +55,20 @@ export default function LevelMenu({ open, current, onSelect, onClose, onSettings
         <Label>Levels</Label>
         {LEVELS.map((level) => {
           const active = level.id === current;
+          const isLocked = locked.includes(level.id);
+          const isNext = next === level.id && !isLocked;
           return (
             <Pressable
               key={level.id}
               accessibilityRole="button"
-              accessibilityLabel={`Level ${level.id}: ${level.title}${level.tag ? ` (${level.tag})` : ""}`}
-              accessibilityState={{ selected: active }}
+              accessibilityLabel={`Level ${level.id}: ${level.title}${level.tag ? ` (${level.tag})` : ""}${isLocked ? ", opens after Level 2" : ""}${isNext ? ", next" : ""}`}
+              accessibilityState={{ selected: active, disabled: isLocked }}
               onPress={() => {
+                if (isLocked) return;
                 tap();
                 onSelect(level.id);
               }}
-              style={({ pressed }) => [styles.row, active && styles.rowActive, pressed ? { opacity: 0.85 } : null]}
+              style={({ pressed }) => [styles.row, active && styles.rowActive, isNext && styles.rowNext, isLocked && styles.rowLocked, pressed && !isLocked ? { opacity: 0.85 } : null]}
             >
               <View style={[styles.num, active && { backgroundColor: color.primary }]}>
                 <Text style={{ fontFamily: font.ui, fontSize: 17, fontWeight: "800", color: active ? color.onPrimary : color.inkSoft }}>{level.id}</Text>
@@ -75,7 +78,7 @@ export default function LevelMenu({ open, current, onSelect, onClose, onSettings
                   {level.title}
                   {level.tag ? <Text style={{ color: color.accent, fontSize: 13 }}>{`  ${level.tag.toUpperCase()}`}</Text> : null}
                 </Text>
-                <Body size={14}>{level.blurb}</Body>
+                <Body size={14}>{isLocked ? "Opens after Level 2" : isNext ? "Next: ready when you are" : level.blurb}</Body>
               </View>
               {active ? (
                 <View style={{ color: color.primary } as ViewStyle}>
@@ -104,6 +107,8 @@ function MenuLink({ label, icon, onPress }: { label: string; icon: React.ReactNo
 
 const styles = StyleSheet.create({
   row: { minHeight: 68, flexDirection: "row", alignItems: "center", gap: 14, padding: 10, borderRadius: 18, borderWidth: 2, borderColor: "transparent" },
+  rowLocked: { backgroundColor: color.surfaceStrong },
+  rowNext: { backgroundColor: color.accentSoft, borderColor: color.accent },
   rowActive: { backgroundColor: color.primarySoft, borderColor: color.primary },
   num: { width: 40, height: 40, borderRadius: 20, backgroundColor: color.surfaceStrong, alignItems: "center", justifyContent: "center" },
   link: { minHeight: 52, flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 10, borderRadius: 14 },
