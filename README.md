@@ -6,21 +6,35 @@ A calm, untimed place for adults with aphasia to practice everyday words and use
 
 > **For the UI team:** read `docs/UI_INTEGRATION.md`. The functionality is in `lib/saykind/` (controllers, no visuals); the current screens in `components/saykind/` are temporary and meant to be replaced. The café artwork must not change.
 
-## What this merged version adds
+## Status
 
-This repository combines the deployed Saykind app (`main`) with a new **Level 2 live camera** and a few supporting changes. Each item says where it lives and how far it has been checked.
+Each line says what has been checked and how. Nothing here has been run against live providers or on a phone.
 
-| Item | Where | Status |
+| Area | Status | What was checked |
 | --- | --- | --- |
-| Live camera at `/level-2`: labelled boxes over objects, tap for a practice sheet | `app/level-2`, `src/ui/level2`, `src/core/camera`, `src/core/vision` | **Prototype**: boxes, mirroring and orientation checked with a stand-in camera; not tested with a real Perceptron key or a phone camera. Details in `docs/LEVEL2_CAMERA.md`. |
-| Object detection: Perceptron (default), Gemini (development fallback) | `app/api/detect`, `src/core/vision` | **Prototype**: request and error paths tested; box format on the live API unverified (see `docs/LEVEL2_CAMERA.md`). |
-| Level 2 speech: browser voice (default) or ElevenLabs | `app/api/tts`, `src/core/speech.ts` | **Prototype**: ElevenLabs path unverified against a live account. |
-| Welcome screen: Soft Aurora backdrop, word-by-word headline, Start | `components/saykind/WelcomeView.tsx` | **Working** in desktop browser. Reduced-motion path is code only, not yet exercised. |
-| Atkinson Hyperlegible Next (body) and Bricolage Grotesque (headings) | `app/layout.tsx` | **Working**. Next warns it has no fallback metrics for Atkinson, so a small reflow on font swap is possible. |
-| Warm palette on the bright theme block and `components/saykind/theme.ts` | `app/globals.css`, `components/saykind/theme.ts` | **Working** for the patient screens. The café scene CSS is unchanged. |
-| Adaptive difficulty: rules (no key) and an optional Claude adapter, `POST /api/adapt` | `src/core/adaptive`, `app/api/adapt` | **Prototype**: rules and route tested; Claude path fell back to the rules with a fake key. **Not connected** to Level 1 or the Level 2 sheet yet. |
+| Café speech (ElevenLabs by default; OpenAI optional) | **Prototype** | Unit tests with stubbed `fetch`. `npm run check:elevenlabs` written but not run (no key in this build). |
+| Café conversation (Claude by default; OpenAI optional) | **Prototype** | Unit tests with stubbed `fetch`, including validation, timeout-style fallback and no sampling parameters. Not run against Claude. |
+| Spoken-audio credit guard (`ELEVENLABS_MAX_CHARS_PER_DAY`) | **Working** in tests | Daily budget and reset tested. |
+| Welcome screen: aurora, word-by-word headline, Start | **Working** in Chrome | Browser smoke run; reduced motion removes the aurora and keeps the plain headline. The logo file is not in the repo. |
+| Atkinson Hyperlegible Next and Bricolage Grotesque; Warm palette | **Working** | Build and browser check. Next warns that Atkinson has no fallback metrics, so a small reflow on font swap is possible. |
+| Level 1: adaptive difficulty | **Prototype** | Rules and route tested. Events are sent from the Level 1 controller only. Nothing has been run with a real recording. Level changes are saved but do not yet choose different words, because the word list has no difficulty levels. |
+| Level 1: flip card with mic and "I said it" | **Built on the Level 2 sheet, not on Level 1** | The card (`src/ui/WordCard.tsx`) is used by the Level 2 object sheet. Dev's Level 1 screen keeps its own layout; putting the card there would replace it, which is Dev's decision. |
+| Level 2 live camera | **Prototype** | Stand-in camera feed and fixed detections in Chrome: box alignment, mirroring, orientation, off-screen boxes, still-scene persistence. Not run with a real camera or a live Perceptron key. |
+| Level 2 colours: coral boxes, cream chips, deep-coral start button | **Working** | Browser check. |
+| Get Help sheet: deep-coral button and Orb | **Working** | Browser smoke run. The Orb's look has not been reviewed on a phone. |
+| Caregiver view: Count Up on the two counts | **Working** | Browser smoke run; plain numbers under reduced motion. |
+| Caregiver view: Spotlight Card and soft cards | **Not done** | |
+| Café menu panel and buttons restyle | **Not done** | |
+| Level menu scrim and caregiver scrim: axe role fix | **Working** | Axe run finds no serious violations on the screens checked. |
+| Browser smoke and accessibility suite (`npm run test:e2e`) | **Working** | 13 checks: axe (WCAG A and AA) on Welcome, Level 1, café menu, caregiver view, Get Help and Level 2 start; reduced motion on Welcome; Level 2 full-bleed at 1280px. Mocks answer every `/api` call. This is a smoke run, not full coverage of every flow. |
+| Provider check scripts | `check:env` **working**; `check:elevenlabs` and `check:perceptron` **not run** (no keys) | See [`docs/SETUP.md`](docs/SETUP.md). |
 
-Not done in this merge: the Level 1 flip card, the café menu restyle, the Get Help orb, the caregiver view counts, the Level 2 coral box styling, React Bits components beyond the two copied, and the Puppeteer and axe suite. Dev's redesign branch `experiment/react-bits-full-ui` is intentionally **not merged**. Its README says it is not deployed, and it carries an open café microphone bug (`docs/KNOWN_ISSUES.md` on that branch).
+## Privacy
+
+- **Providers:** ElevenLabs (spoken audio in and out, when enabled), Anthropic (the café conversation), Perceptron (Level 2 photos, when enabled). OpenAI is an optional fallback and is never required.
+- **We store nothing on our servers.** Audio and photos pass to the provider only to get a result. The server keeps two in-memory caches of spoken lines (audio of phrases, not of people) and a daily character counter. Neither holds anything a person said or photographed.
+- **On the device:** practice records and the caregiver details are kept in the browser's storage on that device.
+- **Keys** are read on the server only and never sent to the browser. `npm run check:env` prints names and yes or no, never values.
 
 ## Run it
 
@@ -42,6 +56,9 @@ npm run lint
 npm test               # vitest: camera geometry, vision parsing, rate limit, TTS helpers, adaptive engine
 npm run build
 npm run check:perceptron -- path/to/photo.jpg   # one live Perceptron call: raw reply, boxes, latency
+npm run check:elevenlabs                         # one text to speech call, then speech to text: PASS or FAIL
+npm run check:env                                # which variables are SET or MISSING (never values)
+npm run test:e2e                                 # browser and axe smoke suite (needs npm run build && npm start on BASE_URL)
 ```
 
 ## Environment variables
@@ -50,11 +67,12 @@ Every variable is in `.env.example`, marked REQUIRED or OPTIONAL. Keys are read 
 
 | Variable | Required when | Get it from |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | always, for speech-to-text, the conversation and the barista | https://platform.openai.com/api-keys |
+| `OPENAI_API_KEY` | Optional. A fallback only, used when no ElevenLabs or Claude key is set, or when chosen with a `*_PROVIDER` variable | https://platform.openai.com/api-keys |
 | `PERCEPTRON_API_KEY` | Level 2 with the default provider | https://docs.perceptron.inc |
 | `GEMINI_API_KEY` | `VISION_PROVIDER=gemini` | https://aistudio.google.com/app/apikey |
-| `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID` | `TTS_PROVIDER=elevenlabs` (Level 2 speech) | https://elevenlabs.io |
-| `ANTHROPIC_API_KEY` | `ADAPTIVE_PROVIDER=claude` | https://console.anthropic.com/ |
+| `ELEVENLABS_API_KEY` | The café's spoken audio and listening (needs Text to Speech and Speech to Text permission) | https://elevenlabs.io |
+| `ANTHROPIC_API_KEY` | The café's conversation (Claude is the default) | https://console.anthropic.com/ |
+| `ELEVENLABS_VOICE_ID` | Optional for the café (a stock voice is used); required for Level 2 speech when `TTS_PROVIDER=elevenlabs` | ElevenLabs voice library |
 
 Optional with defaults: `VISION_PROVIDER` (perceptron), `PERCEPTRON_MODEL`, `GEMINI_MODEL`, `TTS_PROVIDER` (browser), `TTS_PREWARM_SECRET`, `LIVE_MAX_CALLS`, `LIVE_INTERVAL_MS`, `ADAPTIVE_PROVIDER` (rules), `CLAUDE_MODEL` (claude-haiku-5-5), and the OpenAI and rate-limit settings from Dev's original template.
 
@@ -75,7 +93,7 @@ See [`docs/AUTHORSHIP.md`](docs/AUTHORSHIP.md). Short version: the git history s
 - Dev's Saykind app, the café artwork, the Level 1 to 4 screens, the controllers and the audio: Devvrat Vaishnav's repository (`devvratvaishnav14/Saykind`) and its contributors.
 - React Bits components (SoftAurora and SplitText, copied from Dev's experiment branch; the others in `components/reactbits` are from the baseline): React Bits, https://reactbits.dev.
 - Fonts: Atkinson Hyperlegible Next and Bricolage Grotesque, loaded by `next/font` from Google Fonts.
-- Perceptron (vision), ElevenLabs (speech), Anthropic (adaptive), OpenAI (speech and conversation), Google Gemini (development fallback).
+- Perceptron (vision), ElevenLabs (speech), Anthropic (conversation and adaptive), OpenAI (optional fallback), Google Gemini (development fallback).
 - Level 2 camera, merge, Welcome screen and adaptive engine: this repository's owner, with an AI coding assistant.
 
 The key is read only on the server (`lib/server/openai.ts`) and never reaches the browser. The microphone and camera need **https** (or `localhost`); this repo publishes and tunnels nothing, so decide how to serve it over https separately.

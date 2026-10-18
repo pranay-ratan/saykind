@@ -51,3 +51,27 @@ Summary for the 20 files: 16 are baseline (pre-existing per git, unverifiable as
 
 - Whether any baseline file predates 12:30 Pacific. The history cannot show it. Dev can confirm from their own records.
 - The 70/30 result. By git timestamps the pre-event share is 0%. By the "as deployed" label it is probably high. Neither reading has been checked against Dev's records.
+
+## Phases A to E (all committed after the baseline, attributed to the repository owner in git)
+
+Everything below was written or changed after the `4409a83` baseline commit. Git attributes these commits to the repository owner's identity. None of it is claimed as written before the event.
+
+**Written in this work (new files):**
+- Café server: `lib/server/voice/` (ElevenLabs speech and transcription, speech helper with credit guard, transcribe helper), `lib/server/llm/` (Claude conversation, barista output contract, provider dispatcher), `lib/server/providers.ts` (provider choice and key names)
+- Adaptive: `src/core/adaptive/` (types, closeness, rules, Claude adapter), `app/api/adapt/`, `lib/adaptive-client.ts`, `lib/saykind/controllers/use-adaptive.ts`
+- Welcome screen: `components/saykind/WelcomeView.tsx`
+- Tests: `lib/server/voice-llm.test.ts`, `src/core/adaptive/adaptive.test.ts`, `src/core/camera/geometry.test.ts`, `tests/e2e/smoke.mjs`
+- Scripts: `scripts/check-elevenlabs.mjs`, `scripts/check-env.mjs`
+- Docs: `docs/SETUP.md`, `docs/AUTHORSHIP.md` (this file)
+
+**Copied from Dev's experiment branch (`origin/experiment/react-bits-full-ui`), file only, not merged:**
+- `components/reactbits/SoftAurora.tsx`, `SplitText.tsx`, `FlipCard.tsx`, `SpringCheck.tsx`, `hugeicons-shim.tsx`, `Orb.tsx`, `CountUp.tsx`
+- Those files were written by the React Bits authors and vendored by Dev's team in the experiment branch. They are not the repository owner's work.
+
+**Changed in existing files:** the café server routes, the barista's model call (now provider-neutral), the guard (now per capability), the status route, the client voice hook (device-voice fallback), `WordCard`, the Level 2 overlay and start screen, the caregiver sheet and report, the level menu scrim, the Level 1 controller and screen (message line only), `.env.example`, `README.md`.
+
+**Honest limits**
+- Git shows no commits before 12:30 Pacific, so the 70/30 split cannot be measured from history. This section describes what was added after the baseline. It does not show what predates the event.
+- The flip card is on the Level 2 object sheet, not on Dev's Level 1 screen.
+- The Puppeteer suite is a smoke run with mocks, not full coverage.
+- Nothing above has been run against live ElevenLabs, Anthropic or Perceptron services.
