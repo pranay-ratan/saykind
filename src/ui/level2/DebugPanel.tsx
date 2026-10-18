@@ -5,6 +5,11 @@ import type { LiveBlockReason } from '../../core/camera/liveGate';
 
 interface DebugPanelProps {
   provider?: string;
+  /** The model that answered the last call, and whether it used native boxes or the JSON prompt. */
+  model?: string;
+  mode?: string;
+  /** Boxes on screen right now. */
+  boxCount: number;
   latencyMs?: number;
   callsUsed: number;
   maxCalls: number;
@@ -17,6 +22,9 @@ interface DebugPanelProps {
 /** Visible with ?debug=1. Shows what the last detection did, so alignment and budget can be checked. */
 export function DebugPanel({
   provider,
+  model,
+  mode,
+  boxCount,
   latencyMs,
   callsUsed,
   maxCalls,
@@ -28,7 +36,9 @@ export function DebugPanel({
   return (
     <div className="absolute left-4 bottom-4 max-w-xs space-y-2 rounded-xl bg-black/80 p-4 text-sm text-white">
       <div>Provider: {provider ?? 'none yet'}</div>
+      <div>Model: {model ? `${model}${mode ? ` (${mode})` : ''}` : 'none yet'}</div>
       <div>Latency: {latencyMs === undefined ? 'n/a' : `${latencyMs} ms`}</div>
+      <div>Boxes: {boxCount}</div>
       <div>
         Calls: {callsUsed} / {maxCalls}
       </div>

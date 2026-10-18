@@ -14,7 +14,7 @@ Each line says what has been checked and how. **WORKING** means it ran in a real
 | --- | --- | --- |
 | Level 1 word practice (Dev's screens) | **WORKING** | Browser suite: opens, axe, layout at 375px and 1280px. The flip card was **not** put on Level 1: Dev's layout would have to be replaced (the card is used on the Level 2 sheet). |
 | Level 1 adaptive difficulty | **PROTOTYPE** | Rules and route tested. Level changes are saved but do not yet choose different words (the word list has no levels). |
-| Level 2 live camera and practice card | **PROTOTYPE** | Fake camera and mocked detection in Chrome: tap an object, play or record its word. Not run with a real camera or a live Perceptron key. Detect calls wait 15 s and retry once; `PERCEPTRON_MODEL=isaac-0.3-fast` is the speed option. |
+| Level 2 live camera and practice card | **PROTOTYPE** | Fake camera and mocked detection in Chrome: tap an object, play or record its word. Not run with a real camera. The live loop uses Perceptron's native box mode (measured live at about 0.7 to 1.2 s per frame on 2026-10-18); detect calls wait 15 s and retry once; a rejected model name falls back to `PERCEPTRON_MODEL`. See `docs/PERCEPTRON.md`. |
 | Flow: Welcome, Level 1, menu, Level 2, back, café | **WORKING** | Browser test. Every level is open from the menu (the levels are a path, not a gate) and Level 2 is optional: its start screen has Skip, and Back and Next: the café. Completing a word still marks Level 2 done. `NEXT_PUBLIC_UNLOCK_ALL_LEVELS=false` restores the old gate. |
 | Café voice conversation (mic, Scribe, Claude, ElevenLabs voice) | **PROTOTYPE** | Whole loop in a browser with mocks: greeting, fragments, change of mind, empty turn, picture answers, order complete, device-voice fallback. Live latency and lip-sync with the real services are not verified. |
 | Café session saved to the practice log | **WORKING** | Unit and browser tests. |
@@ -74,7 +74,7 @@ Every variable is in `.env.example`, marked REQUIRED or OPTIONAL. Keys are read 
 | `ANTHROPIC_API_KEY` | The café's conversation (Claude is the default) and the doctor report (a template is used without it) | https://console.anthropic.com/ |
 | `ELEVENLABS_VOICE_ID` | Optional for the café (the premade voice `JBFqnCBsd6RMkjVDRZzb` is used; library voices need a paid ElevenLabs plan); required for Level 2 speech when `TTS_PROVIDER=elevenlabs` | ElevenLabs voice library |
 
-Optional with defaults: `VISION_PROVIDER` (perceptron), `PERCEPTRON_MODEL`, `GEMINI_MODEL`, `TTS_PROVIDER` (browser), `TTS_PREWARM_SECRET`, `LIVE_MAX_CALLS`, `LIVE_INTERVAL_MS`, `ADAPTIVE_PROVIDER` (rules), `CLAUDE_MODEL` (claude-haiku-5-5), and the OpenAI and rate-limit settings from Dev's original template.
+Optional with defaults: `VISION_PROVIDER` (perceptron), `PERCEPTRON_MODEL`, `PERCEPTRON_MODEL_LIVE`, `PERCEPTRON_MODEL_CONFIRM`, `PERCEPTRON_BOX_MODE`, `GEMINI_MODEL`, `TTS_PROVIDER` (browser), `TTS_PREWARM_SECRET`, `LIVE_MAX_CALLS`, `LIVE_INTERVAL_MS`, `ADAPTIVE_PROVIDER` (rules), `CLAUDE_MODEL` (claude-haiku-5-5), and the OpenAI and rate-limit settings from Dev's original template.
 
 ## Deploy to Vercel (for a phone test)
 

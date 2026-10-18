@@ -44,6 +44,8 @@ export function toCorners(raw: RawDetection, frame: FrameSize | null): Corners |
 
 export function normalizeLabel(label: string): string | null {
   const words = label
+    // "glass (drink container)" -> "glass": the model sometimes adds a category in brackets.
+    .replace(/\([^)]*\)/g, ' ')
     .toLowerCase()
     .replace(/[^a-z\s-]/g, ' ')
     .trim()

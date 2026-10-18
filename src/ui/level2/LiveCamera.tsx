@@ -87,6 +87,8 @@ export function LiveCamera({ config }: LiveCameraProps) {
   const [mediaSize, setMediaSize] = useState({ width: 0, height: 0 });
   const [failure, setFailure] = useState<DetectFailure | null>(null);
   const [provider, setProvider] = useState<string | undefined>();
+  const [model, setModel] = useState<string | undefined>();
+  const [mode, setMode] = useState<string | undefined>();
   const [latencyMs, setLatencyMs] = useState<number | undefined>();
   const [rawBoxes, setRawBoxes] = useState<DetectedObject[] | null>(null);
   const [hintVisible, setHintVisible] = useState(false);
@@ -111,6 +113,8 @@ export function LiveCamera({ config }: LiveCameraProps) {
     (response: DetectResponse) => {
       setTracks((previous) => mergeTracks(previous, response.objects, Date.now()));
       setProvider(response.provider);
+      setModel(response.model);
+      setMode(response.mode);
       setLatencyMs(response.latencyMs);
       setRawBoxes(response.raw);
       setFailure(null);
@@ -259,6 +263,8 @@ export function LiveCamera({ config }: LiveCameraProps) {
         setPhoto({ dataUrl: frame.dataUrl, width: frame.width, height: frame.height });
         setTracks(mergeTracks([], response.objects, Date.now()));
         setProvider(response.provider);
+        setModel(response.model);
+        setMode(response.mode);
         setLatencyMs(response.latencyMs);
         setRawBoxes(response.raw);
         setFailure(null);
@@ -334,6 +340,9 @@ export function LiveCamera({ config }: LiveCameraProps) {
           {debugMode && (
             <DebugPanel
               provider={provider}
+              model={model}
+              mode={mode}
+              boxCount={tracks.length}
               latencyMs={latencyMs}
               callsUsed={detection.callsUsed}
               maxCalls={config.liveMaxCalls}

@@ -1,5 +1,8 @@
 export type VisionProvider = 'perceptron' | 'gemini';
 
+/** live: a frame from the camera loop (fast box mode). confirm: the tapped object, where confidence matters. */
+export type DetectPurpose = 'live' | 'confirm';
+
 export interface FrameSize {
   width: number;
   height: number;
@@ -28,4 +31,8 @@ export interface DetectResponse {
   raw: DetectedObject[];
   provider: VisionProvider;
   latencyMs: number;
+  /** The model that answered, after any fallback. Shown by ?debug=1. */
+  model?: string;
+  /** How the boxes were asked for: Perceptron's native markup or a JSON prompt. */
+  mode?: 'json' | 'box';
 }

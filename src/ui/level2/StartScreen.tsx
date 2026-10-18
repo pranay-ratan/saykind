@@ -83,6 +83,10 @@ export function StartScreen({ status, photoBusy, photoMessage, onOpenCamera, onC
       <a href={NEXT_AFTER_LEVEL2} className={SECONDARY_LABEL} aria-label="Skip Level 2 and go to the café">
         Skip
       </a>
+
+      <p className="rounded-full bg-cream/90 px-4 py-2 text-xl text-plum" aria-label="Objects are found by Perceptron">
+        Perceptron
+      </p>
     </div>
   );
 }

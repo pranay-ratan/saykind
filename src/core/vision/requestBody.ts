@@ -1,5 +1,5 @@
 import { SERVER_LIMITS } from '../../config/camera';
-import type { FrameSize } from './types';
+import type { DetectPurpose, FrameSize } from './types';
 
 export type ImageMime = 'image/jpeg' | 'image/png';
 
@@ -7,6 +7,8 @@ export interface DetectRequest {
   imageBase64: string;
   mimeType: ImageMime;
   frame: FrameSize | null;
+  /** Missing means live. */
+  purpose?: DetectPurpose;
 }
 
 export type ParseResult = { ok: true; value: DetectRequest } | { ok: false; error: string };
@@ -33,9 +35,10 @@ export function parseDetectRequest(body: unknown): ParseResult {
     return { ok: false, error: 'That photo is too large. Try a smaller one.' };
   }
 
+  const purpose = body.purpose === 'confirm' ? 'confirm' : undefined;
   return {
     ok: true,
-    value: { imageBase64: payload, mimeType, frame: readFrame(body) },
+    value: purpose ? { imageBase64: payload, mimeType, frame: readFrame(body), purpose } : { imageBase64: payload, mimeType, frame: readFrame(body) },
   };
 }
 

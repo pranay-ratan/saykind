@@ -1,5 +1,5 @@
 import { CAMERA_CONFIG } from '../../config/camera';
-import type { DetectResponse, FrameSize } from './types';
+import type { DetectPurpose, DetectResponse, FrameSize } from './types';
 
 export type DetectFailure = 'rate-limited' | 'timeout' | 'offline' | 'bad-photo' | 'failed';
 
@@ -16,6 +16,8 @@ export interface DetectInput {
   /** data:image/jpeg;base64,... or data:image/png;base64,... */
   imageDataUrl: string;
   frame: FrameSize | null;
+  /** live (default): the fast box mode. confirm: the JSON mode with a confidence. */
+  purpose?: DetectPurpose;
 }
 
 function isDetectResponse(value: unknown): value is DetectResponse {
@@ -48,6 +50,7 @@ export async function detectObjects(input: DetectInput): Promise<DetectResponse>
         mimeType: match[1],
         width: input.frame?.width,
         height: input.frame?.height,
+        purpose: input.purpose,
       }),
       signal: AbortSignal.timeout(CAMERA_CONFIG.detectClientTimeoutMs),
     });
