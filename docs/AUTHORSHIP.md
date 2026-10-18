@@ -85,6 +85,16 @@ Written after the baseline, by the repository owner's identity in git, with an A
 
 **Changed in existing files:** the barista prompt and a language safety net (`lib/server/barista.ts`), the conversation hook (session, device-voice start guard), the café end state (a "See my report" button instead of a timer), the café controls and menu panel CSS (`app/globals.css`, tokens only, short-phone compaction removed), the shared kit sizes and tokens, Dev's Level 1 screens (sizes and colour values only, layout kept), Level 2 classes (tokens), the Welcome logo, the caregiver view (Spotlight Cards), Settings (doctor fields), the ElevenLabs default voice and its 402 message, the detect timeout and retry.
 
+## Overnight branch (2026-10-18)
+
+Written after Phase F by the repository owner's identity in git, with an AI coding assistant doing the typing under direction; see `docs/OVERNIGHT_REPORT.md` for the step list and commits. Not claimed as pre-event work.
+
+**Copied, not written:** `app/fonts/*.woff2` are the Google Fonts files for Atkinson Hyperlegible Next and Bricolage Grotesque (SIL OFL, licences beside them).
+
+**New files written here:** `lib/tone.ts` and its test, `docs/TONE.md`, `src/core/autoStop.ts` and its test, `src/ui/level2/useAutoStop.ts`, `src/core/vision/parseAnnotations.ts` and its test, `src/core/vision/runDetection.test.ts`, `docs/PERCEPTRON.md`, `tests/e2e/{welcome,level1-shift,level2-mic}.mjs`, `app/fonts/README.md`.
+
+**Changed:** the Welcome screen, the Level 2 start screen and object sheet (now on the Level 1 recorder), the Perceptron adapter and detection runner, the barista prompt and reply filter, the adaptive messages, the report prompt and template, the unlock default, `app/layout.tsx` (local fonts), the viewport height in `app/globals.css`, the flow and audit suites, and the env template and setup docs.
+
 **Honest limits**
 - Dev's Level 1 screen was not given the Flip Card, because that would replace his layout.
 - Nothing in Phase F has been run against live ElevenLabs or Perceptron. `/api/report` was called once against live Anthropic with sample numbers.

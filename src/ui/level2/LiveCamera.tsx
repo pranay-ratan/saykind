@@ -392,7 +392,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
         />
       )}
 
-      {!sheetOpen && <FlowButtons canContinue={practiced} />}
+      {showMedia && !sheetOpen && <FlowButtons canContinue={practiced} />}
 
       <SettingsSheet
         open={settingsOpen}

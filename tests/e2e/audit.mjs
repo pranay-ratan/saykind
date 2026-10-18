@@ -150,7 +150,7 @@ async function main() {
     await level2.goto(`${BASE_URL}/level-2`, { waitUntil: "domcontentloaded" });
     await waitForText(level2, "Look around you");
     await audit(level2, "Level 2 start");
-    await clickByText(level2, "Open camera", "button");
+    await clickByText(level2, "Camera", "button");
     await level2.waitForSelector('button[aria-label$="Tap to practice"]', { timeout: 20000 });
     await audit(level2, "Level 2 live camera");
     await level2.click('button[aria-label$="Tap to practice"]');

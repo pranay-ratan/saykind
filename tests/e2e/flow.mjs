@@ -38,7 +38,7 @@ async function main() {
     await waitForText(skip, "Look around you");
     const hasSkip = await skip.evaluate(() => [...document.querySelectorAll("a")].some((a) => a.textContent?.trim() === "Skip"));
     record("level 2: Skip is offered on the start screen", hasSkip);
-    const hasBack = await skip.evaluate(() => [...document.querySelectorAll("a")].some((a) => a.textContent?.trim() === "Back to levels"));
+    const hasBack = await skip.evaluate(() => document.querySelector('a[aria-label="Back to levels"]') !== null);
     const nextBefore = await skip.evaluate(() => [...document.querySelectorAll("a")].some((a) => a.textContent?.includes("Next: the café")));
     record("level 2: Back to levels is there from the start", hasBack);
     record("level 2: Next appears only after a word is practiced", !nextBefore);
@@ -54,7 +54,7 @@ async function main() {
     const practice = await newPage(browser);
     await practice.goto(`${BASE_URL}/level-2`, { waitUntil: "domcontentloaded" });
     await waitForText(practice, "Look around you");
-    await clickByText(practice, "Open camera");
+    await clickByText(practice, "Camera", "button");
     await practice.waitForSelector('button[aria-label$="Tap to practice"]', { timeout: 20000 });
     await practice.click('button[aria-label$="Tap to practice"]');
     await waitForText(practice, "Practice");
@@ -75,7 +75,7 @@ async function main() {
     const back = await newPage(browser);
     await back.goto(`${BASE_URL}/level-2`, { waitUntil: "domcontentloaded" });
     await waitForText(back, "Look around you");
-    await clickByText(back, "Back to levels", "a");
+    await back.click('a[aria-label="Back to levels"]');
     await back.waitForFunction(() => location.pathname === "/", { timeout: 10000 });
     await waitForText(back, "Discover Objects");
     record("flow: Back to levels opens the menu, not Welcome", await back.evaluate(() => !document.body.innerText.includes("Find your words")));
