@@ -48,3 +48,34 @@ export function toScreenBox(box: { x: number; y: number; w: number; h: number },
     height: box.h * layout.renderedHeight,
   };
 }
+
+/**
+ * The front camera is shown mirrored, so a box must be mirrored too. The
+ * detection frame itself is not mirrored, so only the display side changes.
+ */
+export function mirrorBox<T extends { x: number; w: number }>(box: T, mirrored: boolean): T {
+  return mirrored ? { ...box, x: 1 - box.x - box.w } : box;
+}
+
+/** True when some part of the box lies inside the visible container. */
+export function isOnScreen(box: ScreenBox, container: Size): boolean {
+  if (box.width <= 0 || box.height <= 0) return false;
+  return (
+    box.left < container.width &&
+    box.top < container.height &&
+    box.left + box.width > 0 &&
+    box.top + box.height > 0
+  );
+}
+
+/** Keeps a label chip inside the screen. Centred under the visible part of the box, above the screen bottom. */
+export function chipAnchor(box: ScreenBox, container: Size, chipGap: number, chipHeight: number): { x: number; y: number } {
+  const visibleLeft = Math.max(0, box.left);
+  const visibleRight = Math.min(container.width, box.left + box.width);
+  const visibleBottom = Math.min(container.height, box.top + box.height);
+  const belowBox = visibleBottom + chipGap;
+  return {
+    x: (visibleLeft + visibleRight) / 2,
+    y: Math.max(chipGap, Math.min(belowBox, container.height - chipHeight - chipGap)),
+  };
+}

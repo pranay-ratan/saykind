@@ -26,7 +26,7 @@ export function DebugPanel({
   onToggleRawBoxes,
 }: DebugPanelProps) {
   return (
-    <div className="absolute left-4 top-4 max-w-xs space-y-2 rounded-xl bg-black/80 p-4 text-sm text-white">
+    <div className="absolute left-4 bottom-4 max-w-xs space-y-2 rounded-xl bg-black/80 p-4 text-sm text-white">
       <div>Provider: {provider ?? 'none yet'}</div>
       <div>Latency: {latencyMs === undefined ? 'n/a' : `${latencyMs} ms`}</div>
       <div>

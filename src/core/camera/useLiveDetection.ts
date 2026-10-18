@@ -15,6 +15,8 @@ export interface LiveDetectionOptions {
   maxCalls: number;
   onResult: (result: DetectResponse) => void;
   onError: (failure: DetectFailure) => void;
+  /** Called on a tick where the scene is unchanged and no call is made, so boxes on screen stay current. */
+  onStill: () => void;
 }
 
 export interface LiveDetectionState {
@@ -31,7 +33,7 @@ export interface LiveDetectionState {
  * are dropped, so a slow reply never overwrites a newer result.
  */
 export function useLiveDetection(options: LiveDetectionOptions): LiveDetectionState {
-  const { videoRef, active, sheetOpen, intervalMs, maxCalls, onResult, onError } = options;
+  const { videoRef, active, sheetOpen, intervalMs, maxCalls, onResult, onError, onStill } = options;
   const [callsUsed, setCallsUsed] = useState(0);
   const [blockReason, setBlockReason] = useState<LiveBlockReason | null>('inactive');
 
@@ -41,12 +43,12 @@ export function useLiveDetection(options: LiveDetectionOptions): LiveDetectionSt
   const appliedSequenceRef = useRef(0);
   const baselineRef = useRef<Float32Array | null>(null);
   const lastCallAtRef = useRef<number | null>(null);
-  const handlersRef = useRef({ onResult, onError });
+  const handlersRef = useRef({ onResult, onError, onStill });
   const tickRef = useRef<() => Promise<void>>(async () => undefined);
 
   useEffect(() => {
-    handlersRef.current = { onResult, onError };
-  }, [onResult, onError]);
+    handlersRef.current = { onResult, onError, onStill };
+  }, [onResult, onError, onStill]);
 
   async function tick(): Promise<void> {
     const video = videoRef.current;
@@ -75,7 +77,10 @@ export function useLiveDetection(options: LiveDetectionOptions): LiveDetectionSt
       hasCalledBefore: lastCallAt !== null,
       staleMs: CAMERA_CONFIG.sceneStaleMs,
     });
-    if (!worthCalling) return;
+    if (!worthCalling) {
+      if (!sceneChanged) handlersRef.current.onStill();
+      return;
+    }
 
     const frame = captureVideoFrame(video, CAMERA_CONFIG.maxFrameWidth, CAMERA_CONFIG.jpegQuality);
     if (!frame) return;

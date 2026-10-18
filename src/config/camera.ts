@@ -22,6 +22,8 @@ export const CAMERA_CONFIG = {
   lowConfidenceThreshold: 0.5,
   duplicateIouThreshold: 0.6,
   trackMatchIouThreshold: 0.3,
+  /** A matched box that moved less than this (fraction of the frame, on any edge) keeps its old position. */
+  stableMoveRatio: 0.015,
 
   // Overlay
   boxPersistMs: 2500,

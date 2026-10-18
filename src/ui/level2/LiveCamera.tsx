@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from '
 import { CAMERA_CONFIG } from '../../config/camera';
 import type { ClientConfig } from '../../config/clientConfig';
 import { captureVideoFrameHighRes, fileToFrame } from '../../core/camera/frames';
-import { mergeTracks, pruneTracks, type TrackedObject } from '../../core/camera/trackBoxes';
+import { mergeTracks, pruneTracks, refreshTracks, type TrackedObject } from '../../core/camera/trackBoxes';
 import { useCamera } from '../../core/camera/useCamera';
 import { useLiveDetection } from '../../core/camera/useLiveDetection';
 import { cancelSpeech, prepareVoices } from '../../core/speech';
@@ -92,6 +92,8 @@ export function LiveCamera({ config }: LiveCameraProps) {
   const hintTimerRef = useRef<number | null>(null);
 
   const live = camera.status === 'live' && photo === null;
+  /** Only the live front camera is mirrored. Photos from the file picker are shown as taken. */
+  const mirrored = live && camera.facing === 'user';
   const sheetOpen = selection !== null;
 
   const clearHintTimer = useCallback(() => {
@@ -124,6 +126,8 @@ export function LiveCamera({ config }: LiveCameraProps) {
 
   const handleFailure = useCallback((next: DetectFailure) => setFailure(next), []);
 
+  const handleStill = useCallback(() => setTracks((previous) => refreshTracks(previous, Date.now())), []);
+
   const detection = useLiveDetection({
     videoRef,
     active: live && settings.liveDetection,
@@ -132,6 +136,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
     maxCalls: config.liveMaxCalls,
     onResult: handleResult,
     onError: handleFailure,
+    onStill: handleStill,
   });
 
   // Mount-only: warm the browser voice list, and stop any speech and hint timer on unmount.
@@ -266,7 +271,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
   const notice = failureNotice(failure);
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-stone-950 text-white">
+    <div className="fixed inset-0 h-dvh overflow-hidden overscroll-none bg-stone-950 text-white">
       <video
         ref={videoRef}
         playsInline
@@ -274,6 +279,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
         autoPlay
         aria-hidden="true"
         className={`absolute inset-0 h-full w-full object-cover ${live ? '' : 'invisible'}`}
+        style={{ transform: mirrored ? 'scaleX(-1)' : undefined }}
       />
       {photo && (
         // eslint-disable-next-line @next/next/no-img-element -- the photo is a local data URL, not a remote asset
@@ -288,9 +294,14 @@ export function LiveCamera({ config }: LiveCameraProps) {
             onSelect={handleSelect}
             rawBoxes={debugMode && showRawBoxes ? rawBoxes : null}
             hintVisible={hintVisible && live}
+            mirrored={mirrored}
+            showGrid={debugMode}
           />
 
-          <div className="absolute right-4 top-4 flex gap-3">
+          <div
+            className="absolute flex gap-3"
+            style={{ top: 'max(1rem, env(safe-area-inset-top))', right: 'max(1rem, env(safe-area-inset-right))' }}
+          >
             {live && (
               <button type="button" onClick={flipCamera} aria-label="Flip camera" className={ICON_BUTTON}>
                 <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
