@@ -14,6 +14,9 @@ const PATRONISING = [
   "You're a bit slow today, slow down.",
   "Perfect! That's not wrong.",
   "Here you go, sweetie.",
+  "Great choice! Hot or iced?",
+  "Excellent. Small, medium or large?",
+  "Nice. Anything else?",
 ];
 
 const DIGNIFIED = [
@@ -22,6 +25,8 @@ const DIGNIFIED = [
   "Thank you. Hot or iced?",
   "Take your time. You can tap Menu to choose from pictures.",
   "A medium iced tea, please. Anything else?",
+  "An Americano, of course. Hot or iced?",
+  "Have a lovely day!",
 ];
 
 describe("dignity rules", () => {

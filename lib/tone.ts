@@ -9,7 +9,7 @@
  * Kept conservative: ordinary café words ("iced", "slow drip"?) are not matched; "slow" only as a comment on the person.
  */
 export const UNDIGNIFIED =
-  /\b(perfect(ly)?|wrong|incorrect(ly)?|mistakes?|scor(e|es|ed|ing)|good job|great job|nice job|well done|good girl|good boy|you did it|don'?t worry|no worries|i (can'?t|cannot|couldn'?t|could not|don'?t|do not|didn'?t|did not) understand( you)?|hurry( up)?|quickly|simply|obviously|just\b|too slow|so slow|slow down|very slow|you'?re slow|try harder|at least|big (girl|boy)|sweetie|honey|dear\b|buddy|champ|struggl(e|es|ed|ing)|unable to|aphasic)\b/i;
+  /\b(perfect(ly)?|wrong|incorrect(ly)?|mistakes?|scor(e|es|ed|ing)|good job|great job|nice job|well done|good girl|good boy|you did it|don'?t worry|no worries|i (can'?t|cannot|couldn'?t|could not|don'?t|do not|didn'?t|did not) understand( you)?|hurry( up)?|quickly|simply|obviously|just\b|too slow|so slow|slow down|very slow|you'?re slow|try harder|at least|big (girl|boy)|sweetie|honey|dear\b|buddy|champ|struggl(e|es|ed|ing)|unable to|aphasic|(great|good|excellent|lovely|wonderful|fine|smart|nice|wise) (choice|pick|option|one)|excellent|nice|wonderful|fantastic|awesome|brilliant|superb)\b/i;
 
 /** True when a line would not pass the dignity rules. */
 export function hasUndignifiedLanguage(text: string): boolean {
@@ -29,7 +29,7 @@ export function politeSentences(text: string): string {
 /** The voice, in a form prompts can quote. */
 export const TONE_RULES = [
   "Speak to the person as a capable adult, politely and warmly: 'please', 'thank you', 'of course', 'take your time', used naturally.",
-  "Never baby talk, cheering ('good job', 'well done', 'you did it'), pity ('don't worry'), blame ('I can't understand you') or hurry ('just', 'simply', 'obviously', 'quickly').",
+  "Never baby talk, cheering ('good job', 'well done', 'you did it'), praise of a choice ('great choice', 'excellent', 'nice', 'perfect'), pity ('don't worry'), blame ('I can't understand you') or hurry ('just', 'simply', 'obviously', 'quickly'). Confirm plainly instead: 'An Americano, of course.'",
   "Never comment on the person's slowness or ability. Never call anything wrong or a mistake. No scores, levels or grades.",
   "If something was not understood, put it on yourself ('Let me check I have that right'), offer the pictures, and ask one question at a time. Never finish the person's words for them.",
 ].join("\n");

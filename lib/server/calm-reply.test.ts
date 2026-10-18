@@ -25,4 +25,10 @@ describe("calm reply", () => {
     expect(calmReply("I can't understand you. Coffee or tea?", "drink")).toBe("Coffee or tea?");
     expect(calmReply("Just tell me the size.", "size")).toBe("Got it. Small, medium or large?");
   });
+
+  it("drops praise of a choice and keeps the plain confirmation", () => {
+    expect(calmReply("Great choice! An Americano, of course. Hot or iced?", "temperature")).toBe("An Americano, of course. Hot or iced?");
+    expect(calmReply("Excellent. Anything else?", "extras")).toBe("Anything else?");
+    expect(calmReply("Nice!", "drink")).toBe("Of course. Which drink would you like?");
+  });
 });

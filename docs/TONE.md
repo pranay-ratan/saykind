@@ -5,7 +5,7 @@ Every line Saykind or its models say to the person speaks to a capable adult, po
 ## The rules
 
 - Polite and warm, used naturally: "please", "thank you", "of course", "take your time".
-- Never baby talk, cheering ("good job", "well done", "you did it"), pity ("don't worry", "no worries") or pet names.
+- Never baby talk, cheering ("good job", "well done", "you did it"), praise of a choice ("great choice", "excellent", "nice", "perfect"), pity ("don't worry", "no worries") or pet names. Confirm plainly instead: "An Americano, of course."
 - Never blame the listener for not understanding ("I can't understand you"). Put it on yourself: "Let me check I have that right."
 - No impatience words: "just", "simply", "obviously", "quickly", "hurry".
 - No comment on slowness or ability, ever. No scores, levels, grades or percentages shown to the person.
