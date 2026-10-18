@@ -16,7 +16,9 @@ const STATIC_GLOW =
 const TAGLINE = "Find your words. At your pace.";
 /** How present the aurora is at the start: it fills the whole screen behind the logo, the tagline and Start. */
 const AURORA_OPACITY = 0.75;
-const LOGO_SIZE = 168;
+/** The PNG is 1280 x 1276, so the box keeps that ratio (a mismatched box makes Next warn about the image). */
+const LOGO_WIDTH = 168;
+const LOGO_HEIGHT = 167;
 /** Two lines of the tagline at its largest size, reserved up front so nothing moves when the font arrives. */
 const TAGLINE_MIN_HEIGHT = 104;
 
@@ -60,7 +62,7 @@ export default function WelcomeView({ onStart }: { onStart: () => void }) {
         <div />
         <div className="flex items-center justify-center">
           {/* The logo has a white background; multiply lets the cream page and the glow show through it. */}
-          <Image src="/saykind-logo.png" alt="Saykind" width={LOGO_SIZE} height={LOGO_SIZE} priority style={{ mixBlendMode: "multiply" }} />
+          <Image src="/saykind-logo.png" alt="Saykind" width={LOGO_WIDTH} height={LOGO_HEIGHT} priority style={{ mixBlendMode: "multiply" }} />
         </div>
         <div className="flex flex-col items-center justify-center gap-7 px-6 pb-4">
           <div className="flex w-full items-center justify-center" style={{ minHeight: TAGLINE_MIN_HEIGHT }}>

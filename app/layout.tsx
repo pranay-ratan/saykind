@@ -10,8 +10,9 @@ const body = localFont({
   style: "normal",
   variable: "--font-ui",
   display: "swap",
-  // Kept off for now so the Level 1 layout-shift measurement sees today's behaviour; switched on in that fix.
-  adjustFontFallback: false,
+  // A metric-matched stand-in (size-adjust, ascent and descent overrides computed from the font file), so text keeps
+  // its size and line height while the real font arrives: no shift on the swap.
+  adjustFontFallback: "Arial",
 });
 
 // Bricolage Grotesque for headings. A variable font, so one file covers the weights used on screen.
@@ -21,7 +22,7 @@ const display = localFont({
   style: "normal",
   variable: "--font-display",
   display: "swap",
-  adjustFontFallback: false,
+  adjustFontFallback: "Arial",
 });
 
 export const metadata: Metadata = {

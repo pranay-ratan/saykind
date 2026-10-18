@@ -6,6 +6,7 @@ import { existsSync } from "node:fs";
 const SUITES = [
   { file: "smoke.mjs" },
   { file: "welcome.mjs" },
+  { file: "level1-shift.mjs" },
   { file: "flow.mjs" },
   { file: "conversation.mjs" },
   { file: "report.mjs" },
