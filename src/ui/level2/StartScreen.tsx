@@ -2,6 +2,7 @@
 
 import type { ChangeEvent } from 'react';
 import type { CameraStatus } from '../../core/camera/useCamera';
+import { NEXT_AFTER_LEVEL2 } from '@/lib/saykind/unlock';
 
 interface StartScreenProps {
   status: CameraStatus;
@@ -34,7 +35,7 @@ function explanationFor(status: CameraStatus): string | null {
   return null;
 }
 
-/** Shown until the camera is live. Also the home for the photo fallback. */
+/** Shown until the camera is live. Also the home for the photo fallback. Level 2 is optional: Skip goes on to the café. */
 export function StartScreen({ status, photoBusy, photoMessage, onOpenCamera, onChoosePhoto }: StartScreenProps) {
   const explanation = explanationFor(status);
   const busy = status === 'starting' || photoBusy;
@@ -77,6 +78,11 @@ export function StartScreen({ status, photoBusy, photoMessage, onOpenCamera, onC
         />
         Choose a photo instead
       </label>
+
+      {/* A plain link on purpose: a full page load stops the camera and lets the app open the café. */}
+      <a href={NEXT_AFTER_LEVEL2} className={SECONDARY_LABEL} aria-label="Skip Level 2 and go to the café">
+        Skip
+      </a>
     </div>
   );
 }

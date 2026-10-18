@@ -42,7 +42,8 @@ const REDESIGNED_WORDS: readonly string[] = ["chair"];
  */
 export default function SaykindApp() {
   const router = useRouter();
-  // Coming back from /level-2 skips the Welcome screen and opens the menu, with the café marked as next once Level 2 is done.
+  // Coming back from /level-2 skips the Welcome screen: "Back to levels" opens the menu, and Skip or "Next: the café" opens
+  // the café itself, waiting on its Start button (the conversation needs a tap on this page before any sound can play).
   const [returned] = useState(() => parseLevelReturn(window.location.search));
   const [welcomed, setWelcomed] = useState(returned.fromLevel2);
   const level2Complete = useLevel2Complete();
@@ -52,9 +53,9 @@ export default function SaykindApp() {
   const cafe = useCafe();
   const contact = useCaregiverContact();
 
-  const [level, setLevel] = useState<LevelId>(1);
+  const [level, setLevel] = useState<LevelId>(returned.nextCafe ? 3 : 1);
   const [settings, setSettings] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(returned.fromLevel2);
+  const [menuOpen, setMenuOpen] = useState(returned.fromLevel2 && !returned.nextCafe);
   const [caregiverOpen, setCaregiverOpen] = useState(false);
   const [cafeStage, setCafeStage] = useState<"cafe" | "done">("cafe");
   const [order, setOrder] = useState<Order | null>(null);

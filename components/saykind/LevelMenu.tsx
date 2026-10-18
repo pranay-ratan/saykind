@@ -10,7 +10,7 @@ export type LevelId = 1 | 2 | 3 | 4;
 
 export const LEVELS: { id: LevelId; title: string; blurb: string; tag?: string }[] = [
   { id: 1, title: "Learn Objects", blurb: "See it, hear it, say it" },
-  { id: 2, title: "Discover Objects", blurb: "Photograph something real", tag: "Preview" },
+  { id: 2, title: "Discover Objects", blurb: "Photograph something real", tag: "Optional" },
   { id: 3, title: "At the Café", blurb: "Order from the barista" },
   { id: 4, title: "In the Real World", blurb: "Phrases to use and play aloud" },
 ];
