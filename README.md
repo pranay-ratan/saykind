@@ -92,7 +92,7 @@ See [`docs/AUTHORSHIP.md`](docs/AUTHORSHIP.md). Short version: the git history s
 
 - Dev's Saykind app, the café artwork, the Level 1 to 4 screens, the controllers and the audio: Devvrat Vaishnav's repository (`devvratvaishnav14/Saykind`) and its contributors.
 - React Bits components (SoftAurora and SplitText, copied from Dev's experiment branch; the others in `components/reactbits` are from the baseline): React Bits, https://reactbits.dev.
-- Fonts: Atkinson Hyperlegible Next and Bricolage Grotesque, loaded by `next/font` from Google Fonts.
+- Fonts: Atkinson Hyperlegible Next and Bricolage Grotesque (both SIL Open Font License), self-hosted in `app/fonts` and loaded by `next/font/local`. See `app/fonts/README.md`.
 - Perceptron (vision), ElevenLabs (speech), Anthropic (conversation and adaptive), OpenAI (optional fallback), Google Gemini (development fallback).
 - Level 2 camera, merge, Welcome screen and adaptive engine: this repository's owner, with an AI coding assistant.
 

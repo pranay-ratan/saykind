@@ -1,23 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-// Self-hosted by Next at build time (no runtime request to Google). Atkinson Hyperlegible Next is built for legibility and is used for all body text.
-const body = Atkinson_Hyperlegible_Next({
+// Self-hosted from app/fonts (SIL OFL, see app/fonts/README.md): no request to Google at build time or run time.
+// Atkinson Hyperlegible Next is built for legibility and is used for all body text. One variable file covers 400 to 700.
+const body = localFont({
+  src: "./fonts/AtkinsonHyperlegibleNext-latin.woff2",
+  weight: "400 700",
+  style: "normal",
   variable: "--font-ui",
-  subsets: ["latin"],
-  weight: ["400", "700"],
   display: "swap",
-  // Next has no fallback metrics for this font, so it cannot size a stand-in. Layout shift is measured in the README.
+  // Kept off for now so the Level 1 layout-shift measurement sees today's behaviour; switched on in that fix.
   adjustFontFallback: false,
 });
 
 // Bricolage Grotesque for headings. A variable font, so one file covers the weights used on screen.
-const display = Bricolage_Grotesque({
+const display = localFont({
+  src: "./fonts/BricolageGrotesque-latin.woff2",
+  weight: "600 700",
+  style: "normal",
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["600", "700"],
   display: "swap",
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
