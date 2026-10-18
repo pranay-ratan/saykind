@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { StyleSheet, View, type ViewStyle } from "react-native";
 import CafeExperience from "@/components/cafe/CafeExperience";
 import CafeScene from "@/components/cafe/CafeScene";
@@ -35,6 +36,7 @@ const REDESIGNED_WORDS: readonly string[] = ["chair"];
  * This file only decides WHICH screen to show. Replace the views freely; keep the controllers (lib/saykind).
  */
 export default function SaykindApp() {
+  const router = useRouter();
   const reduced = useReducedMotion();
   const level1 = useExercise({ id: "level1", level: 1, items: OBJECTS });
   const discovery = useDiscovery();
@@ -95,6 +97,10 @@ export default function SaykindApp() {
     if (level === 3 && id !== 3) {
       cafe.exit();
       setIrisOpen(false);
+    }
+    if (id === 2) {
+      router.push("/level-2");
+      return;
     }
     setLevel(id);
     logEvent({ type: "activity", ts: Date.now(), level: id, name: "opened" });
