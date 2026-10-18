@@ -247,7 +247,7 @@ export default function DiscoverView({ discovery, onMenu, onCaregiver }: { disco
                   placeholderTextColor={color.inkMuted}
                   accessibilityLabel="Type the name of the object"
                   onSubmitEditing={() => typed.trim() && discovery.receiveDiscovery({ image: phase.photo, label: "", correctedLabel: typed })}
-                  style={{ flex: 1, minHeight: 52, borderRadius: 16, borderWidth: 2, borderColor: color.line, backgroundColor: color.surface, color: color.ink, paddingHorizontal: 16, fontFamily: font.ui, fontSize: 18 } as never}
+                  style={{ flex: 1, minHeight: 64, borderRadius: 16, borderWidth: 2, borderColor: color.control, backgroundColor: color.surface, color: color.ink, paddingHorizontal: 16, fontFamily: font.ui, fontSize: 20 } as never}
                 />
                 <Chip label="Practice" selected={!!typed.trim()} onPress={() => typed.trim() && discovery.receiveDiscovery({ image: phase.photo, label: "", correctedLabel: typed })} />
               </View>
@@ -267,6 +267,6 @@ function MenuGlyph() {
 
 const styles = StyleSheet.create({
   top: { flexDirection: "row", alignItems: "center", gap: 14, paddingHorizontal: 16, paddingBottom: 8, paddingTop: `calc(${safe.top} + 12px)` } as never,
-  viewfinder: { flex: 1, borderRadius: 24, overflow: "hidden", borderWidth: 2, borderColor: color.line, backgroundColor: "#000", minHeight: 200 },
-  photo: { width: "100%", maxWidth: 300, aspectRatio: 1, borderRadius: 24, overflow: "hidden", borderWidth: 2, borderColor: color.line },
+  viewfinder: { flex: 1, borderRadius: 24, overflow: "hidden", borderWidth: 2, borderColor: color.control, backgroundColor: "#000", minHeight: 200 },
+  photo: { width: "100%", maxWidth: 300, aspectRatio: 1, borderRadius: 24, overflow: "hidden", borderWidth: 2, borderColor: color.control },
 });

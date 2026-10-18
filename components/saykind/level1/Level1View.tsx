@@ -21,14 +21,15 @@ import ChairArt from "./ChairArt";
  *   Voice Pill   the microphone (live waveform while recording; driven by our own recorder)
  *   Click Spark  a small spark when the computer heard the word
  */
-const INK = "#1F2A37";
-const MUTED = "#5B6675";
-const GREEN = "#1F7A5A";
-const GREEN_DARK = "#17614A";
-const GREEN_SOFT = "#E4F3EC";
-const AMBER_SOFT = "#FFF0CC";
-const AMBER_RING = "#E7A92B";
-const LINE = "#E7E2D6";
+const INK = "#2D1E2F";
+const MUTED = "#6B5C6D";
+const GREEN = "#0E6967";
+const GREEN_DARK = "#0E6967";
+const GREEN_SOFT = "rgba(191,165,212,0.25)";
+const AMBER_SOFT = "rgba(224,122,95,0.18)";
+const AMBER_RING = "#E07A5F";
+const LINE = "rgba(45,30,47,0.06)";
+const CONTROL = "rgba(45,30,47,0.25)";
 
 const FONT = "var(--font-friendly), var(--font-ui), system-ui, sans-serif";
 
@@ -60,25 +61,25 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
   const status = x.isRecording ? "Listening… tap the square when you're done." : x.isProcessing ? "Checking what I heard…" : x.isRequestingMic ? "Please allow the microphone." : "Tap the microphone and say the word.";
 
   return (
-    <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", background: "#FCFBF7", color: INK, fontFamily: FONT }}>
+    <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", background: "#FDFBF7", color: INK, fontFamily: FONT }}>
       {/* top: menu, progress, caregiver */}
-      <header style={{ display: "flex", alignItems: "center", gap: 12, padding: "calc(env(safe-area-inset-top, 0px) + 12px) 16px 6px" }}>
+      <header style={{ display: "flex", alignItems: "center", gap: 8, padding: "calc(env(safe-area-inset-top, 0px) + 12px) 12px 6px" }}>
         <IconBtn label="Open menu" onClick={onMenu}>
           <MenuIcon className="size-6" />
         </IconBtn>
-        <ol aria-label={`Word ${x.currentExerciseIndex + 1} of ${x.total}`} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 14, margin: 0, padding: 0, listStyle: "none" }}>
+        <ol aria-label={`Word ${x.currentExerciseIndex + 1} of ${x.total}`} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, minWidth: 0, margin: 0, padding: 0, listStyle: "none" }}>
           {x.items.map((item, i) => {
             const done = x.completedIds.includes(item.id);
             const current = i === x.currentExerciseIndex;
             return (
-              <li key={item.id} style={{ display: "grid", placeItems: "center", color: current ? INK : "#9AA3AF" }}>
+              <li key={item.id} style={{ display: "grid", placeItems: "center", color: current ? INK : "#6B5C6D" }}>
                 <StatusMark
                   status={done ? "done" : current ? "running" : "pending"}
                   progress={current && !done ? (x.attemptCount > 0 ? 0.65 : 0.3) : undefined}
                   size={26}
                   strokeWidth={2.4}
                   dashes={9}
-                  color={current ? INK : "#9AA3AF"}
+                  color={current ? INK : "#6B5C6D"}
                   doneColor={GREEN}
                   strike={false}
                 />
@@ -94,14 +95,14 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
 
       {/* middle: the picture, the word, how to say it, how to hear it */}
       <main style={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center", padding: "6px 20px 12px" }}>
-        <div style={{ margin: "auto 0", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+        <div style={{ margin: "auto 0", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
         {!feedback ? (
-          <p aria-live="polite" className="[@media(max-height:700px)]:hidden" style={{ margin: "6px 0 0", fontSize: 17, fontWeight: 700, color: MUTED }}>
+          <p aria-live="polite" className="[@media(max-height:760px)]:hidden" style={{ margin: "6px 0 0", fontSize: 20, fontWeight: 700, color: MUTED }}>
             Listen, then say the word
           </p>
         ) : null}
 
-        <div key={`art-${word.id}`} className={feedback ? "l1-enter [@media(max-height:700px)]:hidden" : "l1-enter"} style={{ width: feedback ? "min(34vw, 130px, 13vh)" : "min(62vw, 250px, max(27vh, 150px))", aspectRatio: "1", borderRadius: "50%", background: "#FFF3DA", display: "grid", placeItems: "center", flex: "none", transition: "width 300ms, max-height 300ms" }}>
+        <div key={`art-${word.id}`} className={feedback ? "l1-enter [@media(max-height:700px)]:hidden" : "l1-enter"} style={{ width: feedback ? "min(34vw, 130px, 13vh)" : "min(50vw, 190px, max(21vh, 120px))", aspectRatio: "1", borderRadius: "50%", background: "rgba(246,201,176,0.45)", display: "grid", placeItems: "center", flex: "none", transition: "width 300ms, max-height 300ms" }}>
           <div style={{ width: "80%", height: "80%" }}>
             <ChairArt />
           </div>
@@ -112,17 +113,17 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
         </h1>
 
         {/* accurate pronunciation guidance, always visible */}
-        <p style={{ margin: 0, display: "flex", alignItems: "center", gap: 10, fontSize: 19, fontWeight: 700, color: MUTED }} aria-label={`Pronunciation: ${parts.join(", ")}${x.pronunciation.ipa ? `, ${x.pronunciation.ipa}` : ""}`}>
+        <p style={{ margin: 0, display: "flex", alignItems: "center", gap: 10, fontSize: 20, fontWeight: 700, color: MUTED }} aria-label={`Pronunciation: ${parts.join(", ")}${x.pronunciation.ipa ? `, ${x.pronunciation.ipa}` : ""}`}>
           <span>{parts.map((p, i) => (i === x.pronunciation.stressed ? p.toUpperCase() : p)).join(" · ")}</span>
-          {x.pronunciation.ipa ? <span style={{ fontWeight: 600, color: "#7A8594", letterSpacing: 0.5 }}>{x.pronunciation.ipa}</span> : null}
+          {x.pronunciation.ipa ? <span style={{ fontWeight: 600, color: "#6B5C6D", letterSpacing: 0.5 }}>{x.pronunciation.ipa}</span> : null}
         </p>
 
         {x.adaptiveMessage ? (
-          <p aria-live="polite" style={{ margin: 0, fontSize: 16, fontWeight: 600, color: MUTED, textAlign: "center", maxWidth: 360 }}>{x.adaptiveMessage}</p>
+          <p aria-live="polite" style={{ margin: 0, fontSize: 20, fontWeight: 600, color: MUTED, textAlign: "center", maxWidth: 360 }}>{x.adaptiveMessage}</p>
         ) : null}
 
         {/* hear it */}
-        <div style={{ display: "flex", gap: 30, marginTop: 6 }}>
+        <div style={{ display: "flex", gap: 24, marginTop: 4 }}>
           <RoundAction label={`Hear ${word.text}`} caption="Listen" active={x.isPlayingAudio} onClick={x.playPronunciation} bg={GREEN} fg="#FFFFFF" ring={GREEN_DARK}>
             <SpeakerIcon className="size-8" />
           </RoundAction>
@@ -137,7 +138,7 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
           <Chip label="First sound" on={x.firstSoundShown} onClick={x.toggleFirstSound} />
         </div>
         {!feedback && (x.syllablesShown || x.firstSoundShown) ? (
-          <div style={{ width: "100%", maxWidth: 420, margin: "0 auto", padding: "12px 16px", borderRadius: 18, background: GREEN_SOFT, display: "grid", gap: 6, fontSize: 18, fontWeight: 700 } as React.CSSProperties}>
+          <div style={{ width: "100%", maxWidth: 420, margin: "0 auto", padding: "12px 16px", borderRadius: 18, background: GREEN_SOFT, display: "grid", gap: 6, fontSize: 20, fontWeight: 700 } as React.CSSProperties}>
             {x.syllablesShown ? <span>Parts: {parts.join(" · ")}</span> : null}
             {x.firstSoundShown ? <span>It starts with “{x.pronunciation.startsWith}…”</span> : null}
           </div>
@@ -145,15 +146,15 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
 
         {/* what happened */}
         {feedback ? (
-          <ClickSpark ref={sparks} sparkColor={[GREEN, "#F2B33D"]} sparkSize={9} sparkRadius={26} sparkCount={9} sparkWidth={2.5} duration={600} easing="ease-out" disabled={reduced} style={{ alignSelf: "stretch", maxWidth: 440, margin: "0 auto", width: "100%" }}>
+          <ClickSpark ref={sparks} sparkColor={[GREEN, "#E07A5F"]} sparkSize={9} sparkRadius={26} sparkCount={9} sparkWidth={2.5} duration={600} easing="ease-out" disabled={reduced} style={{ alignSelf: "stretch", maxWidth: 440, margin: "0 auto", width: "100%" }}>
             <section ref={resultRef} key={`${feedback.kind}-${feedback.heard}`} className="l1-enter" role="status" style={{ display: "flex", gap: 14, alignItems: "flex-start", padding: "14px 16px", borderRadius: 20, background: "#FFFFFF", border: `2px solid ${feedback.kind === "heard-match" ? GREEN : LINE}` }}>
               <div style={{ flex: "none", width: 40, height: 40, display: "grid", placeItems: "center" }}>
                 {feedback.kind === "heard-match" ? <StatusMark status="done" size={34} strokeWidth={2.4} doneColor={GREEN} strike={false} /> : <HeardBubble />}
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.2 }}>{feedback.title}</div>
-                <div style={{ marginTop: 4, fontSize: 17, lineHeight: 1.4, fontWeight: 600, color: INK }}>{feedback.detail}</div>
-                {feedback.caveat ? <div style={{ marginTop: 6, fontSize: 14, lineHeight: 1.35, color: MUTED }}>{feedback.caveat}</div> : null}
+                <div style={{ marginTop: 4, fontSize: 20, lineHeight: 1.4, fontWeight: 600, color: INK }}>{feedback.detail}</div>
+                {feedback.caveat ? <div style={{ marginTop: 6, fontSize: 20, lineHeight: 1.35, color: MUTED }}>{feedback.caveat}</div> : null}
               </div>
             </section>
           </ClickSpark>
@@ -173,7 +174,7 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
           </div>
         ) : (
           <div>
-            <p aria-live="polite" style={{ margin: "0 0 10px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 26, fontSize: 16, fontWeight: 700, color: MUTED, textAlign: "center" }}>
+            <p aria-live="polite" style={{ margin: "0 0 10px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 26, fontSize: 20, fontWeight: 700, color: MUTED, textAlign: "center" }}>
               {x.isProcessing ? <StatusMark status="running" size={20} strokeWidth={2.4} color={GREEN} /> : null}
               {status}
             </p>
@@ -182,7 +183,7 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
                 type="button"
                 onClick={x.skipWord}
                 aria-label={x.isLast ? "Skip, finish" : "Skip this word"}
-                style={{ minHeight: 48, padding: "0 6px", border: 0, background: "none", color: MUTED, fontFamily: FONT, fontSize: 16, fontWeight: 700, textDecoration: "underline", opacity: x.isRecording || x.isProcessing ? 0 : 1, pointerEvents: x.isRecording || x.isProcessing ? "none" : "auto", transition: "opacity 150ms" }}
+                style={{ minHeight: 64, padding: "0 6px", border: 0, background: "none", color: MUTED, fontFamily: FONT, fontSize: 20, fontWeight: 700, textDecoration: "underline", opacity: x.isRecording || x.isProcessing ? 0 : 1, pointerEvents: x.isRecording || x.isProcessing ? "none" : "auto", transition: "opacity 150ms" }}
               >
                 {x.isLast ? "Skip, finish" : "Skip this word"}
               </button>
@@ -219,7 +220,7 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
 /** A neutral "here is what I heard" mark: not a tick, not a cross, and not a loading ring. */
 function HeardBubble() {
   return (
-    <span aria-hidden="true" style={{ width: 34, height: 34, borderRadius: "50%", background: AMBER_SOFT, display: "grid", placeItems: "center", color: "#8A5A00" }}>
+    <span aria-hidden="true" style={{ width: 34, height: 34, borderRadius: "50%", background: AMBER_SOFT, display: "grid", placeItems: "center", color: "#9A442D" }}>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M4 5.5h16v10H12l-4.5 4v-4H4z" />
         <path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" />
@@ -232,7 +233,7 @@ const visuallyHidden: React.CSSProperties = { position: "absolute", width: 1, he
 
 function IconBtn({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
   return (
-    <button type="button" aria-label={label} onClick={onClick} className="l1-press" style={{ width: 48, height: 48, flex: "none", display: "grid", placeItems: "center", borderRadius: "50%", border: `2px solid ${LINE}`, background: "#FFFFFF", color: INK }}>
+    <button type="button" aria-label={label} onClick={onClick} className="l1-press" style={{ width: 64, height: 64, flex: "none", display: "grid", placeItems: "center", borderRadius: "50%", border: `2px solid ${CONTROL}`, background: "#FFFFFF", color: INK }}>
       {children}
     </button>
   );
@@ -246,18 +247,18 @@ function RoundAction({ label, caption, active, onClick, bg, fg, ring, children }
         aria-label={label}
         onClick={onClick}
         className="l1-press"
-        style={{ width: "clamp(66px, 9vh, 76px)", height: "clamp(66px, 9vh, 76px)", display: "grid", placeItems: "center", borderRadius: "50%", border: 0, background: bg, color: fg, boxShadow: active ? `0 0 0 4px ${ring}55` : "0 2px 0 rgba(31,42,55,0.12)", transition: "box-shadow 160ms" }}
+        style={{ width: 76, height: 76, display: "grid", placeItems: "center", borderRadius: "50%", border: 0, background: bg, color: fg, boxShadow: active ? `0 0 0 4px ${ring}55` : "0 2px 0 rgba(45,30,47,0.12)", transition: "box-shadow 160ms" }}
       >
         {children}
       </button>
-      <span style={{ fontSize: 15, fontWeight: 800, color: MUTED }}>{caption}</span>
+      <span style={{ fontSize: 20, fontWeight: 800, color: MUTED }}>{caption}</span>
     </div>
   );
 }
 
 function Chip({ label, on, onClick }: { label: string; on: boolean; onClick: () => void }) {
   return (
-    <button type="button" aria-pressed={on} onClick={onClick} className="l1-press" style={{ minHeight: 44, padding: "0 18px", borderRadius: 22, border: `2px solid ${on ? GREEN : LINE}`, background: on ? GREEN_SOFT : "#FFFFFF", color: on ? GREEN_DARK : INK, fontFamily: FONT, fontSize: 16, fontWeight: 800 }}>
+    <button type="button" aria-pressed={on} onClick={onClick} className="l1-press" style={{ minHeight: 64, padding: "0 22px", borderRadius: 32, border: `2px solid ${on ? GREEN : CONTROL}`, background: on ? GREEN_SOFT : "#FFFFFF", color: on ? GREEN_DARK : INK, fontFamily: FONT, fontSize: 20, fontWeight: 800 }}>
       {label}
     </button>
   );
@@ -265,7 +266,7 @@ function Chip({ label, on, onClick }: { label: string; on: boolean; onClick: () 
 
 function BigButton({ label, onClick, primary, hint, grow = 1 }: { label: string; onClick: () => void; primary?: boolean; hint?: string; grow?: number }) {
   return (
-    <button type="button" aria-label={label} title={hint} onClick={onClick} className="l1-press" style={{ flex: grow, minHeight: primary ? 58 : 52, padding: "0 12px", whiteSpace: "nowrap", borderRadius: 29, border: primary ? 0 : `2px solid ${LINE}`, background: primary ? GREEN : "#FFFFFF", color: primary ? "#FFFFFF" : INK, fontFamily: FONT, fontSize: 18, fontWeight: 800 }}>
+    <button type="button" aria-label={label} title={hint} onClick={onClick} className="l1-press" style={{ flex: grow, minHeight: 64, padding: "0 12px", whiteSpace: "nowrap", borderRadius: 32, border: primary ? 0 : `2px solid ${CONTROL}`, background: primary ? GREEN : "#FFFFFF", color: primary ? "#FFFFFF" : INK, fontFamily: FONT, fontSize: 20, fontWeight: 800 }}>
       {label}
     </button>
   );

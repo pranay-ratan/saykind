@@ -25,7 +25,7 @@ export default function ReportBody({ report, includeTranscript }: { report: Save
   return (
     <div className="space-y-5" data-report-body>
       <section className={CARD}>
-        <p className="text-lg font-bold text-muted">Practice on {report.input.date}</p>
+        <p className="text-xl font-bold text-muted">Practice on {report.input.date}</p>
         <p className="mt-2 text-xl leading-relaxed text-plum">{content.summary}</p>
       </section>
       <Block title="Strengths" lines={content.strengths} />
@@ -36,7 +36,7 @@ export default function ReportBody({ report, includeTranscript }: { report: Save
         <h2 className="font-display text-2xl font-bold text-plum">Limits</h2>
         <p className="mt-3 text-xl leading-relaxed text-plum">{content.limits}</p>
         <p className="mt-4 text-xl font-bold text-plum">{DISCLAIMER}</p>
-        <p className="mt-1 text-lg text-muted">{report.source === "ai" ? "Written by an AI from the counts above." : "Written from a fixed template."}</p>
+        <p className="mt-1 text-xl text-muted">{report.source === "ai" ? "Written by an AI from the counts above." : "Written from a fixed template."}</p>
       </section>
       {includeTranscript && report.transcript.length > 0 && (
         <section className={CARD} aria-label="Café conversation">

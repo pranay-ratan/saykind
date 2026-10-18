@@ -109,15 +109,15 @@ export default function ReportSheet({ onClose, reportId }: { onClose: () => void
 
             <section className="space-y-4 rounded-[2rem] border border-plum/[0.06] bg-white p-6 shadow-[0_12px_32px_-8px_rgba(45,30,47,0.05)]" aria-label="Your doctor">
               <h2 className="font-display text-2xl font-bold">Your doctor</h2>
-              <label className="block text-lg font-bold text-muted">
+              <label className="block text-xl font-bold text-muted">
                 Doctor&apos;s name
                 <input className={`${FIELD} mt-2`} value={settings.doctorName} onChange={(event) => setDoctor(event.target.value, settings.doctorEmail)} placeholder="For example, Dr. Lee" autoComplete="off" />
               </label>
-              <label className="block text-lg font-bold text-muted">
+              <label className="block text-xl font-bold text-muted">
                 Doctor&apos;s email
                 <input className={`${FIELD} mt-2`} type="email" value={settings.doctorEmail} onChange={(event) => setDoctor(settings.doctorName, event.target.value)} placeholder="doctor@example.com" autoComplete="off" />
               </label>
-              <p className="text-lg text-muted">Kept only on this device. Tip: tap Download PDF first, then attach it to the email.</p>
+              <p className="text-xl text-muted">Kept only on this device. Tip: tap Download PDF first, then attach it to the email.</p>
             </section>
 
             <div className="flex flex-col gap-3">
@@ -142,7 +142,7 @@ export default function ReportSheet({ onClose, reportId }: { onClose: () => void
               <p role="status" aria-live="polite" className="min-h-7 text-xl text-muted">
                 {note}
               </p>
-              <p className="text-lg text-muted">Saved on this device. You can find it again in the caregiver view, and delete it there.</p>
+              <p className="text-xl text-muted">Saved on this device. You can find it again in the caregiver view, and delete it there.</p>
             </div>
           </>
         )}

@@ -50,7 +50,7 @@ function Toast({ message, show, onDismiss }: { message: string | null; show: boo
     <div className="toast" role="status" data-presence="rise" data-state={presence.state}>
       <InfoIcon className="size-6" />
       <p>{held}</p>
-      <button type="button" className="icon-button" onClick={onDismiss} aria-label="Dismiss message" style={{ width: "2.5rem", height: "2.5rem" }}>
+      <button type="button" className="icon-button" onClick={onDismiss} aria-label="Dismiss message">
         <CloseIcon className="size-5" />
       </button>
     </div>

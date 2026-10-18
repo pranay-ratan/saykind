@@ -35,15 +35,15 @@ const stopFlip = (event: { stopPropagation: () => void }) => event.stopPropagati
 function PhotoFace({ word, imageSrc }: { word: string; imageSrc: string }): ReactNode {
   return (
     <div className="flex h-full w-full flex-col items-center justify-between p-5">
-      <div className="relative w-full flex-1 overflow-hidden rounded-3xl bg-stone-100">
+      <div className="relative w-full flex-1 overflow-hidden rounded-3xl bg-plum/5">
         {imageSrc ? (
           // eslint-disable-next-line @next/next/no-img-element -- data URL crop from the live camera
           <img src={imageSrc} alt={word} className="h-full w-full object-cover" />
         ) : (
-          <div role="img" aria-label={`Photo of ${word} is loading`} className="h-full w-full animate-pulse bg-stone-200" />
+          <div role="img" aria-label={`Photo of ${word} is loading`} className="h-full w-full animate-pulse bg-plum/10" />
         )}
       </div>
-      <span className="mt-4 rounded-full bg-[#F4C2A6] px-5 py-2 text-lg font-semibold text-[#2D1E2F]">Tap to see the word</span>
+      <span className="mt-4 rounded-full bg-coral px-5 py-2 text-xl font-semibold text-plum">Tap to see the word</span>
     </div>
   );
 }
@@ -64,7 +64,7 @@ function BackFace({
   return (
     <div className="flex h-full w-full flex-col items-center gap-4 p-5" style={{ color: INK }}>
       <div className="flex w-full items-center gap-4" onClick={stopFlip}>
-        <div className="h-16 w-16 flex-none overflow-hidden rounded-2xl bg-stone-100">
+        <div className="h-16 w-16 flex-none overflow-hidden rounded-[2rem] bg-plum/5">
           {imageSrc ? (
             // eslint-disable-next-line @next/next/no-img-element -- data URL crop from the live camera
             <img src={imageSrc} alt="" className="h-full w-full object-cover" />
@@ -89,7 +89,7 @@ function BackFace({
         <button
           type="button"
           onClick={onPlayNormal}
-          className="flex min-h-[64px] flex-1 items-center justify-center gap-2 rounded-2xl text-xl font-semibold text-white focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#0E6967]"
+          className="flex min-h-[64px] flex-1 items-center justify-center gap-2 rounded-[2rem] text-xl font-semibold text-white focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
           style={{ background: CORAL_DEEP }}
           aria-label={`Say ${word} at normal speed`}
         >
@@ -101,7 +101,7 @@ function BackFace({
         <button
           type="button"
           onClick={onPlaySlow}
-          className="flex min-h-[64px] flex-1 items-center justify-center gap-2 rounded-2xl text-xl font-semibold text-white focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#0E6967]"
+          className="flex min-h-[64px] flex-1 items-center justify-center gap-2 rounded-[2rem] text-xl font-semibold text-white focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
           style={{ background: CORAL_DEEP }}
           aria-label={`Say ${word} slowly`}
         >
@@ -125,8 +125,8 @@ function BackFace({
           <button
             type="button"
             onClick={onReplayLast}
-            className="min-h-[64px] w-full rounded-2xl text-lg font-semibold focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-[#0E6967]"
-            style={{ background: "#FFFFFF", color: INK, border: "1px solid rgba(45,30,47,.12)" }}
+            className="min-h-[64px] w-full rounded-[2rem] text-xl font-semibold focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
+            style={{ background: "var(--cream)", color: INK, border: "1px solid rgba(45,30,47,.12)" }}
             aria-label="Replay your recording"
           >
             Replay your try
@@ -134,7 +134,7 @@ function BackFace({
         ) : null}
       </div>
 
-      <div className="flex min-h-[64px] w-full items-center justify-between rounded-2xl px-2" onClick={stopFlip}>
+      <div className="flex min-h-[64px] w-full items-center justify-between rounded-[2rem] px-2" onClick={stopFlip}>
         <SpringCheck
           label="I said it"
           color={INK}
@@ -181,7 +181,7 @@ export function WordCard(props: WordCardProps) {
         width={CARD_WIDTH}
         height={CARD_HEIGHT}
         radius={CARD_RADIUS}
-        background="#FFFFFF"
+        background="#FDFBF7"
         color={INK}
         shadow
         shadowColor={INK}
@@ -202,7 +202,7 @@ function CrossfadeCard(props: WordCardProps) {
     <div className="flex w-full justify-center py-4">
       <div
         className="relative overflow-hidden"
-        style={{ width: CARD_WIDTH, minHeight: CARD_HEIGHT, borderRadius: CARD_RADIUS, background: "#FFFFFF", color: INK, boxShadow: "0 12px 32px -8px rgba(45,30,47,.08), 0 4px 16px -2px rgba(45,30,47,.02)", border: "1px solid rgba(45,30,47,.06)" }}
+        style={{ width: CARD_WIDTH, minHeight: CARD_HEIGHT, borderRadius: CARD_RADIUS, background: "var(--cream)", color: INK, boxShadow: "0 12px 32px -8px rgba(45,30,47,.08), 0 4px 16px -2px rgba(45,30,47,.02)", border: "1px solid rgba(45,30,47,.06)" }}
       >
         <div style={{ opacity: showBack ? 0 : 1, transition: "opacity 200ms", pointerEvents: showBack ? "none" : "auto", minHeight: CARD_HEIGHT }}>
           <button type="button" className="h-full w-full text-left" style={{ minHeight: CARD_HEIGHT }} onClick={() => setShowBack(true)} aria-label="Show the word">

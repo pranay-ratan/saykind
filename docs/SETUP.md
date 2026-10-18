@@ -79,3 +79,18 @@ Paste the output into `.env.local` as `TTS_PREWARM_SECRET=`, then send the same 
 2. Project > Settings > Environment Variables: add the names above that you use.
 3. Deployments > Redeploy.
 4. Open the preview URL on a phone at `/level-2`. The camera and microphone need that `https` address.
+
+
+## Troubleshooting the browser suites
+
+- `npm run test:e2e` needs a production build served at `BASE_URL` (`npm run build && npm start`, default `http://localhost:3000`) and Chrome (`CHROME_PATH`).
+- If a CSS change does not show up in a build, delete `.next` and build again (`rm -rf .next`). Turbopack can serve a stale stylesheet from its cache.
+- `tests/e2e/audit.mjs` prints every screen that breaks a UI rule. It checks 20px text, 64px targets, red colours, white or coral text on coral, and sideways overflow at `AUDIT_WIDTH` (375 or 1280).
+
+## Reports and the doctor's email
+
+A report uses `ANTHROPIC_API_KEY` and `CLAUDE_MODEL`; without a key a fixed template is used. The doctor's name and email are entered in Settings (or in the report preview) and stay on the device. **Server-side email is planned and not built**: "Email to my doctor" opens the person's own mail app. See [`docs/REPORTS.md`](REPORTS.md).
+
+## Vercel: variable names to set
+
+`ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID` (optional; default is the premade voice `JBFqnCBsd6RMkjVDRZzb`), `ANTHROPIC_API_KEY`, `CLAUDE_MODEL` (optional), `PERCEPTRON_API_KEY`, `PERCEPTRON_MODEL` (optional), `NEXT_PUBLIC_UNLOCK_ALL_LEVELS` (optional, build time).

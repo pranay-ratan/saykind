@@ -29,7 +29,7 @@ interface LiveCameraProps {
   config: ClientConfig;
 }
 
-const ICON_BUTTON = 'min-h-[64px] min-w-[64px] flex items-center justify-center rounded-xl bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 active:bg-black/80 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-400';
+const ICON_BUTTON = 'min-h-[64px] min-w-[64px] flex items-center justify-center rounded-full bg-cream/95 text-plum shadow-lg hover:bg-cream focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal';
 
 function failureNotice(failure: DetectFailure | null): string | null {
   if (failure === 'rate-limited') return 'Looking is resting for a moment.';
@@ -280,7 +280,7 @@ export function LiveCamera({ config }: LiveCameraProps) {
   const notice = failureNotice(failure);
 
   return (
-    <div className="fixed inset-0 h-dvh overflow-hidden overscroll-none bg-stone-950 text-white">
+    <div className="fixed inset-0 h-dvh overflow-hidden overscroll-none bg-plum text-cream">
       <video
         ref={videoRef}
         playsInline
@@ -345,25 +345,25 @@ export function LiveCamera({ config }: LiveCameraProps) {
           )}
 
           {notice && live && (
-            <p role="status" className="absolute bottom-28 left-4 rounded-xl bg-black/60 px-4 py-3 text-xl">
+            <p role="status" className="absolute bottom-28 left-4 rounded-full bg-cream px-6 py-4 text-xl text-plum">
               {notice}
             </p>
           )}
 
           {!online && live && (
-            <p role="status" className="absolute inset-x-4 bottom-28 rounded-xl bg-stone-800/90 px-4 py-4 text-center text-xl">
+            <p role="status" className="absolute inset-x-4 bottom-28 rounded-full bg-cream px-6 py-4 text-center text-xl text-plum">
               You are offline. Looking will continue when you are back online.
             </p>
           )}
 
           {detection.budgetExhausted && live && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/50 p-6">
-              <div className="w-full max-w-sm rounded-2xl bg-white p-8 text-center text-stone-900 shadow-2xl">
+            <div className="absolute inset-0 flex items-center justify-center bg-plum/50 p-6">
+              <div className="w-full max-w-sm rounded-[2rem] bg-cream p-8 text-center text-plum shadow-2xl">
                 <p className="mb-6 text-xl">We have looked for a while. Keep looking when you are ready.</p>
                 <button
                   type="button"
                   onClick={detection.resetBudget}
-                  className="min-h-[64px] w-full rounded-xl bg-stone-900 text-xl font-medium text-white hover:bg-stone-800 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                  className="min-h-[64px] w-full rounded-full bg-deep-teal text-xl font-bold text-white hover:opacity-90 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
                 >
                   Keep looking
                 </button>

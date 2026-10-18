@@ -22,7 +22,7 @@ export const LEVELS: { id: LevelId; title: string; blurb: string; tag?: string }
 export default function LevelMenu({ open, current, onSelect, onClose, onSettings, onCaregiverView, locked = [], next }: { open: boolean; current: LevelId; onSelect: (id: LevelId) => void; onClose: () => void; onSettings: () => void; onCaregiverView: () => void; locked?: readonly LevelId[]; next?: LevelId }) {
   return (
     <View pointerEvents={open ? "auto" : "none"} style={[StyleSheet.absoluteFill, { zIndex: 60 }]} role="dialog" aria-label="Menu" aria-modal={open}>
-      <Pressable accessibilityRole="button" accessibilityLabel="Close menu" onPress={onClose} style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(27,36,48,0.4)", opacity: open ? 1 : 0, transitionProperty: "opacity", transitionDuration: "200ms" } as ViewStyle]} />
+      <Pressable accessibilityRole="button" accessibilityLabel="Close menu" onPress={onClose} style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(45,30,47,0.4)", opacity: open ? 1 : 0, transitionProperty: "opacity", transitionDuration: "200ms" } as ViewStyle]} />
       <View
         style={
           {
@@ -42,7 +42,7 @@ export default function LevelMenu({ open, current, onSelect, onClose, onSettings
             transitionProperty: "transform, visibility",
             transitionDuration: open ? "260ms, 0s" : "220ms, 0s",
             transitionDelay: open ? "0s" : "0s, 220ms",
-            boxShadow: "0 0 40px rgba(27,36,48,0.2)",
+            boxShadow: "0 12px 32px -8px rgba(45,30,47,0.05)",
           } as ViewStyle
         }
       >
@@ -71,12 +71,12 @@ export default function LevelMenu({ open, current, onSelect, onClose, onSettings
               style={({ pressed }) => [styles.row, active && styles.rowActive, isNext && styles.rowNext, isLocked && styles.rowLocked, pressed && !isLocked ? { opacity: 0.85 } : null]}
             >
               <View style={[styles.num, active && { backgroundColor: color.primary }]}>
-                <Text style={{ fontFamily: font.ui, fontSize: 17, fontWeight: "800", color: active ? color.onPrimary : color.inkSoft }}>{level.id}</Text>
+                <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "800", color: active ? color.onPrimary : color.inkSoft }}>{level.id}</Text>
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={{ fontFamily: font.ui, fontSize: 18, fontWeight: "800", color: color.ink }}>
+                <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "800", color: color.ink }}>
                   {level.title}
-                  {level.tag ? <Text style={{ color: color.accent, fontSize: 13 }}>{`  ${level.tag.toUpperCase()}`}</Text> : null}
+                  {level.tag ? <Text style={{ color: color.accent, fontSize: 20 }}>{`  ${level.tag.toUpperCase()}`}</Text> : null}
                 </Text>
                 <Body size={14}>{isLocked ? "Opens after Level 2" : isNext ? "Next: ready when you are" : level.blurb}</Body>
               </View>
@@ -100,7 +100,7 @@ function MenuLink({ label, icon, onPress }: { label: string; icon: React.ReactNo
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={({ pressed }) => [styles.link, pressed ? { opacity: 0.85 } : null]}>
       <View style={{ color: color.inkSoft } as ViewStyle}>{icon}</View>
-      <Text style={{ fontFamily: font.ui, fontSize: 17, fontWeight: "700", color: color.ink }}>{label}</Text>
+      <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: color.ink }}>{label}</Text>
     </Pressable>
   );
 }
@@ -111,5 +111,5 @@ const styles = StyleSheet.create({
   rowNext: { backgroundColor: color.accentSoft, borderColor: color.accent },
   rowActive: { backgroundColor: color.primarySoft, borderColor: color.primary },
   num: { width: 40, height: 40, borderRadius: 20, backgroundColor: color.surfaceStrong, alignItems: "center", justifyContent: "center" },
-  link: { minHeight: 52, flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 10, borderRadius: 14 },
+  link: { minHeight: 64, flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 10, borderRadius: 14 },
 });

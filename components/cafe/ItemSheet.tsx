@@ -88,6 +88,7 @@ export default function ItemSheet({ id, state, mode, slot, order, canAnswer, onC
       data-presence="rise"
       data-state={state}
       className="sheet"
+      data-mode={mode}
       onKeyDown={(event) => {
         if (event.key === "Escape") onClose();
       }}
@@ -145,7 +146,7 @@ export default function ItemSheet({ id, state, mode, slot, order, canAnswer, onC
                 {selected.price && <p className="item-price">{selected.price}</p>}
                 <div className="syll" data-show="true" role="group" aria-label={`Syllables: ${selected.syllables.join(", ")}`} style={{ justifyContent: "flex-start", marginTop: 0, minHeight: "1.75rem" }}>
                   {selected.syllables.map((part, i) => (
-                    <span key={i} style={{ fontSize: "1.125rem" }}>
+                    <span key={i}>
                       {part}
                     </span>
                   ))}

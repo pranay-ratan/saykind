@@ -23,14 +23,14 @@ export function Heading({ children, size = 28, style, role = "heading", tone = c
 
 export function Body({ children, size = 17, tone = color.inkSoft, weight = "400", style, role }: { children: ReactNode; size?: number; tone?: string; weight?: "400" | "500" | "700"; style?: StyleProp<TextStyle>; role?: string }) {
   return (
-    <Text role={role} style={[{ fontFamily: font.ui, fontSize: size, lineHeight: size * 1.45, color: tone, fontWeight: weight }, style]}>
+    <Text role={role} style={[{ fontFamily: font.ui, fontSize: Math.max(size, 20), lineHeight: Math.max(size, 20) * 1.45, color: tone, fontWeight: weight }, style]}>
       {children}
     </Text>
   );
 }
 
 export function Label({ children, tone = color.inkMuted, style }: { children: ReactNode; tone?: string; style?: StyleProp<TextStyle> }) {
-  return <Text style={[{ fontFamily: font.ui, fontSize: 13, fontWeight: "700", letterSpacing: 1, color: tone, textTransform: "uppercase" }, style]}>{children}</Text>;
+  return <Text style={[{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", letterSpacing: 0.5, color: tone, textTransform: "uppercase" }, style]}>{children}</Text>;
 }
 
 /* --------------------------------------------------------------- buttons */
@@ -69,7 +69,7 @@ export function Button({
       style={({ pressed: down }) => [styles.button, kind === "primary" && styles.primary, kind === "secondary" && styles.secondary, kind === "danger" && styles.danger, disabled ? { opacity: 0.45 } : null, pressed(down && !disabled), style]}
     >
       {icon ? <View style={{ color: text } as ViewStyle}>{icon}</View> : null}
-      <Text style={{ fontFamily: font.ui, fontSize: 18, fontWeight: "700", color: text }}>{label}</Text>
+      <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: text }}>{label}</Text>
     </Pressable>
   );
 }
@@ -80,7 +80,7 @@ export function IconButton({
   caption,
   onPress,
   children,
-  size = 64,
+  size: requestedSize = 64,
   active,
   tone = "soft",
   disabled,
@@ -94,6 +94,7 @@ export function IconButton({
   tone?: "soft" | "primary" | "plain";
   disabled?: boolean;
 }) {
+  const size = Math.max(requestedSize, 64);
   const bg = tone === "primary" ? color.primary : active ? color.primarySoft : color.bg;
   const fg = tone === "primary" ? color.onPrimary : color.ink;
   return (
@@ -107,11 +108,11 @@ export function IconButton({
           tap();
           onPress();
         }}
-        style={({ pressed: down }) => [{ width: size, height: size, borderRadius: size / 2, alignItems: "center", justifyContent: "center", backgroundColor: bg, borderWidth: 2, borderColor: tone === "primary" ? color.primary : active ? color.primary : color.line, opacity: disabled ? 0.45 : 1, color: fg } as ViewStyle, tone === "plain" && { borderColor: "transparent", backgroundColor: "transparent" }, pressed(down)]}
+        style={({ pressed: down }) => [{ width: size, height: size, borderRadius: size / 2, alignItems: "center", justifyContent: "center", backgroundColor: bg, borderWidth: 2, borderColor: tone === "primary" ? color.primary : active ? color.primary : color.control, opacity: disabled ? 0.45 : 1, color: fg } as ViewStyle, tone === "plain" && { borderColor: "transparent", backgroundColor: "transparent" }, pressed(down)]}
       >
         {children}
       </Pressable>
-      {caption ? <Text style={{ fontFamily: font.ui, fontSize: 14, fontWeight: "700", color: color.inkSoft }}>{caption}</Text> : null}
+      {caption ? <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: color.inkSoft }}>{caption}</Text> : null}
     </View>
   );
 }
@@ -130,7 +131,7 @@ export function Chip({ label, onPress, selected, icon, hint, style }: { label: s
       style={({ pressed: down }) => [styles.chip, selected ? styles.chipOn : null, pressed(down), style]}
     >
       {icon ? <View style={{ color: selected ? color.primaryDark : color.ink } as ViewStyle}>{icon}</View> : null}
-      <Text numberOfLines={1} style={{ fontFamily: font.ui, fontSize: 16, fontWeight: "700", color: selected ? color.primaryDark : color.ink }}>
+      <Text numberOfLines={1} style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: selected ? color.primaryDark : color.ink }}>
         {label}
       </Text>
     </Pressable>
@@ -139,8 +140,8 @@ export function Chip({ label, onPress, selected, icon, hint, style }: { label: s
 
 export function TextLink({ label, onPress, tone = color.inkSoft }: { label: string; onPress: () => void; tone?: string }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={({ pressed: down }) => [{ minHeight: 48, paddingHorizontal: 16, alignItems: "center", justifyContent: "center", alignSelf: "center" }, pressed(down)]}>
-      <Text style={{ fontFamily: font.ui, fontSize: 16, fontWeight: "700", color: tone, textDecorationLine: "underline" }}>{label}</Text>
+    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={({ pressed: down }) => [{ minHeight: 64, paddingHorizontal: 16, alignItems: "center", justifyContent: "center", alignSelf: "center" }, pressed(down)]}>
+      <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: tone, textDecorationLine: "underline" }}>{label}</Text>
     </Pressable>
   );
 }
@@ -148,7 +149,7 @@ export function TextLink({ label, onPress, tone = color.inkSoft }: { label: stri
 /* ------------------------------------------------------------ furniture */
 
 export function Panel({ children, style, tone = "plain" }: { children: ReactNode; style?: StyleProp<ViewStyle>; tone?: "plain" | "note" }) {
-  return <View style={[{ borderRadius: 20, borderWidth: 1, borderColor: tone === "note" ? "#F0CFA8" : color.line, backgroundColor: tone === "note" ? color.accentSoft : color.surface, padding: 16, gap: 10 }, style]}>{children}</View>;
+  return <View style={[{ borderRadius: 32, borderWidth: 1, borderColor: tone === "note" ? "rgba(224,122,95,0.35)" : color.line, backgroundColor: tone === "note" ? color.accentSoft : color.surface, padding: 20, gap: 10, boxShadow: "0 12px 32px -8px rgba(45,30,47,0.05)" } as ViewStyle, style]}>{children}</View>;
 }
 
 export function ProgressBar({ value, label }: { value: number; label: string }) {
@@ -198,7 +199,7 @@ export function MicButton({ state, onPress, levelRef, busy, size = 96 }: { state
   return (
     <View ref={levelRef as never} style={{ width: size + 36, height: size + 36, alignItems: "center", justifyContent: "center" }}>
       {state === "recording" ? (
-        <View pointerEvents="none" style={{ position: "absolute", width: size + 20, height: size + 20, borderRadius: (size + 20) / 2, borderWidth: 4, borderColor: "rgba(179,38,30,0.35)", transform: "scale(calc(0.92 + var(--level, 0) * 0.3))", transitionProperty: "transform", transitionDuration: "90ms" } as ViewStyle} />
+        <View pointerEvents="none" style={{ position: "absolute", width: size + 20, height: size + 20, borderRadius: (size + 20) / 2, borderWidth: 4, borderColor: "rgba(154,68,45,0.35)", transform: "scale(calc(0.92 + var(--level, 0) * 0.3))", transitionProperty: "transform", transitionDuration: "90ms" } as ViewStyle} />
       ) : null}
       {state === "processing" ? <View dataSet={{ skSpin: "on" }} pointerEvents="none" style={{ position: "absolute", width: size + 14, height: size + 14, borderRadius: (size + 14) / 2, borderWidth: 4, borderColor: "transparent", borderTopColor: color.primary }} /> : null}
       <Pressable
@@ -219,10 +220,10 @@ export function MicButton({ state, onPress, levelRef, busy, size = 96 }: { state
 }
 
 const styles = StyleSheet.create({
-  button: { minHeight: 58, borderRadius: 29, paddingHorizontal: 28, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, alignSelf: "center" },
+  button: { minHeight: 64, borderRadius: 32, paddingHorizontal: 28, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, alignSelf: "center" },
   primary: { backgroundColor: color.primary },
-  secondary: { backgroundColor: color.bg, borderWidth: 2, borderColor: color.line },
+  secondary: { backgroundColor: color.bg, borderWidth: 2, borderColor: color.control },
   danger: { backgroundColor: color.dangerSoft, borderWidth: 2, borderColor: color.danger },
-  chip: { minHeight: 48, paddingHorizontal: 18, borderRadius: 24, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: color.bg, borderWidth: 2, borderColor: color.line },
+  chip: { minHeight: 64, paddingHorizontal: 20, borderRadius: 32, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: color.bg, borderWidth: 2, borderColor: color.control },
   chipOn: { backgroundColor: color.primarySoft, borderColor: color.primary },
 });

@@ -81,10 +81,10 @@ export default function PhrasesView({ onMenu, onCaregiver }: { onMenu: () => voi
             ) : (
               <View style={{ alignItems: "center", gap: 6 }}>
                 <MicButton state={p.isRecording ? "recording" : p.isProcessing ? "processing" : "ready"} levelRef={p.micLevelRef} busy={p.isRequestingMic} size={84} onPress={() => p.toggleRecording(phrase)} />
-                <Text aria-live="polite" style={{ fontFamily: font.ui, fontSize: 16, lineHeight: 23, color: color.inkSoft, textAlign: "center", minHeight: 46 }}>
+                <Text aria-live="polite" style={{ fontFamily: font.ui, fontSize: 20, lineHeight: 23, color: color.inkSoft, textAlign: "center", minHeight: 64 }}>
                   {message}
                 </Text>
-                {attempt ? <Button label="Try again" kind="secondary" onPress={p.retry} style={{ minHeight: 48 }} /> : null}
+                {attempt ? <Button label="Try again" kind="secondary" onPress={p.retry} style={{ minHeight: 64 }} /> : null}
               </View>
             )}
           </Panel>
@@ -116,7 +116,7 @@ export default function PhrasesView({ onMenu, onCaregiver }: { onMenu: () => voi
               <RecordIcon className="size-7" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontFamily: font.ui, fontWeight: "800", fontSize: 18, color: color.ink }}>Practice session</Text>
+              <Text style={{ fontFamily: font.ui, fontWeight: "800", fontSize: 20, color: color.ink }}>Practice session</Text>
               <Body size={15}>Record a real conversation, only if everyone agrees. You start it and you stop it.</Body>
             </View>
           </View>
@@ -129,8 +129,8 @@ export default function PhrasesView({ onMenu, onCaregiver }: { onMenu: () => voi
             {phrases.map((item, i) => (
               <View key={item.id} style={[styles.row, i === 0 ? { borderTopWidth: 1 } : null]}>
                 <Pressable accessibilityRole="button" accessibilityLabel={`${item.label}: ${item.text}. Open card.`} onPress={() => p.select(item.id)} style={{ flex: 1, minHeight: 64, justifyContent: "center", gap: 2 }}>
-                  <Text style={{ fontFamily: font.ui, fontWeight: "800", fontSize: 18, color: color.ink }}>{item.label}</Text>
-                  <Text numberOfLines={2} style={{ fontFamily: font.ui, fontSize: 15, lineHeight: 21, color: color.inkSoft }}>
+                  <Text style={{ fontFamily: font.ui, fontWeight: "800", fontSize: 20, color: color.ink }}>{item.label}</Text>
+                  <Text numberOfLines={2} style={{ fontFamily: font.ui, fontSize: 20, lineHeight: 21, color: color.inkSoft }}>
                     {item.text}
                   </Text>
                 </Pressable>

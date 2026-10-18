@@ -3,11 +3,19 @@ import { spawnSync } from "node:child_process";
 
 import { existsSync } from "node:fs";
 
-const SUITES = ["smoke.mjs", "flow.mjs", "conversation.mjs", "report.mjs"].filter((name) => existsSync(new URL(`./${name}`, import.meta.url)));
+const SUITES = [
+  { file: "smoke.mjs" },
+  { file: "flow.mjs" },
+  { file: "conversation.mjs" },
+  { file: "report.mjs" },
+  { file: "motion.mjs" },
+  { file: "audit.mjs", env: { AUDIT_STRICT: "1", AUDIT_WIDTH: "375" }, label: "audit.mjs at 375px" },
+  { file: "audit.mjs", env: { AUDIT_STRICT: "1", AUDIT_WIDTH: "1280" }, label: "audit.mjs at 1280px" },
+].filter((suite) => existsSync(new URL(`./${suite.file}`, import.meta.url)));
 let failed = false;
 for (const suite of SUITES) {
-  console.log(`\n== ${suite}`);
-  const result = spawnSync(process.execPath, [new URL(`./${suite}`, import.meta.url).pathname], { stdio: "inherit", env: process.env });
+  console.log(`\n== ${suite.label ?? suite.file}`);
+  const result = spawnSync(process.execPath, [new URL(`./${suite.file}`, import.meta.url).pathname], { stdio: "inherit", env: { ...process.env, ...suite.env } });
   if (result.status !== 0) failed = true;
 }
 process.exitCode = failed ? 1 : 0;

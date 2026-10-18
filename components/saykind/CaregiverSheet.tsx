@@ -63,7 +63,7 @@ export default function CaregiverSheet({ open, onClose, contact, onSettings }: {
         </View>
 
         {caregiver.hasPhone ? (
-          <Button label={`Call ${caregiver.name}`} icon={<PhoneIcon className="size-6" />} onPress={contact.callCaregiver} hint="Opens your phone's call screen" style={{ alignSelf: "stretch", minHeight: 80, backgroundColor: "#9A442D" }} />
+          <Button label={`Call ${caregiver.name}`} icon={<PhoneIcon className="size-6" />} onPress={contact.callCaregiver} hint="Opens your phone's call screen" style={{ alignSelf: "stretch", minHeight: 80, backgroundColor: color.accent }} />
         ) : (
           <View style={{ gap: 8 }}>
             <Body size={16}>Add a caregiver's phone number once, and this button will start a call to them.</Body>
@@ -80,14 +80,14 @@ export default function CaregiverSheet({ open, onClose, contact, onSettings }: {
             multiline
             numberOfLines={5}
             accessibilityLabel="Message to my caregiver"
-            style={{ minHeight: 110, borderRadius: 16, borderWidth: 2, borderColor: color.line, backgroundColor: color.surface, color: color.ink, padding: 14, fontFamily: font.ui, fontSize: 17, lineHeight: 24, textAlignVertical: "top" } as never}
+            style={{ minHeight: 110, borderRadius: 16, borderWidth: 2, borderColor: color.control, backgroundColor: color.surface, color: color.ink, padding: 14, fontFamily: font.ui, fontSize: 20, lineHeight: 24, textAlignVertical: "top" } as never}
           />
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             <Chip label="Open in Messages" onPress={contact.openMessage} icon={<PhoneIcon className="size-5" />} />
             <Chip label="Share…" onPress={() => void contact.shareSummary()} icon={<ShareIcon className="size-5" />} />
             <Chip label="Copy" onPress={() => void contact.copySummary()} icon={<CopyIcon className="size-5" />} />
           </View>
-          <Text aria-live="polite" style={{ fontFamily: font.ui, fontSize: 14, lineHeight: 20, color: contact.note ? color.accent : color.inkMuted, minHeight: 20 }}>
+          <Text aria-live="polite" style={{ fontFamily: font.ui, fontSize: 20, lineHeight: 20, color: contact.note ? color.accent : color.inkMuted, minHeight: 20 }}>
             {contact.note || "Saykind can't send this for you, and can't tell if it arrived. Your own messaging app sends it when you press send."}
           </Text>
         </View>

@@ -21,7 +21,7 @@ const MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 const MOVE_MS = 300;
 const GRID_DIVISIONS = 3;
 const CHIP_GAP_PX = 8;
-const CHIP_HEIGHT_PX = 56;
+const CHIP_HEIGHT_PX = 64;
 
 /** Reads the reduced-motion preference after mount, so the first render matches the server. */
 function useReducedMotion(): boolean {
@@ -75,9 +75,9 @@ function CalibrationGrid({ frame }: { frame: ScreenBox }) {
   }
   return (
     <g aria-hidden="true">
-      <rect x={frame.left} y={frame.top} width={frame.width} height={frame.height} fill="none" stroke="#38bdf8" strokeWidth={2} />
+      <rect x={frame.left} y={frame.top} width={frame.width} height={frame.height} fill="none" stroke="var(--deep-teal)" strokeWidth={2} />
       {lines.map((line, index) => (
-        <line key={index} {...line} stroke="#38bdf8" strokeOpacity={0.7} strokeWidth={1} />
+        <line key={index} {...line} stroke="var(--deep-teal)" strokeOpacity={0.7} strokeWidth={1} />
       ))}
     </g>
   );
@@ -128,7 +128,7 @@ export function DetectionOverlay({
             width={screen.width}
             height={screen.height}
             fill="none"
-            stroke="#facc15"
+            stroke="var(--coral)"
             strokeDasharray="6 4"
             strokeWidth={2}
           />
@@ -143,7 +143,7 @@ export function DetectionOverlay({
               height={screen.height}
               rx={12}
               fill="transparent"
-              stroke="#E07A5F"
+              stroke="var(--coral)"
               strokeWidth={3}
               className="pointer-events-auto cursor-pointer"
               onClick={() => onSelect(track)}
@@ -158,7 +158,7 @@ export function DetectionOverlay({
           type="button"
           onClick={() => onSelect(track)}
           aria-label={`${track.label}. Tap to practice`}
-          className="pointer-events-auto absolute -translate-x-1/2 min-h-[56px] px-5 rounded-full bg-[#FDFBF7] text-[#2D1E2F] text-2xl font-semibold shadow-lg hover:bg-white focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+          className="pointer-events-auto absolute -translate-x-1/2 min-h-16 px-5 rounded-full bg-cream text-plum text-2xl font-semibold shadow-lg hover:bg-cream focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
           style={{
             left: chipAnchor(screen, size, CHIP_GAP_PX, CHIP_HEIGHT_PX).x,
             top: chipAnchor(screen, size, CHIP_GAP_PX, CHIP_HEIGHT_PX).y,
@@ -171,7 +171,7 @@ export function DetectionOverlay({
 
       {hintVisible && (
         <div className="absolute inset-x-0 top-1/3 flex justify-center px-6 pointer-events-none">
-          <p className="bg-white/90 backdrop-blur-sm px-6 py-4 rounded-2xl text-2xl text-stone-800 shadow-lg text-center">
+          <p className="bg-cream px-6 py-4 rounded-[2rem] text-2xl text-plum shadow-lg text-center">
             Move closer to one object.
           </p>
         </div>

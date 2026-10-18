@@ -4,17 +4,17 @@ The hackathon rule is that at most 30% of the code may predate the event. This n
 
 ## What git shows
 
-- The repository has 21 commits. The earliest is `4409a83` ("VERSION A: baseline = Saykind as deployed"), committed 2026-10-17 at 19:36 Pacific. That is after the 12:30 Pacific event cutoff.
+- The repository has 17 commits before the commit that adds this update. The earliest is `4409a83` ("VERSION A: baseline = Saykind as deployed"), committed 2026-10-17 at 19:36 Pacific. That is after the 12:30 Pacific event cutoff.
 - **Commits before 12:30 Pacific: 0.** Git therefore shows **0 lines added before the cutoff**. This is a fact about the history, not a finding about the code.
 - Git cannot show what existed before this history was created. The baseline commit is labelled "as deployed", so most of the baseline code probably predates the event, but the commit timestamps do not prove it.
 
-## Lines added, all non-merge commits (text files)
+## Lines added, all non-merge commits (text files, `package-lock.json` excluded; counted at the commit before this update)
 
 | Author label in git | Lines added |
 | --- | --- |
-| `Saykind local` (baseline and the React Bits experiment work) | 31,249 |
-| `Pranay Ratan` (Level 2 merge, Phase 2 to 4 commits) | 8,177 |
-| `Devvrat Vaishnav` (docs and env template) | 71 |
+| `Saykind local` (baseline and the React Bits experiment work) | 13,249 |
+| `Pranay Ratan` (Level 2 merge, Phases A to E, Phase F steps 0 to 6 except this commit) | 12,001 |
+| `Devvrat Vaishnav` (docs and env template) | 25 |
 
 `Saykind local` is the author label recorded in the commits, not a verified person. Confirm with Dev which person that identity belongs to.
 
@@ -75,3 +75,17 @@ Everything below was written or changed after the `4409a83` baseline commit. Git
 - The flip card is on the Level 2 object sheet, not on Dev's Level 1 screen.
 - The Puppeteer suite is a smoke run with mocks, not full coverage.
 - Nothing above has been run against live ElevenLabs, Anthropic or Perceptron services.
+
+
+## Phase F (steps 0 to 6)
+
+Written after the baseline, by the repository owner's identity in git, with an AI coding assistant doing the typing under direction. Not claimed as pre-event work.
+
+**New:** the session report (`lib/report/*`, `lib/server/report.ts`, `app/api/report/`, `components/report/*`, `app/report/print/`), the café session object (`lib/cafe-session.ts`), level unlocking and return markers (`lib/saykind/unlock.ts`), Level 2 Back and Next buttons (`src/ui/level2/FlowButtons.tsx`), `components/reactbits/SpotlightCard.tsx` (written for this app in the pattern of the React Bits Spotlight Card, **not copied from the package**), the browser suites `tests/e2e/{helpers,flow,conversation,report,motion,audit,run}.mjs`, and `docs/{CAFE_CONVERSATION,REPORTS}.md`.
+
+**Changed in existing files:** the barista prompt and a language safety net (`lib/server/barista.ts`), the conversation hook (session, device-voice start guard), the café end state (a "See my report" button instead of a timer), the café controls and menu panel CSS (`app/globals.css`, tokens only, short-phone compaction removed), the shared kit sizes and tokens, Dev's Level 1 screens (sizes and colour values only, layout kept), Level 2 classes (tokens), the Welcome logo, the caregiver view (Spotlight Cards), Settings (doctor fields), the ElevenLabs default voice and its 402 message, the detect timeout and retry.
+
+**Honest limits**
+- Dev's Level 1 screen was not given the Flip Card, because that would replace his layout.
+- Nothing in Phase F has been run against live ElevenLabs or Perceptron. `/api/report` was called once against live Anthropic with sample numbers.
+- The 70/30 question is still not answerable from git.

@@ -30,7 +30,7 @@ export default function CafeDoneView({ order, onAgain, onHome, onReport }: { ord
                 <View style={{ width: 56, height: 56 }}>
                   <CafeArt id={line.art} />
                 </View>
-                <Text style={{ fontFamily: font.ui, fontSize: 18, fontWeight: "700", color: color.ink }}>{line.text}</Text>
+                <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: color.ink }}>{line.text}</Text>
               </View>
             ))}
           </View>

@@ -25,7 +25,7 @@ export default function FinishedView({ exercise, onAgain, onNext, nextLabel }: {
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: "center", marginTop: 4 }}>
             {worked.map((item) => (
               <View key={item.id} style={{ paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: color.surface, borderWidth: 1, borderColor: color.line }}>
-                <Text style={{ fontFamily: font.ui, fontSize: 16, fontWeight: "700", color: color.ink }}>{item.text}</Text>
+                <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: color.ink }}>{item.text}</Text>
               </View>
             ))}
           </View>

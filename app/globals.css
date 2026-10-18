@@ -40,6 +40,9 @@
   --peach: #f6c9b0;
   --card-shadow: 0 12px 32px -8px rgba(45, 30, 47, 0.05);
   --card-border: 1px solid rgba(45, 30, 47, 0.06);
+  --control-border: 1px solid rgba(45, 30, 47, 0.25);
+  --lavender-soft: rgba(191, 165, 212, 0.25);
+  --radius-card: 2rem;
 
   --ease-out: cubic-bezier(0.22, 0.7, 0.2, 1);
   --ease-soft: cubic-bezier(0.32, 0.72, 0.24, 1);
@@ -2487,42 +2490,6 @@ body {
   outline: none;
 }
 
-/* Short phones: the picture-and-word card tightens so its Choose button is always in view. */
-@container (max-height: 720px) {
-  .tile {
-    width: 4.8rem;
-    height: 4.3rem;
-  }
-  .tile-art {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
-  .item-art {
-    width: 3.25rem;
-    height: 3.25rem;
-  }
-  .item-name {
-    font-size: 1.5rem;
-  }
-  .item-price {
-    display: none;
-  }
-  .item-actions .chip {
-    min-height: 2.5rem;
-  }
-  .say-btn,
-  .choose-btn {
-    min-height: 2.75rem;
-  }
-  .say-feedback {
-    font-size: 0.8125rem;
-    line-height: 1.3;
-  }
-  .sheet-body {
-    padding-bottom: 0.625rem;
-  }
-}
-
 /* Wide screens: a quiet editorial note beside the window. Phones never see it. */
 .desk-note {
   position: absolute;
@@ -2606,137 +2573,144 @@ body {
 }
 
 /* ========================================================================== */
-/* TEMPORARY bright theme. The UI team replaces this block (and the components that  */
-/* use it). The café artwork and its scene CSS above are NOT touched by anything here.*/
+/* Saykind theme: tokens only (see :root). The café artwork and its scene CSS above are NOT touched by anything here. */
+/* Patient screens: text at least 20px, touch targets at least 64px, cards 2rem, pills fully round.                    */
 /* ========================================================================== */
 
 :root {
-  --focus: #1a73e8;
+  --focus: var(--deep-teal);
 }
 
 html,
 body {
-  background: #FDFBF7;
-  color: #2D1E2F;
+  background: var(--cream);
+  color: var(--plum);
 }
 
-.app {
-  background: #FDFBF7;
-}
-
-.frame {
-  background: #FDFBF7;
+.app,
+.frame,
+.stage {
+  background: var(--cream);
 }
 
 @media (min-width: 768px) {
   .frame {
-    box-shadow:
-      0 24px 60px rgba(27, 36, 48, 0.18),
-      0 0 0 1px #E6DCD6;
+    box-shadow: var(--card-shadow), 0 0 0 1px rgba(45, 30, 47, 0.06);
   }
-}
-
-.stage {
-  background: #FDFBF7;
 }
 
 /* ---- café controls ---- */
 .scrim {
-  height: 15rem;
-  background: linear-gradient(to top, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.72) 48%, rgba(255, 255, 255, 0));
+  height: 17rem;
+  background: linear-gradient(to top, rgba(253, 251, 247, 0.97) 0%, rgba(253, 251, 247, 0.78) 50%, rgba(253, 251, 247, 0));
 }
 
 .round-btn,
 .round-btn.glass,
 .icon-button {
-  background: rgba(255, 255, 255, 0.94);
-  border: 2px solid #E6DCD6;
-  color: #2D1E2F;
-  box-shadow: 0 2px 8px rgba(27, 36, 48, 0.12);
+  width: 4rem;
+  height: 4rem;
+  background: var(--cream);
+  border: var(--control-border);
+  color: var(--plum);
+  box-shadow: var(--card-shadow);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
+.round-btn:hover:not(:disabled),
+.icon-button:hover:not(:disabled) {
+  background: var(--lavender-soft);
+}
+
 .round-btn[aria-pressed="true"] {
-  background: #F6EFEA;
-  border-color: #0E6967;
-  color: #0E6967;
+  background: var(--lavender-soft);
+  border-color: var(--deep-teal);
+  color: var(--deep-teal);
 }
 
 .pill {
-  background: #FDFBF7;
-  color: #2D1E2F;
-  border: 2px solid #E6DCD6;
-  box-shadow: 0 2px 8px rgba(27, 36, 48, 0.12);
+  min-height: 4rem;
+  padding: 0 1.4rem 0 1.2rem;
+  font-size: 1.25rem;
+  background: var(--cream);
+  color: var(--plum);
+  border: var(--control-border);
+  box-shadow: var(--card-shadow);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
 .pill:hover {
-  background: #F6F1EC;
+  background: var(--lavender-soft);
 }
 
 .pill[aria-expanded="true"] {
-  background: #F6EFEA;
-  color: #0E6967;
-  border-color: #0E6967;
+  background: var(--lavender-soft);
+  color: var(--deep-teal);
+  border-color: var(--deep-teal);
 }
 
 .pill-attention {
-  border-color: #9A442D;
-  box-shadow: 0 0 0 4px rgba(180, 83, 15, 0.25);
+  border-color: var(--deep-coral);
+  box-shadow: 0 0 0 4px rgba(224, 122, 95, 0.35);
 }
 
 .bubble {
-  background: #FDFBF7;
-  color: #2D1E2F;
-  border: 2px solid #E6DCD6;
-  box-shadow: 0 6px 20px rgba(27, 36, 48, 0.16);
+  border-radius: var(--radius-card);
+  background: var(--cream);
+  color: var(--plum);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
 .bubble::before {
-  background: #FDFBF7;
-  border-top: 2px solid #E6DCD6;
-  border-left: 2px solid #E6DCD6;
+  background: var(--cream);
+  border-top: var(--card-border);
+  border-left: var(--card-border);
 }
 
 .bubble-name {
-  color: #0E6967;
+  color: var(--deep-teal);
+  font-size: 1.25rem;
 }
 
 .bubble-text {
   font-family: var(--font-ui), system-ui, sans-serif;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   line-height: 1.35;
 }
 
 .speaking span {
-  background: #0E6967;
+  background: var(--deep-teal);
 }
 
 .ack {
-  background: #0E6967;
+  background: var(--deep-teal);
   border: 0;
-  color: #FDFBF7;
+  color: #fff;
+  font-size: 1.25rem;
 }
 
 .ack-check {
-  background: #FDFBF7;
-  color: #0E6967;
+  background: var(--cream);
+  color: var(--deep-teal);
 }
 
 .toast {
-  background: #FDFBF7;
-  border: 2px solid #E6DCD6;
-  color: #2D1E2F;
-  box-shadow: 0 6px 20px rgba(27, 36, 48, 0.16);
+  border-radius: var(--radius-card);
+  background: var(--cream);
+  border: var(--card-border);
+  color: var(--plum);
+  font-size: 1.25rem;
+  box-shadow: var(--card-shadow);
 }
 
 .toast > svg {
-  color: #9A442D;
+  color: var(--deep-coral);
 }
 
 .controls {
@@ -2756,8 +2730,8 @@ body {
 .mic-caption {
   margin: -0.5rem 0 0;
   text-align: center;
-  color: #2D1E2F;
-  font-size: 1rem;
+  color: var(--plum);
+  font-size: 1.25rem;
   font-weight: 700;
   white-space: nowrap;
   min-height: 1.4em;
@@ -2765,102 +2739,221 @@ body {
 
 /* ---- the picture-and-word sheet (Help and Menu) ---- */
 .sheet {
-  background: #FDFBF7;
-  border: 2px solid #E6DCD6;
-  color: #2D1E2F;
-  box-shadow: 0 10px 40px rgba(27, 36, 48, 0.22);
+  border-radius: var(--radius-card);
+  background: var(--cream);
+  border: var(--card-border);
+  color: var(--plum);
+  box-shadow: var(--card-shadow);
+}
+
+.sheet-header {
+  flex-wrap: wrap;
+  padding: 0.75rem 0.75rem 0.5rem 1.5rem;
+}
+
+/* The section tabs sit on their own row, so the close button never leaves the card on a narrow phone. */
+.sheet-header .tabs {
+  order: 3;
+  width: 100%;
+  margin: 0;
+}
+
+.sheet-header .icon-button,
+.sheet-header .tabs + .icon-button {
+  margin-left: auto;
+}
+
+/* On a narrow screen the Help and Menu pills drop their icons so both fit beside the microphone. */
+@container (max-width: 430px) {
+  /* The menu's own title is dropped on a narrow screen so Drinks, Treats and Close fit on one row. */
+  .sheet[data-mode="menu"] .sheet-header .sheet-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .sheet[data-mode="menu"] .sheet-header .tabs {
+    order: 0;
+    width: auto;
+    margin: 0;
+  }
+  .pill svg {
+    display: none;
+  }
+  .pill {
+    padding: 0 1.1rem;
+  }
 }
 
 .sheet-eyebrow {
-  color: #6B5C6D;
+  color: var(--muted);
+  font-size: 1.25rem;
 }
 
 .sheet-title {
-  font-family: var(--font-ui), system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   font-style: normal;
-  font-weight: 800;
-  font-size: 1.5rem;
+  font-weight: 700;
+  font-size: 1.75rem;
+}
+
+.sheet-header .tabs .chip {
+  min-height: 4rem;
+  padding: 0 1.1rem;
+}
+
+.sheet-header .icon-button {
+  width: 4rem;
+  height: 4rem;
 }
 
 .chip {
-  background: #FDFBF7;
-  border: 2px solid #E6DCD6;
-  color: #2D1E2F;
+  min-height: 4rem;
+  padding: 0 1.3rem;
+  font-size: 1.25rem;
+  background: var(--cream);
+  border: var(--control-border);
+  color: var(--plum);
   font-weight: 700;
 }
 
 .chip:hover:not(:disabled) {
-  background: #F6F1EC;
+  background: var(--lavender-soft);
 }
 
 .chip[aria-pressed="true"] {
-  background: #F6EFEA;
-  border-color: #0E6967;
-  color: #0E6967;
+  background: var(--lavender-soft);
+  border-color: var(--deep-teal);
+  color: var(--deep-teal);
 }
 
 .chip.light {
-  background: #0E6967;
-  border-color: #0E6967;
-  color: #FDFBF7;
+  background: var(--deep-teal);
+  border-color: var(--deep-teal);
+  color: #fff;
+}
+
+.strip {
+  gap: 0.75rem;
 }
 
 .tile {
-  background: #F6F1EC;
-  border: 2px solid #E6DCD6;
-  color: #2D1E2F;
+  width: 8.25rem;
+  height: 8rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-card);
+  background: var(--cream);
+  border: var(--control-border);
+  color: var(--plum);
+}
+
+.tile-art {
+  width: 3rem;
+  height: 3rem;
+}
+
+.tile-label {
+  max-width: 100%;
+  overflow: visible;
+  white-space: normal;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.1;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .tile[aria-pressed="true"] {
-  background: #F6EFEA;
-  border-color: #0E6967;
-  color: #0E6967;
+  background: var(--lavender-soft);
+  border-color: var(--deep-teal);
+  color: var(--deep-teal);
+}
+
+.item-art {
+  width: 4.5rem;
+  height: 4.5rem;
 }
 
 .item-name {
-  font-family: var(--font-ui), system-ui, sans-serif;
-  font-weight: 800;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.75rem;
   letter-spacing: -0.01em;
 }
 
 .item-price {
-  color: #6B5C6D;
+  font-size: 1.25rem;
+  color: var(--muted);
 }
 
 .item-first {
-  color: #9A442D;
+  font-size: 1.25rem;
+  color: var(--deep-coral);
+}
+
+.item-actions {
+  flex-wrap: wrap;
+}
+
+.item-actions .chip {
+  min-height: 4rem;
+  flex: 1 1 auto;
+}
+
+.item-say {
+  flex-wrap: wrap;
+  min-height: 4rem;
 }
 
 .syll span {
-  color: #2D1E2F;
+  color: var(--plum);
+  font-size: 1.25rem;
 }
 
 .syll span + span::before {
-  background: #9A442D;
+  background: var(--deep-coral);
 }
 
 .say-btn {
-  background: #0E6967;
+  min-height: 4rem;
+  min-width: 8.5rem;
+  font-size: 1.25rem;
+  background: var(--deep-teal);
   border: 0;
-  color: #FDFBF7;
+  color: #fff;
 }
 
 .say-btn[data-live="true"] {
-  background: #9A442D;
+  background: var(--deep-coral);
 }
 
 .say-feedback {
-  color: #6B5C6D;
+  font-size: 1.25rem;
+  line-height: 1.35;
+  color: var(--muted);
 }
 
 .choose-btn {
-  background: #0E6967;
-  color: #FDFBF7;
+  min-height: 4rem;
+  width: 100%;
+  font-size: 1.25rem;
+  background: var(--deep-teal);
+  color: #fff;
 }
 
 .choose-btn:disabled {
-  background: #e4ece8;
-  color: #6B5C6D;
+  background: rgba(45, 30, 47, 0.08);
+  color: var(--muted);
+}
+
+/* The Choose button stays in view while the rest of the card scrolls. */
+.choose-btn {
+  position: sticky;
+  bottom: 0;
+  box-shadow: 0 0 0 0.5rem var(--cream);
 }
 
 /* RNW: the turning ring while the microphone is processing */

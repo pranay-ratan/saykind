@@ -30,7 +30,7 @@ export default function ReportsPanel() {
             <li key={report.id} className={`${CARD} flex flex-wrap items-center gap-3`}>
               <div className="min-w-40 flex-1">
                 <p className="text-xl font-bold">Report, {report.input.date}</p>
-                <p className="text-lg text-muted">{report.source === "ai" ? "Written by an AI" : "Written from a template"}</p>
+                <p className="text-xl text-muted">{report.source === "ai" ? "Written by an AI" : "Written from a template"}</p>
               </div>
               <button type="button" className={`${PILL} border-2 border-deep-teal bg-cream text-plum`} onClick={() => setSheet({ id: report.id })} aria-label={`Open the report from ${report.input.date}`}>
                 Open

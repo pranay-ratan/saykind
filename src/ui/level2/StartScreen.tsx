@@ -11,12 +11,12 @@ interface StartScreenProps {
   onChoosePhoto: (file: File) => void;
 }
 
-const PRIMARY_BUTTON = 'min-h-[80px] min-w-[240px] rounded-2xl bg-[#9A442D] px-8 text-2xl font-semibold text-white shadow-lg hover:bg-[#7F3823] active:bg-[#6B2F1C] focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-sky-400 disabled:opacity-60';
-const SECONDARY_LABEL = 'flex min-h-[64px] cursor-pointer items-center justify-center rounded-xl bg-stone-800 px-6 text-xl font-medium text-white hover:bg-stone-700 active:bg-stone-600 focus-within:outline-4 focus-within:outline-offset-2 focus-within:outline-sky-400';
+const PRIMARY_BUTTON = 'min-h-[80px] min-w-[240px] rounded-[2rem] bg-deep-coral px-8 text-2xl font-semibold text-white shadow-lg hover:opacity-90 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-deep-teal disabled:opacity-60';
+const SECONDARY_LABEL = 'flex min-h-[64px] cursor-pointer items-center justify-center rounded-full border-2 border-cream bg-cream px-6 text-xl font-bold text-plum hover:opacity-90 focus-within:outline-4 focus-within:outline-offset-2 focus-within:outline-deep-teal';
 
 function PermissionSteps() {
   return (
-    <div className="max-w-md rounded-2xl bg-stone-800 p-5 text-lg text-stone-100 space-y-3">
+    <div className="max-w-md rounded-[2rem] bg-cream p-6 text-xl text-plum space-y-3">
       <p>Camera access is off for this site.</p>
       <p>
         <strong>iPhone:</strong> open Settings, find your browser, and turn Camera on.
@@ -50,14 +50,14 @@ export function StartScreen({ status, photoBusy, photoMessage, onOpenCamera, onC
       <h1 className="text-4xl font-semibold text-white">Look around you</h1>
 
       {status === 'denied' && <PermissionSteps />}
-      {explanation && <p className="max-w-md text-xl text-stone-200">{explanation}</p>}
+      {explanation && <p className="max-w-md text-xl text-cream">{explanation}</p>}
       {photoMessage && (
-        <p role="status" className="max-w-md text-xl text-stone-200">
+        <p role="status" className="max-w-md text-xl text-cream">
           {photoMessage}
         </p>
       )}
       {busy && (
-        <p role="status" className="text-xl text-stone-200">
+        <p role="status" className="text-xl text-cream">
           {photoBusy ? 'Looking at your photo…' : 'Starting the camera…'}
         </p>
       )}

@@ -11,9 +11,9 @@ import { color, font, safe } from "./theme";
 
 function Toggle({ label, detail, value, onChange }: { label: string; detail: string; value: boolean; onChange: (next: boolean) => void }) {
   return (
-    <Pressable accessibilityRole="switch" accessibilityLabel={label} accessibilityState={{ checked: value }} onPress={() => onChange(!value)} style={{ flexDirection: "row", alignItems: "center", gap: 14, minHeight: 56 }}>
+    <Pressable accessibilityRole="switch" accessibilityLabel={label} accessibilityState={{ checked: value }} onPress={() => onChange(!value)} style={{ flexDirection: "row", alignItems: "center", gap: 14, minHeight: 64 }}>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontFamily: font.ui, fontSize: 17, fontWeight: "800", color: color.ink }}>{label}</Text>
+        <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "800", color: color.ink }}>{label}</Text>
         <Body size={14} style={{ marginTop: 2 }}>
           {detail}
         </Body>
@@ -26,8 +26,8 @@ function Toggle({ label, detail, value, onChange }: { label: string; detail: str
 function Field({ label, value, onChange, placeholder, keyboard }: { label: string; value: string; onChange: (v: string) => void; placeholder: string; keyboard?: string }) {
   return (
     <View style={{ gap: 6 }}>
-      <Text style={{ fontFamily: font.ui, fontSize: 14, fontWeight: "700", color: color.inkSoft }}>{label}</Text>
-      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={color.inkMuted} keyboardType={keyboard} accessibilityLabel={label} style={{ minHeight: 52, borderRadius: 14, borderWidth: 2, borderColor: color.line, backgroundColor: color.bg, color: color.ink, paddingHorizontal: 16, fontFamily: font.ui, fontSize: 18 } as never} />
+      <Text style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: color.inkSoft }}>{label}</Text>
+      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={color.inkMuted} keyboardType={keyboard} accessibilityLabel={label} style={{ minHeight: 64, borderRadius: 14, borderWidth: 2, borderColor: color.control, backgroundColor: color.bg, color: color.ink, paddingHorizontal: 16, fontFamily: font.ui, fontSize: 20 } as never} />
     </View>
   );
 }
@@ -113,7 +113,7 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
                 {samples.slice(0, 20).map((sample) => (
                   <View key={sample.id} style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap", paddingVertical: 4 }}>
                     <View style={{ flex: 1, minWidth: 120 }}>
-                      <Text numberOfLines={1} style={{ fontFamily: font.ui, fontSize: 16, fontWeight: "800", color: color.ink }}>
+                      <Text numberOfLines={1} style={{ fontFamily: font.ui, fontSize: 20, fontWeight: "800", color: color.ink }}>
                         {sample.kind === "session" ? "Real-world recording" : (sample.itemText ?? "Practice attempt")}
                       </Text>
                       <Body size={13}>{new Date(sample.ts).toLocaleString()}</Body>

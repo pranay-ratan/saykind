@@ -6,19 +6,21 @@ export const color = {
   bg: "#FDFBF7",
   page: "#FDFBF7",
   surface: "#FFFFFF",
-  surfaceStrong: "#F6F1EC",
-  line: "#E6DCD6",
+  surfaceStrong: "rgba(45,30,47,0.05)",
+  line: "rgba(45,30,47,0.06)",
+  /** Borders on controls (buttons, fields), strong enough to see. Cards use `line`. */
+  control: "rgba(45,30,47,0.25)",
   ink: "#2D1E2F",
   inkSoft: "#6B5C6D",
   inkMuted: "#6B5C6D",
   primary: "#0E6967",
   primaryDark: "#0E6967",
-  primarySoft: "#F6EFEA",
+  primarySoft: "rgba(191,165,212,0.25)",
   onPrimary: "#FFFFFF",
   accent: "#9A442D",
-  accentSoft: "#FBE3D9",
+  accentSoft: "rgba(224,122,95,0.18)",
   danger: "#9A442D",
-  dangerSoft: "#FBE3D9",
+  dangerSoft: "rgba(224,122,95,0.18)",
 } as const;
 
 /** Body text: Atkinson Hyperlegible Next. Headings: Bricolage Grotesque (both loaded by next/font in app/layout.tsx). */

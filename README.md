@@ -8,32 +8,32 @@ A calm, untimed place for adults with aphasia to practice everyday words and use
 
 ## Status
 
-Each line says what has been checked and how. Nothing here has been run against live providers or on a phone.
+Each line says what has been checked and how. **WORKING** means it ran in a real browser or in tests as described; **PROTOTYPE** means it is built but not proven end to end; **NOT DONE** means it does not exist. Nothing has been tried on a real phone, and the browser suite uses mocks for every provider.
 
 | Area | Status | What was checked |
 | --- | --- | --- |
-| Café speech (ElevenLabs by default; OpenAI optional) | **Prototype** | Unit tests with stubbed `fetch`. `npm run check:elevenlabs` written but not run (no key in this build). |
-| Café conversation (Claude by default; OpenAI optional) | **Prototype** | Unit tests with stubbed `fetch`, including validation, timeout-style fallback and no sampling parameters. Not run against Claude. |
-| Spoken-audio credit guard (`ELEVENLABS_MAX_CHARS_PER_DAY`) | **Working** in tests | Daily budget and reset tested. |
-| Welcome screen: aurora, word-by-word headline, Start | **Working** in Chrome | Browser smoke run; reduced motion removes the aurora and keeps the plain headline. The logo file is not in the repo. |
-| Atkinson Hyperlegible Next and Bricolage Grotesque; Warm palette | **Working** | Build and browser check. Next warns that Atkinson has no fallback metrics, so a small reflow on font swap is possible. |
-| Level 1: adaptive difficulty | **Prototype** | Rules and route tested. Events are sent from the Level 1 controller only. Nothing has been run with a real recording. Level changes are saved but do not yet choose different words, because the word list has no difficulty levels. |
-| Level 1: flip card with mic and "I said it" | **Built on the Level 2 sheet, not on Level 1** | The card (`src/ui/WordCard.tsx`) is used by the Level 2 object sheet. Dev's Level 1 screen keeps its own layout; putting the card there would replace it, which is Dev's decision. |
-| Level 2 live camera | **Prototype** | Stand-in camera feed and fixed detections in Chrome: box alignment, mirroring, orientation, off-screen boxes, still-scene persistence. Not run with a real camera or a live Perceptron key. |
-| Level 2 colours: coral boxes, cream chips, deep-coral start button | **Working** | Browser check. |
-| Get Help sheet: deep-coral button and Orb | **Working** | Browser smoke run. The Orb's look has not been reviewed on a phone. |
-| Caregiver view: Count Up on the two counts | **Working** | Browser smoke run; plain numbers under reduced motion. |
-| Caregiver view: Spotlight Card and soft cards | **Not done** | |
-| Café menu panel and buttons restyle | **Not done** | |
-| Level menu scrim and caregiver scrim: axe role fix | **Working** | Axe run finds no serious violations on the screens checked. |
-| Browser smoke and accessibility suite (`npm run test:e2e`) | **Working** | 13 checks: axe (WCAG A and AA) on Welcome, Level 1, café menu, caregiver view, Get Help and Level 2 start; reduced motion on Welcome; Level 2 full-bleed at 1280px. Mocks answer every `/api` call. This is a smoke run, not full coverage of every flow. |
-| Provider check scripts | `check:env` **working**; `check:elevenlabs` and `check:perceptron` **not run** (no keys) | See [`docs/SETUP.md`](docs/SETUP.md). |
+| Level 1 word practice (Dev's screens) | **WORKING** | Browser suite: opens, axe, layout at 375px and 1280px. The flip card was **not** put on Level 1: Dev's layout would have to be replaced (the card is used on the Level 2 sheet). |
+| Level 1 adaptive difficulty | **PROTOTYPE** | Rules and route tested. Level changes are saved but do not yet choose different words (the word list has no levels). |
+| Level 2 live camera and practice card | **PROTOTYPE** | Fake camera and mocked detection in Chrome: tap an object, play or record its word. Not run with a real camera or a live Perceptron key. Detect calls wait 15 s and retry once; `PERCEPTRON_MODEL=isaac-0.3-fast` is the speed option. |
+| Flow: Welcome, Level 1, menu, Level 2, back, café | **WORKING** | Browser test. Level 2 has Back to levels and Next: the café; completing a word marks Level 2 done in the progress store and opens the café and phrases. `NEXT_PUBLIC_UNLOCK_ALL_LEVELS=true` opens everything. |
+| Café voice conversation (mic, Scribe, Claude, ElevenLabs voice) | **PROTOTYPE** | Whole loop in a browser with mocks: greeting, fragments, change of mind, empty turn, picture answers, order complete, device-voice fallback. Live latency and lip-sync with the real services are not verified. |
+| Café session saved to the practice log | **WORKING** | Unit and browser tests. |
+| Session report for the doctor | **PROTOTYPE** | Assembly, template fallback, language rules, preview, transcript switch (off by default), Email link, Share, Download PDF, Copy, saved list and Delete: tested with mocks. One live call to Claude with sample numbers returned a valid report. Email goes through the person's own mail app; server-side email is **NOT DONE**. |
+| Caregiver view: Spotlight Cards, soft cards, Count Up on counts | **WORKING** | Browser audit. |
+| Café menu panel and buttons on the Saykind tokens | **WORKING** | Browser audit at 375px and 1280px. |
+| UI rules audit (tokens, 20px text, 64px targets, no red, layout) | **WORKING** | `tests/e2e/audit.mjs` finds 0 findings on 13 screens at 375px and 1280px. It checks computed styles, not a person's eyes. The café scene art and Dev's illustrations were not touched. |
+| Reduced motion (Welcome, Level 1, Level 2) | **WORKING** | No running animation and no canvas in the browser test. |
+| Accessibility (axe, WCAG A and AA) | **WORKING** | No serious or critical findings on Welcome, Level 1, café, café end, caregiver view, Get Help, Level 2 and the report. Axe does not replace testing with a screen reader. |
+| Spoken-audio credit guard | **WORKING** in tests | Daily budget and reset tested. |
+| Provider check scripts | `check:env` **WORKING**; `check:elevenlabs` and `check:perceptron` **not run in this build** | See [`docs/SETUP.md`](docs/SETUP.md). |
+| Caregiver view on another device, accounts, consent record | **NOT DONE** | Everything is on the device. |
 
 ## Privacy
 
-- **Providers:** ElevenLabs (spoken audio in and out, when enabled), Anthropic (the café conversation), Perceptron (Level 2 photos, when enabled). OpenAI is an optional fallback and is never required.
-- **We store nothing on our servers.** Audio and photos pass to the provider only to get a result. The server keeps two in-memory caches of spoken lines (audio of phrases, not of people) and a daily character counter. Neither holds anything a person said or photographed.
-- **On the device:** practice records and the caregiver details are kept in the browser's storage on that device.
+- **Providers:** ElevenLabs (the barista's voice and listening to the person), Anthropic (the café conversation, and writing the doctor report), Perceptron (Level 2 photos). OpenAI is an optional fallback and is never required.
+- **Audio and photos pass through ElevenLabs, Anthropic and Perceptron only to get a result.** Our servers keep nothing: two in-memory caches of spoken lines and a daily character counter, none of which holds anything a person said or photographed.
+- **Reports** are written by Anthropic from compact counts and short words (no audio, no images, no conversation text), and are **stored only on the device**. They are shared **only when the person taps** Email, Share, Download PDF or Copy. The conversation transcript is left out unless the person switches it on.
+- **On the device:** the practice log, café sessions, progress, settings (caregiver and doctor details) and saved reports are kept in the browser's storage on that device.
 - **Keys** are read on the server only and never sent to the browser. `npm run check:env` prints names and yes or no, never values.
 
 ## Run it
@@ -58,7 +58,7 @@ npm run build
 npm run check:perceptron -- path/to/photo.jpg   # one live Perceptron call: raw reply, boxes, latency
 npm run check:elevenlabs                         # one text to speech call, then speech to text: PASS or FAIL
 npm run check:env                                # which variables are SET or MISSING (never values)
-npm run test:e2e                                 # browser and axe smoke suite (needs npm run build && npm start on BASE_URL)
+npm run test:e2e                                 # browser suites: smoke, flow, conversation, report, motion, UI audit (needs a build served at BASE_URL)
 ```
 
 ## Environment variables
@@ -71,8 +71,8 @@ Every variable is in `.env.example`, marked REQUIRED or OPTIONAL. Keys are read 
 | `PERCEPTRON_API_KEY` | Level 2 with the default provider | https://docs.perceptron.inc |
 | `GEMINI_API_KEY` | `VISION_PROVIDER=gemini` | https://aistudio.google.com/app/apikey |
 | `ELEVENLABS_API_KEY` | The café's spoken audio and listening (needs Text to Speech and Speech to Text permission) | https://elevenlabs.io |
-| `ANTHROPIC_API_KEY` | The café's conversation (Claude is the default) | https://console.anthropic.com/ |
-| `ELEVENLABS_VOICE_ID` | Optional for the café (a stock voice is used); required for Level 2 speech when `TTS_PROVIDER=elevenlabs` | ElevenLabs voice library |
+| `ANTHROPIC_API_KEY` | The café's conversation (Claude is the default) and the doctor report (a template is used without it) | https://console.anthropic.com/ |
+| `ELEVENLABS_VOICE_ID` | Optional for the café (the premade voice `JBFqnCBsd6RMkjVDRZzb` is used; library voices need a paid ElevenLabs plan); required for Level 2 speech when `TTS_PROVIDER=elevenlabs` | ElevenLabs voice library |
 
 Optional with defaults: `VISION_PROVIDER` (perceptron), `PERCEPTRON_MODEL`, `GEMINI_MODEL`, `TTS_PROVIDER` (browser), `TTS_PREWARM_SECRET`, `LIVE_MAX_CALLS`, `LIVE_INTERVAL_MS`, `ADAPTIVE_PROVIDER` (rules), `CLAUDE_MODEL` (claude-haiku-5-5), and the OpenAI and rate-limit settings from Dev's original template.
 
@@ -103,7 +103,7 @@ The key is read only on the server (`lib/server/openai.ts`) and never reaches th
 | Level | What it is | Status |
 | --- | --- | --- |
 | 1. Learn Objects | Chair, Cookie, Mug, Hat, Table, Lamp: picture, word, syllables and IPA, speaker, snail (slow), speaking practice, unlimited tries, continue | **Working** |
-| 2. Discover Objects | Camera screen and the hand-off function `receiveDiscovery(...)`; the practice screen is the Level 1 exercise | **Prototype**: camera and hand-off work; recognition is a teammate's and is *not* built |
+| 2. Discover Objects | The live camera at `/level-2` (Back to levels, Next: the café), or Dev's Discover screen | **Prototype** (see the status table) |
 | 3. At the Café | The original animated café and AI barista; a Menu where every drink and pastry has picture, name, syllables, speaker, snail, practice and "choose without speaking" | **Working** |
 | 4. In the Real World | Twelve ready phrases (normal and slow audio, practice, a large "show someone" card that plays aloud) and a consented recording session | **Working** |
 | Contact caregiver | A call button (`tel:`) and an optional message the person reads, edits and sends from their own phone | **Working as a hand-off only**; Saykind never sends or confirms anything |

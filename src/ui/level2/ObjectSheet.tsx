@@ -192,28 +192,28 @@ export function ObjectSheet({
   const otherLabels = alternatives.filter((item) => item !== word);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-stone-900/40">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-plum/40">
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="object-sheet-title"
-        className="w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl bg-stone-50 p-6 pb-10 shadow-2xl motion-safe:animate-[sheet-up_300ms_ease-out]"
+        className="w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-t-[2rem] bg-cream p-6 pb-10 shadow-2xl motion-safe:animate-[sheet-up_300ms_ease-out]"
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 id="object-sheet-title" className="text-2xl font-semibold text-stone-900">
+          <h2 id="object-sheet-title" className="text-2xl font-semibold text-plum">
             Practice
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="min-h-[64px] px-5 rounded-xl bg-stone-200 text-stone-900 text-xl font-medium hover:bg-stone-300 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+            className="min-h-[64px] px-5 rounded-full border-2 border-deep-teal bg-cream text-plum text-xl font-bold hover:bg-lavender/25 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
           >
             Back to looking
           </button>
         </div>
 
         {isLowConfidence && (
-          <div className="mb-6 rounded-2xl border border-stone-300 bg-white p-5">
+          <div className="mb-6 rounded-[2rem] border border-plum/25 bg-cream p-5">
             {showChoices ? (
               <ChoicePanel
                 alternatives={otherLabels}
@@ -224,21 +224,21 @@ export function ObjectSheet({
               />
             ) : (
               <>
-                <p className="text-xl text-stone-800 mb-4">
+                <p className="text-xl text-plum mb-4">
                   I think this might be a <strong>{word}</strong>. Is that right?
                 </p>
                 <div className="flex gap-3">
                   <button
                     type="button"
                     onClick={() => setIsLowConfidence(false)}
-                    className="flex-1 min-h-[64px] rounded-xl bg-stone-900 text-white text-xl font-medium hover:bg-stone-800 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                    className="flex-1 min-h-[64px] rounded-full bg-deep-teal text-white text-xl font-bold hover:opacity-90 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
                   >
                     Yes
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowChoices(true)}
-                    className="flex-1 min-h-[64px] rounded-xl bg-stone-200 text-stone-900 text-xl font-medium hover:bg-stone-300 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+                    className="flex-1 min-h-[64px] rounded-full border-2 border-deep-teal bg-cream text-plum text-xl font-bold hover:bg-lavender/25 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
                   >
                     Not quite
                   </button>
@@ -266,12 +266,12 @@ export function ObjectSheet({
         />
 
         {micNote && (
-          <p role="status" className="text-center text-lg text-stone-700">
+          <p role="status" className="text-center text-xl text-muted">
             {micNote}
           </p>
         )}
         {isRecording && (
-          <p role="status" className="text-center text-lg text-stone-700">
+          <p role="status" className="text-center text-xl text-muted">
             Listening. Tap Stop when you are done.
           </p>
         )}
@@ -291,7 +291,7 @@ interface ChoicePanelProps {
 function ChoicePanel({ alternatives, typedWord, onTypedChange, onTypedSubmit, onChoose }: ChoicePanelProps) {
   return (
     <div className="space-y-4">
-      <p className="text-xl text-stone-800">What is it?</p>
+      <p className="text-xl text-plum">What is it?</p>
       {alternatives.length > 0 && (
         <div className="grid grid-cols-2 gap-3">
           {alternatives.map((option) => (
@@ -299,7 +299,7 @@ function ChoicePanel({ alternatives, typedWord, onTypedChange, onTypedSubmit, on
               key={option}
               type="button"
               onClick={() => onChoose(option)}
-              className="min-h-[64px] rounded-xl bg-stone-900 text-white text-xl font-medium hover:bg-stone-800 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+              className="min-h-[64px] rounded-full bg-deep-teal text-white text-xl font-bold hover:opacity-90 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
             >
               {option}
             </button>
@@ -316,11 +316,11 @@ function ChoicePanel({ alternatives, typedWord, onTypedChange, onTypedSubmit, on
           onChange={(event) => onTypedChange(event.target.value)}
           maxLength={MAX_TYPED_WORD}
           placeholder="Type the word"
-          className="flex-1 min-h-[56px] rounded-xl border border-stone-300 px-4 text-lg text-stone-900"
+          className="flex-1 min-h-16 rounded-full border border-plum/25 px-4 text-xl text-plum"
         />
         <button
           type="submit"
-          className="min-h-[56px] px-4 rounded-xl bg-stone-200 text-stone-900 text-lg font-medium hover:bg-stone-300 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+          className="min-h-16 px-4 rounded-full border-2 border-deep-teal bg-cream text-plum text-xl font-bold hover:bg-lavender/25 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
         >
           Use
         </button>

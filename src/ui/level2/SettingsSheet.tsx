@@ -10,9 +10,9 @@ interface SettingsSheetProps {
   onClose: () => void;
 }
 
-const CHOICE_BUTTON = 'flex-1 min-h-[64px] rounded-xl text-xl font-medium transition-colors focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600';
-const SELECTED = 'bg-stone-900 text-white';
-const UNSELECTED = 'bg-stone-200 text-stone-900 hover:bg-stone-300';
+const CHOICE_BUTTON = 'flex-1 min-h-[64px] rounded-full text-xl font-medium transition-colors focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal';
+const SELECTED = 'bg-deep-teal text-white';
+const UNSELECTED = 'border-2 border-deep-teal bg-cream text-plum hover:bg-lavender/25';
 
 const INTERVAL_LABELS: Readonly<Record<number, string>> = { 1000: '1 sec', 1500: '1.5 sec', 3000: '3 sec' };
 const RATE_LABELS: Readonly<Record<number, string>> = { 0.7: 'Slow', 1: 'Normal', 1.3: 'Fast' };
@@ -30,15 +30,15 @@ function SwitchRow({ label, checked, onToggle }: SwitchRowProps) {
       role="switch"
       aria-checked={checked}
       onClick={() => onToggle(!checked)}
-      className="w-full min-h-[64px] flex items-center justify-between gap-4 rounded-xl bg-white px-5 text-xl text-stone-900 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+      className="w-full min-h-[64px] flex items-center justify-between gap-4 rounded-full bg-cream px-5 text-xl text-plum focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
     >
       <span>{label}</span>
       <span
         aria-hidden="true"
-        className={`relative inline-flex h-9 w-16 shrink-0 rounded-full transition-colors ${checked ? 'bg-stone-900' : 'bg-stone-300'}`}
+        className={`relative inline-flex h-9 w-16 shrink-0 rounded-full transition-colors ${checked ? 'bg-deep-teal' : 'bg-plum/15'}`}
       >
         <span
-          className={`absolute top-1 h-7 w-7 rounded-full bg-white shadow transition-transform motion-reduce:transition-none ${checked ? 'translate-x-8' : 'translate-x-1'}`}
+          className={`absolute top-1 h-7 w-7 rounded-full bg-cream shadow transition-transform motion-reduce:transition-none ${checked ? 'translate-x-8' : 'translate-x-1'}`}
         />
       </span>
     </button>
@@ -49,22 +49,22 @@ export function SettingsSheet({ open, settings, onChange, onClose }: SettingsShe
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-stone-900/40">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-plum/40">
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-title"
-        className="w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl bg-stone-50 p-6 pb-10 shadow-2xl"
+        className="w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-t-[2rem] bg-cream p-6 pb-10 shadow-2xl"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 id="settings-title" className="text-2xl font-semibold text-stone-900">
+          <h2 id="settings-title" className="text-2xl font-semibold text-plum">
             Settings
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close settings"
-            className="min-h-[64px] min-w-[64px] flex items-center justify-center rounded-xl bg-stone-200 text-stone-900 hover:bg-stone-300 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
+            className="min-h-[64px] min-w-[64px] flex items-center justify-center rounded-full border-2 border-deep-teal bg-cream text-plum hover:bg-lavender/25 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
           >
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -80,7 +80,7 @@ export function SettingsSheet({ open, settings, onChange, onClose }: SettingsShe
           />
 
           <fieldset>
-            <legend className="text-lg text-stone-700 mb-3">How often to look</legend>
+            <legend className="text-xl text-muted mb-3">How often to look</legend>
             <div className="flex gap-3">
               {CAMERA_CONFIG.intervalChoicesMs.map((value) => (
                 <button
@@ -103,7 +103,7 @@ export function SettingsSheet({ open, settings, onChange, onClose }: SettingsShe
           />
 
           <fieldset>
-            <legend className="text-lg text-stone-700 mb-3">Voice speed</legend>
+            <legend className="text-xl text-muted mb-3">Voice speed</legend>
             <div className="flex gap-3">
               {CAMERA_CONFIG.voiceRateChoices.map((value) => (
                 <button

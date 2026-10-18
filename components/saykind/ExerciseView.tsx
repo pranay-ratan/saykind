@@ -119,8 +119,8 @@ export default function ExerciseView({
           <View style={{ gap: 10, alignSelf: "stretch", alignItems: "center" }}>
             <Button label={x.isLast ? "Finish" : "Continue"} onPress={x.continueToNextWord} style={{ alignSelf: "stretch" }} />
             <View style={{ flexDirection: "row", gap: 10, alignSelf: "stretch" }}>
-              <Button label="Try again" kind="secondary" onPress={x.retryWord} style={{ minHeight: 50, flex: 1, paddingHorizontal: 12 }} />
-              {feedback.canConfirm ? <Button label="That's what I said" kind="secondary" onPress={x.confirmHeard} style={{ minHeight: 50, flex: 1, paddingHorizontal: 12 }} hint="You know best. This moves on and is noted." /> : null}
+              <Button label="Try again" kind="secondary" onPress={x.retryWord} style={{ minHeight: 64, flex: 1, paddingHorizontal: 12 }} />
+              {feedback.canConfirm ? <Button label="That's what I said" kind="secondary" onPress={x.confirmHeard} style={{ minHeight: 64, flex: 1, paddingHorizontal: 12 }} hint="You know best. This moves on and is noted." /> : null}
             </View>
           </View>
         ) : (
@@ -139,10 +139,10 @@ export default function ExerciseView({
 
 const styles = StyleSheet.create({
   top: { flexDirection: "row", alignItems: "center", gap: 14, paddingHorizontal: 16, paddingBottom: 8 },
-  instruction: { fontFamily: font.ui, fontSize: 18, fontWeight: "700", color: color.inkSoft, textAlign: "center" },
+  instruction: { fontFamily: font.ui, fontSize: 20, fontWeight: "700", color: color.inkSoft, textAlign: "center" },
   pictureCard: { borderRadius: 28, backgroundColor: color.surface, borderWidth: 1, borderColor: color.line, alignItems: "center", justifyContent: "center" },
   syllables: { fontFamily: font.ui, fontSize: 20, fontWeight: "600", letterSpacing: 1, color: color.inkMuted, textAlign: "center" },
   audioRow: { flexDirection: "row", gap: 28, alignItems: "flex-start", justifyContent: "center", marginTop: 4 },
   bottom: { paddingHorizontal: 20, paddingTop: 10, borderTopWidth: 1, borderColor: color.line, backgroundColor: color.bg, alignItems: "center" },
-  status: { fontFamily: font.ui, fontSize: 16, fontWeight: "500", color: color.inkSoft, textAlign: "center", marginTop: -2, minHeight: 22 },
+  status: { fontFamily: font.ui, fontSize: 20, fontWeight: "500", color: color.inkSoft, textAlign: "center", marginTop: -2, minHeight: 22 },
 });

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Pressable, ScrollView, Text, View, type ViewStyle } from "react-native";
 import { relativeTime, useCaregiverReport, type WordSummary } from "@/lib/saykind";
 import { color, font } from "./theme";
+import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import ReportsPanel from "@/components/report/ReportsPanel";
 import CountUp from "@/components/reactbits/CountUp";
 import { useReducedMotion } from "@/lib/use-presence";
@@ -19,7 +20,7 @@ const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? o
 function Pill({ children, tone = "plain" }: { children: ReactNode; tone?: "plain" | "on" | "off" | "note" }) {
   const p = { plain: [color.surfaceStrong, color.ink], on: [color.primarySoft, color.primaryDark], off: [color.surface, color.inkMuted], note: [color.accentSoft, color.accent] }[tone];
   return (
-    <View style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, backgroundColor: p[0] }}>
+    <View style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, backgroundColor: p[0] }}>
       <Text style={{ fontFamily: font.ui, fontSize: 13, fontWeight: "700", color: p[1] }}>{children}</Text>
     </View>
   );
@@ -43,10 +44,10 @@ function Stat({ value, label }: { value: string; label: string }) {
   const reduced = useReducedMotion();
   const count = Number(value);
   return (
-    <View style={{ flex: 1, minWidth: 130, padding: 16, borderRadius: 16, borderWidth: 1, borderColor: color.line, backgroundColor: color.bg }}>
-      <Text style={{ fontFamily: font.ui, fontWeight: "800", fontSize: 30, color: color.ink }}>{reduced || !Number.isFinite(count) ? value : <CountUp to={count} duration={0.8} trigger="view" />}</Text>
-      <Text style={{ fontFamily: font.ui, fontSize: 14, color: color.inkMuted, marginTop: 2 }}>{label}</Text>
-    </View>
+    <SpotlightCard style={{ flex: 1, minWidth: 140 }}>
+      <Text style={{ fontFamily: font.ui, fontWeight: "800", fontSize: 32, color: color.ink }}>{reduced || !Number.isFinite(count) ? value : <CountUp to={count} duration={0.8} trigger="view" />}</Text>
+      <Text style={{ fontFamily: font.ui, fontSize: 16, color: color.inkMuted, marginTop: 2 }}>{label}</Text>
+    </SpotlightCard>
   );
 }
 
@@ -125,7 +126,7 @@ export default function CaregiverReportView() {
             </View>
           </Section>
 
-          <View style={{ padding: 16, borderRadius: 16, backgroundColor: color.accentSoft, borderWidth: 1, borderColor: "#F0CFA8", gap: 4 }}>
+          <View style={{ padding: 20, borderRadius: 32, backgroundColor: color.accentSoft, borderWidth: 1, borderColor: "rgba(224,122,95,0.35)", gap: 4 }}>
             <Text style={{ fontFamily: font.ui, fontSize: 15, fontWeight: "800", color: color.accent }}>About these results</Text>
             <Text style={{ fontFamily: font.ui, fontSize: 15, lineHeight: 22, color: color.ink }}>
               “Computer heard” is the output of automatic speech recognition. It can be wrong for any voice, and it is especially unreliable for speech affected by aphasia. It is not a clinical measure of pronunciation and Saykind gives no scores. Use it as a prompt for conversation, and trust your own listening and a speech-language pathologist's judgement.
@@ -135,7 +136,7 @@ export default function CaregiverReportView() {
           {!r.isAnythingShared ? (
             <Section title="Nothing is shared yet">
               <Text style={{ fontFamily: font.ui, fontSize: 17, lineHeight: 26, color: color.ink }}>
-                {r.caregiverName ? `${r.caregiverName}, ` : ""}practice details appear here only after the person turns sharing on in Saykind, under Settings. That choice is theirs.
+                {r.caregiverName ? `${r.caregiverName}, practice` : "Practice"} details appear here only after the person turns sharing on in Saykind, under Settings. That choice is theirs.
               </Text>
             </Section>
           ) : (
@@ -149,7 +150,7 @@ export default function CaregiverReportView() {
                     <Stat value={r.totals.lastPracticeTs ? relativeTime(r.totals.lastPracticeTs) : "–"} label="Last practice" />
                   </View>
                   <Section title="Word by word" hint="Newest first.">
-                    {r.words.length === 0 ? <Text style={{ fontFamily: font.ui, fontSize: 16, color: color.inkMuted }}>No practice recorded yet.</Text> : <View>{r.words.map((w) => <WordRow key={`${w.level}-${w.itemId}`} word={w} assistance={r.sharing.assistance} />)}</View>}
+                    {r.words.length === 0 ? <Text style={{ fontFamily: font.ui, fontSize: 16, color: color.inkMuted }}>No practice recorded yet.</Text> : <SpotlightCard>{r.words.map((w) => <WordRow key={`${w.level}-${w.itemId}`} word={w} assistance={r.sharing.assistance} />)}</SpotlightCard>}
                   </Section>
                   {r.mayBenefitFromPractice.length > 0 && (
                     <Section title="May benefit from more practice" hint="Suggestions from how often help or retries were used. They are prompts, not conclusions.">
