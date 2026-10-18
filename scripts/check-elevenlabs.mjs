@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const BASE = "https://api.elevenlabs.io/v1";
-const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
+const DEFAULT_VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
 const TTS_MODEL = "eleven_flash_v2_5";
 const STT_MODEL = "scribe_v1";
 const PHRASE = "Hello, thank you.";
@@ -25,13 +25,27 @@ function loadEnvLocal() {
 }
 
 /** The message for a failed status. Never includes the provider's response text, which could echo the key. */
-function hintFor(status) {
+function hintFor(status, paidPlan = false) {
   if (status === 401 || status === 403) {
     return "The key is missing Text to Speech / Speech to Text permission. Check the key's permissions in ElevenLabs.";
+  }
+  if (status === 402 && paidPlan) {
+    return "That voice isn't available on this ElevenLabs plan. Set ELEVENLABS_VOICE_ID to a premade voice.";
   }
   if (status === 402) return "The ElevenLabs account is out of credits.";
   if (status === 429) return "ElevenLabs is busy. Wait a minute and try again.";
   return `The request failed with HTTP ${status}.`;
+}
+
+/** True when a 402 body says the voice needs a paid plan. Only the status word is read. */
+async function paidPlanRequired(response) {
+  if (response.status !== 402) return false;
+  try {
+    const data = await response.json();
+    return data?.detail?.status === "paid_plan_required" || data?.detail?.code === "paid_plan_required";
+  } catch {
+    return false;
+  }
 }
 
 function report(step, ok, detail) {
@@ -56,7 +70,7 @@ async function main() {
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     if (!response.ok) {
-      report("text to speech", false, hintFor(response.status));
+      report("text to speech", false, hintFor(response.status, await paidPlanRequired(response)));
       process.exit(1);
     }
     audio = Buffer.from(await response.arrayBuffer());
@@ -79,7 +93,7 @@ async function main() {
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     if (!response.ok) {
-      report("speech to text", false, hintFor(response.status));
+      report("speech to text", false, hintFor(response.status, await paidPlanRequired(response)));
       process.exit(1);
     }
     const data = await response.json();

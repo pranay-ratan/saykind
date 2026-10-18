@@ -87,6 +87,7 @@ function isTimeout(error: unknown, signal: AbortSignal): boolean {
 }
 
 function isRetryable(error: unknown): boolean {
+  if (error instanceof DetectError) return error.code === 'timeout';
   if (error instanceof ProviderHttpError) return error.status >= 500;
   return error instanceof TypeError;
 }

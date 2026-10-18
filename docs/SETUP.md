@@ -15,7 +15,7 @@ The app starts without any key. A missing key shows a calm message in the featur
 | Name | What it is | Where to get it | Required? | What breaks without it |
 | --- | --- | --- | --- | --- |
 | `ELEVENLABS_API_KEY` | ElevenLabs key for the café's spoken voice and listening | https://elevenlabs.io (Profile > API keys). Needs **Text to Speech** and **Speech to Text** permission. | **Required** for the café | The café can't speak or hear. Users see "The voice service isn't set up yet." If the key is present but lacks permission, users see the permission message. |
-| `ELEVENLABS_VOICE_ID` | Which ElevenLabs voice speaks | ElevenLabs voice library: copy a voice's ID | Optional | The default stock voice `21m00Tcm4TlvDq8ikWAM` is used. **Level 2's own speech route (`/api/tts`) needs this set**, because it has no default. |
+| `ELEVENLABS_VOICE_ID` | Which ElevenLabs voice speaks | ElevenLabs voice library: copy a voice's ID | Optional | The default stock voice `JBFqnCBsd6RMkjVDRZzb` is used. **Level 2's own speech route (`/api/tts`) needs this set**, because it has no default. |
 | `ELEVENLABS_MAX_CHARS_PER_DAY` | Daily cap on characters sent to ElevenLabs for the café (in memory, resets at UTC midnight) | You choose | Optional (default `30000`) | Nothing breaks. Past the cap, lines are read by the device voice. |
 | `ELEVENLABS_STT_MODEL` | ElevenLabs speech-to-text model | ElevenLabs docs | Optional (default `scribe_v1`) | Nothing breaks. |
 | `ANTHROPIC_API_KEY` | Claude key for the café conversation | https://console.anthropic.com/ | **Required** for the café conversation (Claude is the default) | The barista can't reply. Users see "The voice service isn't set up yet." |
@@ -28,7 +28,7 @@ The app starts without any key. A missing key shows a calm message in the featur
 | `RATE_LIMIT_PER_MINUTE`, `DAILY_LIMIT_PER_CLIENT`, `HOURLY_LIMIT_GLOBAL` | Spending limits per visitor and per app | You choose | Optional (defaults `90`, `600`, `2000`) | Defaults are used. |
 | `VISION_PROVIDER` | Level 2 detector: `perceptron` or `gemini` | You choose | Optional (default `perceptron`) | Nothing breaks. |
 | `PERCEPTRON_API_KEY` | Perceptron key for Level 2 object detection | https://docs.perceptron.inc | **Required** for Level 2 (default detector) | Level 2 can't detect objects. The page says so calmly. |
-| `PERCEPTRON_MODEL` | Perceptron model name | Perceptron docs | Optional (default `perceptron-mk1.5`) | Try `isaac-0.3-fast` if latency is high. |
+| `PERCEPTRON_MODEL` | Perceptron model name | Perceptron docs | Optional (default `perceptron-mk1.5`) | **Speed option:** set `PERCEPTRON_MODEL=isaac-0.3-fast` if detection feels slow. Each detect call waits up to 15 seconds and is retried once on a timeout; boxes already on screen stay and a calm "Looking again." line shows. |
 | `GEMINI_API_KEY` | Gemini key, development fallback for Level 2 | https://aistudio.google.com/app/apikey | Required **only** when `VISION_PROVIDER=gemini` | Gemini detection is unavailable. |
 | `GEMINI_MODEL` | Gemini model name | Google AI docs | Optional (default `gemini-2.5-flash`) | Default is used. |
 | `TTS_PROVIDER` | Level 2 spoken audio: `browser` or `elevenlabs` | You choose | Optional (default `browser`, no key needed) | `elevenlabs` also needs `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID`. |

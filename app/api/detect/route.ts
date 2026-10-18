@@ -4,6 +4,8 @@ import { createFixedWindowLimiter } from '../../../src/core/http/rateLimiter';
 import { DetectError, runDetection } from '../../../src/core/vision/runDetection';
 import { parseDetectRequest } from '../../../src/core/vision/requestBody';
 
+export const maxDuration = 60;
+
 const ONE_MINUTE_MS = 60 * 1000;
 const MAX_TRACKED_CLIENTS = 10000;
 /** Base64 grows the body by about a third, so this allows the 2 MB image plus JSON overhead. */

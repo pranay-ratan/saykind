@@ -9,7 +9,7 @@
  */
 
 export const ELEVENLABS_BASE_URL = "https://api.elevenlabs.io/v1";
-export const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
+export const DEFAULT_VOICE_ID = "JBFqnCBsd6RMkjVDRZzb";
 export const DEFAULT_TTS_MODEL = "eleven_flash_v2_5";
 export const DEFAULT_STT_MODEL = "scribe_v1";
 const OUTPUT_FORMAT = "mp3_44100_128";
@@ -19,6 +19,7 @@ export type VoiceErrorCode =
   | "not_configured"
   | "elevenlabs_permission"
   | "out_of_credits"
+  | "voice_unavailable"
   | "rate_limit"
   | "credits_guard"
   | "network"
@@ -37,7 +38,7 @@ export class VoiceError extends Error {
 }
 
 /** Maps an ElevenLabs HTTP status to a safe error. Anything that is not an error status returns null. */
-export function elevenLabsStatusError(status: number): VoiceError | null {
+export function elevenLabsStatusError(status: number, paidPlanRequired = false): VoiceError | null {
   if (status >= 200 && status < 300) return null;
   if (status === 401 || status === 403) {
     return new VoiceError(
@@ -46,9 +47,32 @@ export function elevenLabsStatusError(status: number): VoiceError | null {
       "The ElevenLabs key is missing Text to Speech / Speech to Text permission.",
     );
   }
+  if (status === 402 && paidPlanRequired) {
+    return new VoiceError(
+      "voice_unavailable",
+      503,
+      "That voice isn't available on this ElevenLabs plan. Set ELEVENLABS_VOICE_ID to a premade voice.",
+    );
+  }
   if (status === 402) return new VoiceError("out_of_credits", 503, "The ElevenLabs account is out of credits.");
   if (status === 429) return new VoiceError("rate_limit", 429, "ElevenLabs is busy. Please wait a moment.");
   return new VoiceError("upstream", 502, "The voice service had a problem.");
+}
+
+/** True when a 402 body says the voice needs a paid plan. Only the status code word is read, never forwarded. */
+async function needsPaidPlan(response: Response): Promise<boolean> {
+  if (response.status !== 402) return false;
+  try {
+    const data = (await response.clone().json()) as { detail?: { status?: unknown; code?: unknown } };
+    return data.detail?.status === "paid_plan_required" || data.detail?.code === "paid_plan_required";
+  } catch {
+    return false;
+  }
+}
+
+/** Maps a response to a safe error, telling a paid-plan voice apart from a genuine quota error. */
+export async function elevenLabsResponseError(response: Response): Promise<VoiceError | null> {
+  return elevenLabsStatusError(response.status, await needsPaidPlan(response));
 }
 
 /** Removes parenthetical audio-event tags such as "(laughs)" and collapses spaces. Never adds words. */
@@ -82,7 +106,7 @@ export async function elevenLabsTextToSpeech(options: {
     },
     REQUEST_TIMEOUT_MS,
   );
-  const error = elevenLabsStatusError(response.status);
+  const error = await elevenLabsResponseError(response);
   if (error) throw error;
   return response.arrayBuffer();
 }
@@ -103,7 +127,7 @@ export async function elevenLabsSpeechToText(options: {
     { method: "POST", headers: { "xi-api-key": options.apiKey }, body: form },
     REQUEST_TIMEOUT_MS,
   );
-  const error = elevenLabsStatusError(response.status);
+  const error = await elevenLabsResponseError(response);
   if (error) throw error;
   const data = (await response.json()) as { text?: unknown };
   return typeof data.text === "string" ? stripAudioEventTags(data.text) : "";

@@ -37,12 +37,12 @@ export const CAMERA_CONFIG = {
   normalRate: 1.0,
 
   // Client networking
-  detectClientTimeoutMs: 30000,
+  detectClientTimeoutMs: 40000,
 } as const;
 
 /** Server-side limits for /api/detect and /api/tts. */
 export const SERVER_LIMITS = {
-  detectTimeoutMs: 12000,
+  detectTimeoutMs: 15000,
   detectRetries: 1,
   maxImageBytes: 2 * 1024 * 1024,
   detectRequestsPerMinute: 60,

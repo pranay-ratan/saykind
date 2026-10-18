@@ -25,6 +25,8 @@ export function describeApiError(error: unknown): string {
       return "The ElevenLabs key is missing Text to Speech / Speech to Text permission. The site owner can check it in docs/SETUP.md.";
     case "out_of_credits":
       return "The spoken-voice account is out of credits, so the device voice is being used for now.";
+    case "voice_unavailable":
+      return "That voice isn't available on this ElevenLabs plan, so the device voice is being used. The site owner can set ELEVENLABS_VOICE_ID to a premade voice.";
     case "credits_guard":
       return "Today's spoken-voice limit has been reached, so the device voice is being used for now.";
     case "bad_request":

@@ -31,7 +31,8 @@ const ICON_BUTTON = 'min-h-[64px] min-w-[64px] flex items-center justify-center 
 
 function failureNotice(failure: DetectFailure | null): string | null {
   if (failure === 'rate-limited') return 'Looking is resting for a moment.';
-  if (failure === 'timeout' || failure === 'failed') return 'Trying again.';
+  if (failure === 'timeout') return 'Looking again.';
+  if (failure === 'failed') return 'Trying again.';
   return null;
 }
 

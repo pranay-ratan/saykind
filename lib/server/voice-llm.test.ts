@@ -27,6 +27,13 @@ describe("ElevenLabs status mapping", () => {
     expect(elevenLabsStatusError(402)?.message).toBe("The ElevenLabs account is out of credits.");
   });
 
+  it("says a voice is unavailable on the plan when the 402 is paid_plan_required", () => {
+    const error = elevenLabsStatusError(402, true);
+    expect(error?.code).toBe("voice_unavailable");
+    expect(error?.message).toContain("isn't available on this ElevenLabs plan");
+    expect(error?.message).not.toContain("credits");
+  });
+
   it("asks the caller to back off on 429", () => {
     expect(elevenLabsStatusError(429)?.code).toBe("rate_limit");
   });
@@ -65,7 +72,7 @@ describe("ElevenLabs text to speech", () => {
     const mock = stubFetch(() => new Response(new Uint8Array([1, 2, 3]), { status: 200 }));
     const audio = await elevenLabsTextToSpeech({ apiKey: "test-key", text: "Hello" });
     const [url, init] = mock.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toContain("/text-to-speech/21m00Tcm4TlvDq8ikWAM");
+    expect(url).toContain("/text-to-speech/JBFqnCBsd6RMkjVDRZzb");
     expect(url).toContain("output_format=mp3_44100_128");
     expect(JSON.parse(String(init.body)).model_id).toBe("eleven_flash_v2_5");
     expect(audio.byteLength).toBe(3);
