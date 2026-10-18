@@ -21,7 +21,7 @@ Reverted steps: none. Skipped on the owner's instruction: Step 2 (copy audit; a 
 
 ## Final checks before the merge
 
-Unit tests: 23 files, 205 tests passed. Typecheck and lint clean. Secrets scan clean (no `.env*` or `.claude/settings.local.json` tracked). Full browser run on the final build: smoke 13, welcome 21, level1-shift 12, level2-mic 9, flow 15, conversation 10, report 15, motion 3, UI audit 13 screens at 375px and 13 at 1280px with 0 findings; every suite passed. `main` was then fast-forwarded to `overnight` and pushed to `saykind` (see the final line of this file).
+Unit tests: 23 files, 205 tests passed. Typecheck and lint clean. Secrets scan clean (no `.env*` or `.claude/settings.local.json` tracked). Full browser run on the final build: smoke 13, welcome 21, level1-shift 12, level2-mic 9, flow 15, conversation 10, report 15, motion 3, UI audit 13 screens at 375px and 13 at 1280px with 0 findings; every suite passed. While the branch was being built, the owner uploaded a smaller square logo straight to `saykind/main` (`aa74251`, `public/saykind-logo.png` only). That commit was merged into `overnight` (`bd6d617`, no conflicts), the Welcome logo box was made square (`5b68904`), and the build, typecheck, lint, unit tests and the Welcome and smoke suites were rerun on the result before `main` was fast-forwarded to `overnight` and pushed to `saykind`.
 
 ## Not verified
 
