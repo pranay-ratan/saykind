@@ -42,8 +42,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${body.variable} ${display.variable} h-full antialiased`}>
-      <body className="h-full">{children}</body>
+    // suppressHydrationWarning: something outside this code (a browser extension or dev tooling) adds an inline
+    // isolation:isolate to <body> before React hydrates in development; nothing here sets it, so the mismatch is noise.
+    <html lang="en" className={`${body.variable} ${display.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="h-full" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }
