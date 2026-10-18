@@ -7,6 +7,7 @@ const SUITES = [
   { file: "smoke.mjs" },
   { file: "welcome.mjs" },
   { file: "level1-shift.mjs" },
+  { file: "level2-mic.mjs" },
   { file: "flow.mjs" },
   { file: "conversation.mjs" },
   { file: "report.mjs" },

@@ -1,6 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { CheckIcon, MicIcon, PlayIcon, RestartIcon } from '@/components/cafe/icons';
+import { MicButton, type MicVisual } from '@/components/saykind/kit';
+import { usePractice, type Subject } from '@/lib/saykind/use-practice';
 import { CAMERA_CONFIG } from '../../config/camera';
 import { cropFrame } from '../../core/camera/frames';
 import { logPracticeEvent, type PracticeEventType } from '../../core/practiceLog';
@@ -8,6 +11,7 @@ import { getSyllables } from '../../core/pronunciation';
 import { speak, type TtsProvider } from '../../core/speech';
 import type { DetectedObject } from '../../core/vision/types';
 import { WordCard } from '../WordCard';
+import { useAutoStop } from './useAutoStop';
 
 export interface ObjectSelection {
   id: number;
@@ -29,15 +33,17 @@ interface ObjectSheetProps {
 }
 
 const MAX_TYPED_WORD = 30;
-const RECORDER_MIME_TYPES = ['audio/webm;codecs=opus', 'audio/mp4', 'audio/webm'] as const;
-
-function pickRecorderMimeType(): string | undefined {
-  if (typeof MediaRecorder === 'undefined' || typeof MediaRecorder.isTypeSupported !== 'function') return undefined;
-  return RECORDER_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type));
-}
+/** The microphone: at least 96 px, the primary action, bottom centre of the sheet. */
+const MIC_SIZE = 96;
+const LEVEL = 2;
 
 function cleanTypedWord(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, ' ').slice(0, MAX_TYPED_WORD);
+}
+
+/** The same shape Level 1 practices: the server voice says free words, and plain plurals count as the word. */
+function subjectFor(word: string): Subject {
+  return { id: `camera-${word.replace(/\s+/g, '-')}`, text: word, accepted: [word, `${word}s`], audioKey: null };
 }
 
 export function ObjectSheet({
@@ -56,15 +62,13 @@ export function ObjectSheet({
   const [isLowConfidence, setIsLowConfidence] = useState(object.confidence < CAMERA_CONFIG.lowConfidenceThreshold);
   const [showChoices, setShowChoices] = useState(false);
   const [typedWord, setTypedWord] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [lastAttemptUrl, setLastAttemptUrl] = useState('');
-  const [micNote, setMicNote] = useState('');
 
   const spokenRef = useRef(false);
-  const mountedRef = useRef(false);
-  const recorderRef = useRef<MediaRecorder | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const attemptUrlRef = useRef('');
+  const levelRef = useRef<HTMLDivElement>(null);
+  // Exactly the Level 1 path: the same recorder (with its live level), the same /api/transcribe check, the same log.
+  const practice = usePractice(LEVEL, levelRef);
+  const subject = useMemo(() => subjectFor(word), [word]);
+  const { status, outcome, lastAttempt, problemText } = practice;
 
   function logEvent(type: PracticeEventType, eventWord: string): void {
     logPracticeEvent({
@@ -106,72 +110,42 @@ export function ObjectSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- speak exactly once when the sheet opens
   }, [autoSpeak]);
 
-  // Release the mic and the last recording when the sheet closes.
+  // A finished recording counts as practice, in the camera's own log as well as the shared one.
+  const loggedResultRef = useRef<Outcome | null>(null);
   useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-      if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
-      streamRef.current?.getTracks().forEach((track) => track.stop());
-      if (attemptUrlRef.current) URL.revokeObjectURL(attemptUrlRef.current);
-    };
-  }, []);
-
-  function replaceAttempt(url: string): void {
-    if (attemptUrlRef.current) URL.revokeObjectURL(attemptUrlRef.current);
-    attemptUrlRef.current = url;
-    setLastAttemptUrl(url);
-  }
-
-  async function startRecording(): Promise<void> {
-    if (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-      setMicNote('Recording is not available on this device.');
-      return;
+    if (status !== 'result' || !outcome || loggedResultRef.current === outcome) return;
+    loggedResultRef.current = outcome;
+    if (outcome.recognition !== 'error') {
+      logEvent('attempt', word);
+      onPracticed?.();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- log each new outcome once
+  }, [status, outcome]);
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = pickRecorderMimeType();
-      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-      const chunks: Blob[] = [];
+  // Tap to start, tap to stop; silence or the ceiling stops it too.
+  const stopRecording = () => {
+    if (status === 'recording') void practice.toggle(subject);
+  };
+  useAutoStop({ active: status === 'recording', levelRef, onStop: stopRecording });
 
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) chunks.push(event.data);
-      };
-      recorder.onstop = () => {
-        stream.getTracks().forEach((track) => track.stop());
-        streamRef.current = null;
-        recorderRef.current = null;
-        if (!mountedRef.current) return;
-
-        setIsRecording(false);
-        if (chunks.length === 0) return;
-        replaceAttempt(URL.createObjectURL(new Blob(chunks, { type: recorder.mimeType || 'audio/webm' })));
-        logEvent('attempt', word);
-        onPracticed?.();
-      };
-
-      streamRef.current = stream;
-      recorderRef.current = recorder;
-      recorder.start();
-      setMicNote('');
-      setIsRecording(true);
-    } catch (error) {
-      console.warn('Microphone could not start', error);
-      setMicNote('The microphone is not available. Check your settings and try again.');
+  function pressMic(): void {
+    if (status === 'recording') {
+      void practice.toggle(subject);
+    } else if (status === 'idle') {
+      void practice.toggle(subject);
+    } else if (status === 'result') {
+      practice.another();
+      void practice.toggle(subject);
     }
   }
 
-  function stopRecording(): void {
-    if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
-  }
-
-  function replayAttempt(): void {
-    if (!lastAttemptUrl) return;
-    void new Audio(lastAttemptUrl).play().catch((error: unknown) => console.warn('Replay was blocked', error));
+  function hearMe(): void {
+    if (!lastAttempt) return;
+    void new Audio(lastAttempt.url).play().catch((error: unknown) => console.warn('Replay was blocked', error));
   }
 
   function chooseWord(next: string): void {
+    practice.reset(subject);
     setWord(next);
     setIsLowConfidence(false);
     setShowChoices(false);
@@ -190,6 +164,8 @@ export function ObjectSheet({
 
   const syllables = getSyllables(word);
   const otherLabels = alternatives.filter((item) => item !== word);
+  const mic: MicVisual = status === 'recording' ? 'recording' : status === 'processing' ? 'processing' : 'ready';
+  const heard = outcome?.heard.replace(/[.!?]+$/, '') ?? '';
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-plum/40">
@@ -254,29 +230,81 @@ export function ObjectSheet({
           syllables={syllables}
           onPlayNormal={() => say(word, voiceRate, 'replay')}
           onPlaySlow={() => say(word, CAMERA_CONFIG.slowRate, 'slow')}
-          onRecordStart={() => void startRecording()}
+          onRecordStart={pressMic}
           onRecordStop={stopRecording}
-          isRecording={isRecording}
-          lastRecording={lastAttemptUrl}
-          onReplayLast={replayAttempt}
+          isRecording={status === 'recording'}
+          recordControl={null}
           onSaidIt={(said) => {
             // Self-reported: the person ticked "I said it". Nothing is scored.
             if (said) logEvent('self-reported', word);
           }}
         />
 
-        {micNote && (
-          <p role="status" className="text-center text-xl text-muted">
-            {micNote}
+        {/* The microphone: the Level 1 recorder and its live ring, large, bottom centre. */}
+        <div className="mt-2 flex flex-col items-center gap-2">
+          <MicButton state={mic} size={MIC_SIZE} levelRef={levelRef} busy={practice.requesting} onPress={pressMic} />
+          <p role="status" aria-live="polite" className="flex min-h-[32px] items-center gap-2 text-xl font-bold text-muted">
+            {status === 'recording' ? (
+              <>
+                <ListeningIcon />
+                Listening
+              </>
+            ) : status === 'processing' ? (
+              'One moment'
+            ) : status === 'result' ? (
+              <>
+                <RestartIcon className="size-6" />
+                Again
+              </>
+            ) : (
+              <>
+                <MicIcon className="size-6" />
+                Say it
+              </>
+            )}
           </p>
-        )}
-        {isRecording && (
-          <p role="status" className="text-center text-xl text-muted">
-            Listening. Tap Stop when you are done.
-          </p>
-        )}
+
+          {status === 'result' && (
+            <div className="flex w-full flex-col items-center gap-3">
+              {outcome?.recognition === 'error' ? (
+                <p className="text-center text-xl text-plum">{problemText ?? 'Allow the microphone'}</p>
+              ) : (
+                <div className="flex items-center gap-3 rounded-[2rem] bg-cream px-5 py-3 text-xl font-bold text-plum" style={{ border: 'var(--card-border)', boxShadow: 'var(--card-shadow)' }}>
+                  <span className="flex size-9 items-center justify-center rounded-full bg-deep-teal text-white" aria-hidden="true">
+                    <CheckIcon className="size-5" />
+                  </span>
+                  <span>
+                    Thank you.
+                    {heard ? <span className="block text-base font-normal text-muted">I heard “{heard}”</span> : null}
+                  </span>
+                </div>
+              )}
+              {lastAttempt && (
+                <button
+                  type="button"
+                  onClick={hearMe}
+                  className="flex min-h-[64px] min-w-[200px] items-center justify-center gap-2 rounded-full bg-deep-coral px-6 text-xl font-bold text-white hover:opacity-90 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
+                >
+                  <PlayIcon className="size-6" />
+                  Hear me
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </section>
     </div>
+  );
+}
+
+type Outcome = NonNullable<ReturnType<typeof usePractice>['outcome']>;
+
+/** Calm sound waves: the sheet is listening. */
+function ListeningIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+      <path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4" />
+    </svg>
   );
 }
 

@@ -20,6 +20,8 @@ export type Subject = {
 
 export type Outcome = { recognition: Recognition; heard: string; problem?: MicProblem };
 export type PracticeStatus = "idle" | "recording" | "processing" | "result";
+/** The last recording, playable from an object URL ("Hear me"). Replaced by the next attempt, dropped on reset. */
+export type LastAttempt = { url: string; mimeType: string };
 
 type Counters = { retry: number; slow: number; normal: number; help: number };
 
@@ -39,6 +41,14 @@ export function usePractice(level: Level, levelRef: RefObject<HTMLElement | null
   const startedAt = useRef(0);
   const counters = useRef(new Map<string, Counters>());
   const [attempts, setAttempts] = useState<Record<string, number>>({});
+  const [lastAttempt, setLastAttempt] = useState<LastAttempt | null>(null);
+  const lastAttemptRef = useRef<LastAttempt | null>(null);
+
+  const replaceLastAttempt = useCallback((next: LastAttempt | null) => {
+    if (lastAttemptRef.current) URL.revokeObjectURL(lastAttemptRef.current.url);
+    lastAttemptRef.current = next;
+    setLastAttempt(next);
+  }, []);
 
   const setStatus = useCallback((next: PracticeStatus) => {
     statusRef.current = next;
@@ -68,12 +78,13 @@ export function usePractice(level: Level, levelRef: RefObject<HTMLElement | null
       stop();
       setStatus("idle");
       setOutcome(null);
+      replaceLastAttempt(null);
       if (subject) {
         counters.current.delete(subject.id);
         setAttempts((all) => ({ ...all, [subject.id]: 0 }));
       }
     },
-    [recorder, setStatus, stop],
+    [recorder, replaceLastAttempt, setStatus, stop],
   );
 
   const play = useCallback(
@@ -127,6 +138,7 @@ export function usePractice(level: Level, levelRef: RefObject<HTMLElement | null
           }
         }
         if (run !== runRef.current) return;
+        replaceLastAttempt(audio ? { url: URL.createObjectURL(audio.blob), mimeType: audio.mimeType } : null);
 
         // Keep the recording only if the person asked us to, and only on this device.
         let sampleId: string | undefined;
@@ -184,7 +196,7 @@ export function usePractice(level: Level, levelRef: RefObject<HTMLElement | null
       startedAt.current = Date.now();
       setStatus("recording");
     },
-    [level, recorder, setStatus, stop],
+    [level, recorder, replaceLastAttempt, setStatus, stop],
   );
 
   /** Go back from a result to the ready state, for another try. Tries are unlimited. */
@@ -207,6 +219,7 @@ export function usePractice(level: Level, levelRef: RefObject<HTMLElement | null
     () => () => {
       runRef.current += 1;
       stopWordAudio();
+      if (lastAttemptRef.current) URL.revokeObjectURL(lastAttemptRef.current.url);
     },
     [],
   );
@@ -217,6 +230,7 @@ export function usePractice(level: Level, levelRef: RefObject<HTMLElement | null
     status,
     outcome,
     problemText,
+    lastAttempt,
     listening,
     slowListening,
     requesting: recorder.status === "requesting",

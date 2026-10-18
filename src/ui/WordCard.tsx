@@ -19,6 +19,11 @@ export interface WordCardProps {
   onReplayLast?: () => void;
   /** Optional, added in Phase C: the "I said it" box. Receives true when the person ticks it. Logs nothing by itself. */
   onSaidIt?: (said: boolean) => void;
+  /**
+   * What stands in for the small voice pill on the back face: leave it out for the pill, pass null for no control at
+   * all (the Level 2 sheet puts its own large microphone under the card), or pass a node of your own.
+   */
+  recordControl?: ReactNode | null;
 }
 
 const INK = "#2D1E2F";
@@ -60,7 +65,9 @@ function BackFace({
   lastRecording,
   onReplayLast,
   onSaidIt,
+  recordControl,
 }: WordCardProps): ReactNode {
+  const ownPill = recordControl === undefined;
   return (
     <div className="flex h-full w-full flex-col items-center gap-4 p-5" style={{ color: INK }}>
       <div className="flex w-full items-center gap-4" onClick={stopFlip}>
@@ -113,15 +120,19 @@ function BackFace({
       </div>
 
       <div className="flex w-full flex-col items-center gap-3" onClick={stopFlip}>
-        <VoicePill
-          listening={isRecording}
-          mode="toggle"
-          showTime={false}
-          accentColor={CORAL_DEEP}
-          onPressStart={() => (isRecording ? onRecordStop() : onRecordStart())}
-          ariaLabel={isRecording ? "Stop recording" : "Record your pronunciation"}
-        />
-        {lastRecording && onReplayLast ? (
+        {ownPill ? (
+          <VoicePill
+            listening={isRecording}
+            mode="toggle"
+            showTime={false}
+            accentColor={CORAL_DEEP}
+            onPressStart={() => (isRecording ? onRecordStop() : onRecordStart())}
+            ariaLabel={isRecording ? "Stop recording" : "Record your pronunciation"}
+          />
+        ) : (
+          recordControl
+        )}
+        {ownPill && lastRecording && onReplayLast ? (
           <button
             type="button"
             onClick={onReplayLast}
