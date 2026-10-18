@@ -1,0 +1,9 @@
+# Never uploaded to the host (the key lives in Vercel's environment settings instead).
+.env
+.env.*
+.next
+node_modules
+# Not needed to run the site.
+docs
+scripts
+public/images/full-scene-reference.png

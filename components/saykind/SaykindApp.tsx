@@ -1,0 +1,174 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
+import { StyleSheet, View, type ViewStyle } from "react-native";
+import CafeExperience from "@/components/cafe/CafeExperience";
+import CafeScene from "@/components/cafe/CafeScene";
+import { OBJECTS, logEvent, useCafe, useCaregiverContact, useDiscovery, useExercise } from "@/lib/saykind";
+import type { Order } from "@/lib/order";
+import { useReducedMotion } from "@/lib/use-presence";
+import { unlockWordAudio } from "@/lib/word-audio";
+import CafeDoneView from "./CafeDoneView";
+import CaregiverSheet from "./CaregiverSheet";
+import DiscoverView from "./DiscoverView";
+import ExerciseView from "./ExerciseView";
+import FinishedView from "./FinishedView";
+import { Frame } from "./frame";
+import LevelMenu, { type LevelId } from "./LevelMenu";
+import Level1View from "./level1/Level1View";
+import PhrasesView from "./PhrasesView";
+import SettingsView from "./SettingsView";
+
+const IRIS_MS = 1900;
+
+/**
+ * Words that use the redesigned Level 1 screen (components/saykind/level1). The redesign is being reviewed on the Chair first;
+ * every other word keeps the previous screen until it is approved. Approving it is a one-line change: list the other ids here
+ * (or replace this check with `true`).
+ */
+const REDESIGNED_WORDS: readonly string[] = ["chair"];
+
+/**
+ * The app shell. It opens straight into Level 1, Exercise 1. The four levels are one tap away in a small menu, which never
+ * disturbs anything: every level's state lives in a controller owned here (or, for Level 1, in saved progress).
+ *
+ * This file only decides WHICH screen to show. Replace the views freely; keep the controllers (lib/saykind).
+ */
+export default function SaykindApp() {
+  const reduced = useReducedMotion();
+  const level1 = useExercise({ id: "level1", level: 1, items: OBJECTS });
+  const discovery = useDiscovery();
+  const cafe = useCafe();
+  const contact = useCaregiverContact();
+
+  const [level, setLevel] = useState<LevelId>(1);
+  const [settings, setSettings] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [caregiverOpen, setCaregiverOpen] = useState(false);
+  const [cafeStage, setCafeStage] = useState<"cafe" | "done">("cafe");
+  const [order, setOrder] = useState<Order | null>(null);
+  const [irisOpen, setIrisOpen] = useState(false);
+  const timers = useRef<number[]>([]);
+  const { unlockAudio } = cafe;
+
+  const later = useCallback((fn: () => void, ms: number) => {
+    timers.current.push(window.setTimeout(fn, ms));
+  }, []);
+
+  // The very first press anywhere unlocks sound for the rest of the visit (iPhone Safari needs a tap), and
+  // design-review links (?level=2) can open another level.
+  useEffect(() => {
+    const unlock = () => {
+      unlockWordAudio();
+      unlockAudio();
+    };
+    window.addEventListener("pointerdown", unlock, { once: true });
+    const wanted = Number(new URLSearchParams(window.location.search).get("level"));
+    const start = window.setTimeout(() => {
+      if (wanted >= 1 && wanted <= 4 && wanted !== 3) setLevel(wanted as LevelId);
+    }, 0);
+    const pending = timers.current;
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.clearTimeout(start);
+      pending.forEach((id) => window.clearTimeout(id));
+    };
+  }, [unlockAudio]);
+
+  /** Into the café. Always called straight from a tap, so the browser allows sound and the microphone. */
+  const enterCafe = (withIris = true) => {
+    unlockWordAudio();
+    let ready: () => void = () => {};
+    const whenReady = new Promise<void>((resolve) => {
+      ready = resolve;
+    });
+    cafe.start({ whenReady });
+    setCafeStage("cafe");
+    setIrisOpen(withIris);
+    later(ready, reduced ? 500 : withIris ? IRIS_MS : 900);
+  };
+
+  const selectLevel = (id: LevelId) => {
+    setMenuOpen(false);
+    setSettings(false);
+    if (id === level && id !== 3) return;
+    if (level === 3 && id !== 3) {
+      cafe.exit();
+      setIrisOpen(false);
+    }
+    setLevel(id);
+    logEvent({ type: "activity", ts: Date.now(), level: id, name: "opened" });
+    if (id === 3 && !(level === 3 && cafe.phase !== "idle")) enterCafe();
+  };
+
+  const openMenu = () => setMenuOpen(true);
+  const openCaregiver = () => {
+    contact.refreshSummary();
+    setCaregiverOpen(true);
+  };
+
+  return (
+    <Frame>
+      <View style={StyleSheet.absoluteFill as ViewStyle}>
+        {settings ? (
+          <SettingsView onBack={() => setSettings(false)} />
+        ) : level === 1 ? (
+          level1.isFinished ? (
+            <FinishedView exercise={level1} onAgain={level1.restart} onNext={() => selectLevel(2)} nextLabel="Try Level 2: Discover Objects" />
+          ) : REDESIGNED_WORDS.includes(level1.currentWord.id) ? (
+            <Level1View exercise={level1} onMenu={openMenu} onCaregiver={openCaregiver} />
+          ) : (
+            <ExerciseView exercise={level1} onMenu={openMenu} onCaregiver={openCaregiver} />
+          )
+        ) : level === 2 ? (
+          <DiscoverView discovery={discovery} onMenu={openMenu} onCaregiver={openCaregiver} />
+        ) : level === 3 ? (
+          cafeStage === "done" && order ? (
+            <CafeDoneView order={order} onAgain={() => enterCafe(false)} onHome={() => selectLevel(1)} />
+          ) : (
+            <div className="stage iris" data-open={irisOpen ? "true" : "false"}>
+              <CafeExperience
+                scene={<CafeScene />}
+                cafe={cafe}
+                onComplete={(finalOrder) => {
+                  setOrder(finalOrder);
+                  logEvent({ type: "activity", ts: Date.now(), level: 3, name: "order-completed" });
+                  setCafeStage("done");
+                }}
+                onRetryStart={() => enterCafe(false)}
+                onExit={openMenu}
+                onCaregiver={openCaregiver}
+              />
+            </div>
+          )
+        ) : (
+          <PhrasesView onMenu={openMenu} onCaregiver={openCaregiver} />
+        )}
+      </View>
+
+      <LevelMenu
+        open={menuOpen}
+        current={level}
+        onSelect={selectLevel}
+        onClose={() => setMenuOpen(false)}
+        onSettings={() => {
+          setMenuOpen(false);
+          setSettings(true);
+        }}
+        onCaregiverView={() => {
+          setMenuOpen(false);
+          window.open("/caregiver", "_self");
+        }}
+      />
+      <CaregiverSheet
+        open={caregiverOpen}
+        onClose={() => setCaregiverOpen(false)}
+        contact={contact}
+        onSettings={() => {
+          setCaregiverOpen(false);
+          setSettings(true);
+        }}
+      />
+    </Frame>
+  );
+}
