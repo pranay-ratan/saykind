@@ -3,7 +3,7 @@ import "server-only";
 import { containsBannedLanguage } from "../report/language";
 import { buildTemplateReport } from "../report/template";
 import { DISCLAIMER, reportContentSchema, type ReportContent, type ReportInput, type ReportSource } from "../report/types";
-import { DEFAULT_CLAUDE_MODEL, claudeJson, type ChatTurn } from "./llm/claude";
+import { DEFAULT_CLAUDE_MODEL, LlmError, claudeJson, type ChatTurn } from "./llm/claude";
 
 const REPORT_MAX_TOKENS = 900;
 const REPORT_TIMEOUT_MS = 20_000;
@@ -60,10 +60,16 @@ export async function generateReport(
       maxTokens: REPORT_MAX_TOKENS,
       timeoutMs: REPORT_TIMEOUT_MS,
     });
-    if (containsBannedLanguage(content)) return fallback;
+    if (containsBannedLanguage(content)) {
+      // The rule only, never the words: the report text is private.
+      console.error("[report] using the template: the language rule rejected the model's report");
+      return fallback;
+    }
     return { content, source: "ai" };
   } catch (error) {
-    console.error("[report] using the template:", error instanceof Error ? error.name : "error");
+    // Name, code and the shape message (field paths and codes) only; never the input or any reply text.
+    const detail = error instanceof LlmError ? `${error.code}: ${error.message}` : error instanceof Error ? error.name : "error";
+    console.error(`[report] using the template: ${detail}`);
     return fallback;
   }
 }

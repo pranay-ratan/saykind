@@ -107,6 +107,10 @@ export async function claudeJson<T>(options: {
   }
 
   const parsed = options.schema.safeParse(extractJsonObject(text));
-  if (!parsed.success) throw new LlmError("bad_output", "The model reply did not match the expected shape.");
+  if (!parsed.success) {
+    // Which fields failed and how (paths and zod codes only, never the text), so a fallback can be explained.
+    const issues = parsed.error.issues.map((issue) => `${issue.path.join(".") || "root"}:${issue.code}`).join(", ");
+    throw new LlmError("bad_output", `The model reply did not match the expected shape (${issues}).`);
+  }
   return parsed.data;
 }
