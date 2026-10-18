@@ -6,15 +6,77 @@ A calm, untimed place for adults with aphasia to practice everyday words and use
 
 > **For the UI team:** read `docs/UI_INTEGRATION.md`. The functionality is in `lib/saykind/` (controllers, no visuals); the current screens in `components/saykind/` are temporary and meant to be replaced. The café artwork must not change.
 
+## What this merged version adds
+
+This repository combines the deployed Saykind app (`main`) with a new **Level 2 live camera** and a few supporting changes. Each item says where it lives and how far it has been checked.
+
+| Item | Where | Status |
+| --- | --- | --- |
+| Live camera at `/level-2`: labelled boxes over objects, tap for a practice sheet | `app/level-2`, `src/ui/level2`, `src/core/camera`, `src/core/vision` | **Prototype**: boxes, mirroring and orientation checked with a stand-in camera; not tested with a real Perceptron key or a phone camera. Details in `docs/LEVEL2_CAMERA.md`. |
+| Object detection: Perceptron (default), Gemini (development fallback) | `app/api/detect`, `src/core/vision` | **Prototype**: request and error paths tested; box format on the live API unverified (see `docs/LEVEL2_CAMERA.md`). |
+| Level 2 speech: browser voice (default) or ElevenLabs | `app/api/tts`, `src/core/speech.ts` | **Prototype**: ElevenLabs path unverified against a live account. |
+| Welcome screen: Soft Aurora backdrop, word-by-word headline, Start | `components/saykind/WelcomeView.tsx` | **Working** in desktop browser. Reduced-motion path is code only, not yet exercised. |
+| Atkinson Hyperlegible Next (body) and Bricolage Grotesque (headings) | `app/layout.tsx` | **Working**. Next warns it has no fallback metrics for Atkinson, so a small reflow on font swap is possible. |
+| Warm palette on the bright theme block and `components/saykind/theme.ts` | `app/globals.css`, `components/saykind/theme.ts` | **Working** for the patient screens. The café scene CSS is unchanged. |
+| Adaptive difficulty: rules (no key) and an optional Claude adapter, `POST /api/adapt` | `src/core/adaptive`, `app/api/adapt` | **Prototype**: rules and route tested; Claude path fell back to the rules with a fake key. **Not connected** to Level 1 or the Level 2 sheet yet. |
+
+Not done in this merge: the Level 1 flip card, the café menu restyle, the Get Help orb, the caregiver view counts, the Level 2 coral box styling, React Bits components beyond the two copied, and the Puppeteer and axe suite. Dev's redesign branch `experiment/react-bits-full-ui` is intentionally **not merged**. Its README says it is not deployed, and it carries an open café microphone bug (`docs/KNOWN_ISSUES.md` on that branch).
+
 ## Run it
 
 ```bash
-cp .env.example .env.local     # put your OpenAI key in .env.local (server-side only)
+cp .env.example .env.local     # add the keys you need; see the env table below
 npm install
 npm run dev                    # http://localhost:3000
 ```
 
-Production-like: `npm run build && npm start`. Checks: `npm run lint`, `npx tsc --noEmit`.
+Level 2 is at `http://localhost:3000/level-2?debug=1`. The camera needs `https` or `localhost`.
+
+Production-like: `npm run build && npm start`.
+
+## Checks
+
+```bash
+npm run typecheck      # tsc --noEmit
+npm run lint
+npm test               # vitest: camera geometry, vision parsing, rate limit, TTS helpers, adaptive engine
+npm run build
+npm run check:perceptron -- path/to/photo.jpg   # one live Perceptron call: raw reply, boxes, latency
+```
+
+## Environment variables
+
+Every variable is in `.env.example`, marked REQUIRED or OPTIONAL. Keys are read only on the server.
+
+| Variable | Required when | Get it from |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | always, for speech-to-text, the conversation and the barista | https://platform.openai.com/api-keys |
+| `PERCEPTRON_API_KEY` | Level 2 with the default provider | https://docs.perceptron.inc |
+| `GEMINI_API_KEY` | `VISION_PROVIDER=gemini` | https://aistudio.google.com/app/apikey |
+| `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID` | `TTS_PROVIDER=elevenlabs` (Level 2 speech) | https://elevenlabs.io |
+| `ANTHROPIC_API_KEY` | `ADAPTIVE_PROVIDER=claude` | https://console.anthropic.com/ |
+
+Optional with defaults: `VISION_PROVIDER` (perceptron), `PERCEPTRON_MODEL`, `GEMINI_MODEL`, `TTS_PROVIDER` (browser), `TTS_PREWARM_SECRET`, `LIVE_MAX_CALLS`, `LIVE_INTERVAL_MS`, `ADAPTIVE_PROVIDER` (rules), `CLAUDE_MODEL` (claude-haiku-5-5), and the OpenAI and rate-limit settings from Dev's original template.
+
+## Deploy to Vercel (for a phone test)
+
+1. Go to https://vercel.com/new and import the GitHub repository.
+2. In the project settings, add the environment variables from the table above for the environments you need.
+3. Deploy. Open the preview URL on a phone at `/level-2`. Camera and microphone need that `https` address.
+
+Dev's `npm run deploy` (see `docs/DEPLOY.md`) publishes to the existing private Vercel project; use it only after the variables are set there.
+
+## Built before vs during the event
+
+See [`docs/AUTHORSHIP.md`](docs/AUTHORSHIP.md). Short version: the git history starts at the "as deployed" baseline commit, which is timestamped after the 12:30 PT cutoff, so git cannot show what predates the event. The merged Level 2 work is attributed to the repository owner. The 20 largest tracked files and their introducing commits are listed there.
+
+## Credits
+
+- Dev's Saykind app, the café artwork, the Level 1 to 4 screens, the controllers and the audio: Devvrat Vaishnav's repository (`devvratvaishnav14/Saykind`) and its contributors.
+- React Bits components (SoftAurora and SplitText, copied from Dev's experiment branch; the others in `components/reactbits` are from the baseline): React Bits, https://reactbits.dev.
+- Fonts: Atkinson Hyperlegible Next and Bricolage Grotesque, loaded by `next/font` from Google Fonts.
+- Perceptron (vision), ElevenLabs (speech), Anthropic (adaptive), OpenAI (speech and conversation), Google Gemini (development fallback).
+- Level 2 camera, merge, Welcome screen and adaptive engine: this repository's owner, with an AI coding assistant.
 
 The key is read only on the server (`lib/server/openai.ts`) and never reaches the browser. The microphone and camera need **https** (or `localhost`); this repo publishes and tunnels nothing, so decide how to serve it over https separately.
 
