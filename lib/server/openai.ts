@@ -39,10 +39,6 @@ export function providerConfig() {
   };
 }
 
-export function missingConfig(): string[] {
-  return providerConfig().apiKey ? [] : ["OPENAI_API_KEY"];
-}
-
 async function request(path: string, init: RequestInit): Promise<Response> {
   const config = providerConfig();
   if (!config.apiKey) {
@@ -98,7 +94,7 @@ export async function transcribe(audio: Blob, filename: string, vocabularyHint: 
 export type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
 /** A chat completion constrained to a JSON schema. Returns the parsed object. */
-export async function chatJson(messages: ChatMessage[], schemaName: string, schema: object): Promise<unknown> {
+export async function chatJson(messages: readonly ChatMessage[], schemaName: string, schema: object): Promise<unknown> {
   const config = providerConfig();
   const response = await request("/chat/completions", {
     method: "POST",

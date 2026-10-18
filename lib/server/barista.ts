@@ -12,7 +12,8 @@ import {
   type Slot,
 } from "../order";
 import type { ChoiceSlot } from "../support";
-import { chatJson, type ChatMessage } from "./openai";
+import { baristaChat } from "./llm";
+import { LlmError, type ChatTurn } from "./llm/claude";
 
 export type TurnInput = {
   history: HistoryItem[];
@@ -77,36 +78,6 @@ The server keeps the official order. You will be told the current order and what
 OUTPUT
 Return JSON matching the schema. Use "unchanged" for anything the customer did not change. "next_question" is the first missing thing after your updates ("none" only when finish_order is true). Write "reply" last, as what you will say out loud.`;
 
-const OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [
-    "confidence",
-    "asks_for_help",
-    "drink",
-    "size",
-    "temperature",
-    "add_extras",
-    "remove_extras",
-    "clear_order",
-    "finish_order",
-    "next_question",
-    "reply",
-  ],
-  properties: {
-    confidence: { type: "string", enum: ["clear", "unsure", "unclear"] },
-    asks_for_help: { type: "boolean" },
-    drink: { type: "string", enum: ["unchanged", "none", ...DRINK_IDS] },
-    size: { type: "string", enum: ["unchanged", ...SIZE_IDS] },
-    temperature: { type: "string", enum: ["unchanged", "hot", "iced"] },
-    add_extras: { type: "array", items: { type: "string", enum: PASTRY_IDS } },
-    remove_extras: { type: "array", items: { type: "string", enum: PASTRY_IDS } },
-    clear_order: { type: "boolean" },
-    finish_order: { type: "boolean" },
-    next_question: { type: "string", enum: ["drink", "size", "temperature", "extras", "none"] },
-    reply: { type: "string" },
-  },
-} as const;
 
 /* -------------------------------------------------------------------------- */
 /* Model output                                                               */
@@ -199,10 +170,10 @@ export async function runBaristaTurn(input: TurnInput): Promise<TurnResult> {
   // Taps are exact, so they are applied directly. Speech goes through the model.
   const tapResult = input.tapped ? applyUpdates(input.order, forcedUpdates(input.tapped)) : null;
 
-  const messages: ChatMessage[] = [
+  const messages: ChatTurn[] = [
     { role: "system", content: SYSTEM_PROMPT },
     { role: "system", content: orderContext(input.order, input.unclearStreak) },
-    ...input.history.slice(-10).map<ChatMessage>((item) =>
+    ...input.history.slice(-10).map<ChatTurn>((item) =>
       item.role === "barista"
         ? { role: "assistant", content: item.text }
         : {
@@ -218,7 +189,14 @@ export async function runBaristaTurn(input: TurnInput): Promise<TurnResult> {
     { role: "user", content: patientLine(input, tapResult?.order ?? null) },
   ];
 
-  const first = parseOutput(await chatJson(messages, "barista_turn", OUTPUT_SCHEMA));
+  let raw: unknown;
+  try {
+    raw = await baristaChat(messages);
+  } catch (error) {
+    if (error instanceof LlmError && (error.code === "timeout" || error.code === "bad_output")) return gentleTurn(input);
+    throw error;
+  }
+  const first = parseOutput(raw);
   if (!first) throw new Error("The language model did not return a usable reply.");
 
   const applied = tapResult ?? applyUpdates(input.order, first.updates);
@@ -239,10 +217,8 @@ export async function runBaristaTurn(input: TurnInput): Promise<TurnResult> {
       `Return the same JSON again with a corrected "reply" (and next_question "${expected}"). Keep it short and kind.`;
     try {
       const repaired = parseOutput(
-        await chatJson(
+        await baristaChat(
           [...messages, { role: "assistant", content: JSON.stringify(rawOf(first)) }, { role: "user", content: correction }],
-          "barista_turn",
-          OUTPUT_SCHEMA,
         ),
       );
       if (repaired) reply = repaired.reply;
@@ -257,6 +233,16 @@ export async function runBaristaTurn(input: TurnInput): Promise<TurnResult> {
     order: applied.order,
     nextSlot: expected,
     unclearStreak: input.patient.via === "tap" ? 0 : struggled ? input.unclearStreak + 1 : 0,
+  };
+}
+
+/** Used when the model times out or its reply cannot be read: a gentle question, never an error, and the order is untouched. */
+function gentleTurn(input: TurnInput): TurnResult {
+  return {
+    reply: "Sorry, I didn’t quite catch that. Could you say it again, or tap a picture?",
+    order: input.order,
+    nextSlot: nextSlot(input.order),
+    unclearStreak: input.unclearStreak + 1,
   };
 }
 

@@ -71,6 +71,8 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
 
       if (result === "failed") {
         setNotice("I couldn't play the barista's voice. You can read the captions, or tap the speaker to try again.");
+      } else if (result === "device") {
+        setNotice("The spoken voice is paused for now, so your device's voice is reading this line.");
       } else if (result === "blocked") {
         setNotice("Your browser blocked the sound. Tap the speaker to hear the barista.");
       }

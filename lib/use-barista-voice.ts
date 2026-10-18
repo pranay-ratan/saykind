@@ -15,7 +15,8 @@ import { computeEnvelope, followAudio, prefersReducedMotion, setMouth, type Enve
 // One silent sample. Enough to satisfy the browser's "user started playback" rule.
 const SILENCE = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 
-export type SayResult = "ended" | "interrupted" | "blocked" | "failed";
+/** "device" means the server voice was unavailable and the device voice read the line (no mouth movement). */
+export type SayResult = "ended" | "interrupted" | "blocked" | "failed" | "device";
 
 const MAX_CACHED = 40;
 
@@ -48,7 +49,21 @@ export function useBaristaVoice() {
   const stop = useCallback(() => {
     tokenRef.current += 1;
     audioRef.current?.pause();
+    if (typeof window !== "undefined") window.speechSynthesis?.cancel();
     finishRef.current?.("interrupted");
+  }, []);
+
+  /** Used only when the server voice fails: the device speaks the line, and the mouth stays closed. */
+  const speakWithDevice = useCallback((text: string, token: number): Promise<SayResult> => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return Promise.resolve("failed");
+    return new Promise<SayResult>((resolve) => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.onend = () => resolve(token === tokenRef.current ? "device" : "interrupted");
+      utterance.onerror = () => resolve(token === tokenRef.current ? "failed" : "interrupted");
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    });
   }, []);
 
   const fetchAudio = useCallback(async (text: string): Promise<Blob> => {
@@ -87,7 +102,8 @@ export function useBaristaVoice() {
         blob = await fetchAudio(text);
       } catch (error) {
         console.error("[voice]", error instanceof Error ? error.message : error);
-        return token === tokenRef.current ? "failed" : "interrupted";
+        if (token !== tokenRef.current) return "interrupted";
+        return speakWithDevice(text, token);
       }
       if (token !== tokenRef.current) return "interrupted";
 
@@ -131,7 +147,7 @@ export function useBaristaVoice() {
           });
       });
     },
-    [element, fetchAudio, stop],
+    [element, fetchAudio, stop, speakWithDevice],
   );
 
   /** Say the barista's last line again. */

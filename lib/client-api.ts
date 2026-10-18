@@ -18,9 +18,15 @@ export function describeApiError(error: unknown): string {
   const code = error instanceof ApiError ? error.code : "network";
   switch (code) {
     case "not_configured":
-      return "The voice service isn't set up yet. Add OPENAI_API_KEY to .env.local and restart (see README).";
+      return "The voice service isn't set up yet. The site owner can find what it needs in docs/SETUP.md.";
     case "auth":
-      return "The voice service rejected the API key. Please check OPENAI_API_KEY.";
+      return "The voice service rejected its key. The site owner can check it in docs/SETUP.md.";
+    case "elevenlabs_permission":
+      return "The ElevenLabs key is missing Text to Speech / Speech to Text permission. The site owner can check it in docs/SETUP.md.";
+    case "out_of_credits":
+      return "The spoken-voice account is out of credits, so the device voice is being used for now.";
+    case "credits_guard":
+      return "Today's spoken-voice limit has been reached, so the device voice is being used for now.";
     case "bad_request":
       return "The voice service didn't accept a request. Please check the model names in .env.local.";
     case "rate_limit":

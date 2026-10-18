@@ -13,7 +13,8 @@
     "deploy": "npx --yes vercel@64.5.0 deploy --prod",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check:perceptron": "node scripts/check-perceptron.mjs"
+    "check:perceptron": "node scripts/check-perceptron.mjs",
+    "check:elevenlabs": "node scripts/check-elevenlabs.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",

@@ -1,7 +1,10 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
-import { ProviderError, missingConfig } from "./openai";
+import { ProviderError } from "./openai";
+import { keysNeededFor, resolveProvider, type Capability } from "./providers";
+import { VoiceError } from "./voice/elevenlabs";
+import { LlmError } from "./llm/claude";
 
 /**
  * Spending protection, so a shared link can't be used to run up the provider bill. Three layers, all in memory
@@ -43,11 +46,13 @@ function clientKey(request: Request): string {
   );
 }
 
-/** Returns a response to send back instead of handling the request, or null to continue. */
-export function guard(request: Request): NextResponse | null {
-  const missing = missingConfig();
-  if (missing.length > 0) {
-    return NextResponse.json({ error: "not_configured", missing }, { status: 503 });
+/**
+ * Returns a response to send back instead of handling the request, or null to continue.
+ * A capability with no usable key answers 503 with the names of the keys it needs (never values).
+ */
+export function guard(request: Request, capability: Capability): NextResponse | null {
+  if (resolveProvider(capability, process.env) === "none") {
+    return NextResponse.json({ error: "not_configured", missing: keysNeededFor(capability) }, { status: 503 });
   }
 
   const max = limits();
@@ -83,6 +88,13 @@ export function guard(request: Request): NextResponse | null {
 export function failure(error: unknown): NextResponse {
   if (error instanceof ProviderError) {
     return NextResponse.json({ error: error.code }, { status: error.httpStatus });
+  }
+  if (error instanceof VoiceError) {
+    return NextResponse.json({ error: error.code }, { status: error.httpStatus });
+  }
+  if (error instanceof LlmError) {
+    const status = error.code === "rate_limit" ? 429 : 502;
+    return NextResponse.json({ error: error.code }, { status });
   }
   console.error("[api] unexpected error:", error instanceof Error ? error.message : error);
   return NextResponse.json({ error: "upstream" }, { status: 500 });

@@ -1,9 +1,11 @@
 import { connection, NextResponse } from "next/server";
-import { missingConfig } from "@/lib/server/openai";
+import { providerStatus } from "@/lib/server/providers";
 
-/** Lets the page say plainly when the voice service isn't set up, instead of faking it. */
+/**
+ * Lets the page say plainly which providers are active and which key names are present. Names and yes/no answers
+ * only; no key value is ever returned.
+ */
 export async function GET() {
   await connection(); // read the environment per request, never at build time
-  const missing = missingConfig();
-  return NextResponse.json({ configured: missing.length === 0, missing }, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json(providerStatus(process.env), { headers: { "Cache-Control": "no-store" } });
 }

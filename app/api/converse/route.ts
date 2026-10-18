@@ -30,7 +30,7 @@ function parseHistory(value: unknown): HistoryItem[] {
 
 /** One conversational turn: the patient's words in, the barista's reply and the updated order out. */
 export async function POST(request: Request) {
-  const blocked = guard(request);
+  const blocked = guard(request, "converse");
   if (blocked) return blocked;
 
   if (Number(request.headers.get("content-length") ?? 0) > 64_000) {
