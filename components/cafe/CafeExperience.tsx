@@ -14,8 +14,6 @@ import ItemSheet from "./ItemSheet";
 type SheetKind = "help" | "menu";
 const IDS = { help: "help-sheet", menu: "menu-sheet" } as const;
 
-/** How long the closing words stay in view before the summary appears. No pressure: it is only a pause. */
-const COMPLETE_DELAY_MS = 2200;
 /** How long the small "Got it" badge stays. */
 const ACK_MS = 3000;
 
@@ -100,18 +98,6 @@ export default function CafeExperience({
   const heldSheet = useHeld<SheetKind>(wanted);
   const sheetOpen = wanted !== null;
 
-  // After the barista's closing words, pause a moment, then move on to the summary.
-  const completeRef = useRef(onComplete);
-  useEffect(() => {
-    completeRef.current = onComplete;
-  });
-  useEffect(() => {
-    if (phase !== "ended") return;
-    const timer = setTimeout(() => completeRef.current(convo.order), COMPLETE_DELAY_MS);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
-
   // The "Got it" badge fades by itself.
   useEffect(() => {
     if (!convo.acknowledgement) return;
@@ -137,6 +123,8 @@ export default function CafeExperience({
     if (openSheet === which) closeSheet(which);
     else {
       setOpenSheet(which);
+      if (which === "menu") convo.noteMenuUsed();
+      else convo.noteHelpRequest();
       logEvent({ type: "help", ts: Date.now(), level: 3, itemId: which === "menu" ? "menu" : `help-${slot}`, itemText: which === "menu" ? "Menu" : `Picture help (${slot})`, kind: which === "menu" ? "menu" : "picture-help" });
     }
   };
@@ -206,6 +194,13 @@ export default function CafeExperience({
             <SpeakerIcon className="size-5" />
             Hear that again
           </button>
+        )}
+
+        {/* The order is done: the closing words stay in view until the person chooses to move on. No timer. */}
+        {phase === "ended" && (
+          <div className="flex flex-col items-center gap-4" data-presence="rise" data-state="open">
+            <Button label="See my report" onPress={() => onComplete(convo.order)} />
+          </div>
         )}
 
         {/* Only if the conversation could not begin by itself: one clear thing to do. */}

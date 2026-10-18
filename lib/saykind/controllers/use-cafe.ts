@@ -4,6 +4,7 @@ import { useMemo, type RefObject } from "react";
 import { DRINK_WORDS, PASTRY_WORDS, SIZE_WORDS, TEMP_WORDS, wordsForChoices, type MenuWord } from "@/lib/menu-words";
 import { choicesFor, questionFor, type Choice, type ChoiceSlot } from "@/lib/support";
 import { useConversation, type ConversationMessage, type Phase } from "@/lib/use-conversation";
+import type { CafeSession } from "@/lib/cafe-session";
 import type { Order } from "@/lib/order";
 import { subjectOfMenuWord } from "../menu-bridge";
 import { usePractice } from "../use-practice";
@@ -53,6 +54,12 @@ export type CafeController = {
   dismissNotice: () => void;
   /** Leave the café: stops the voice and the microphone and forgets this conversation. */
   exit: () => void;
+  /** Counts a Help sheet opening in this visit's session. */
+  noteHelpRequest: () => void;
+  /** Counts the menu pictures being opened in this visit's session. */
+  noteMenuUsed: () => void;
+  /** This visit so far (turns, order, help and follow-up counts). Kept in memory; written to the practice log on confirm or exit. */
+  getSession: () => CafeSession;
 
   /* ---- the menu ---- */
   menu: {
@@ -115,6 +122,9 @@ export function useCafe(): CafeController {
     hearBaristaAgain: convo.hearAgain,
     dismissNotice: convo.dismissNotice,
     exit: convo.exit,
+    noteHelpRequest: convo.noteHelpRequest,
+    noteMenuUsed: convo.noteMenuUsed,
+    getSession: convo.getSession,
     menu,
   };
 }

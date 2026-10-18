@@ -3,6 +3,18 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { ApiError, converse, describeApiError, fetchStatus, transcribe } from "./client-api";
 import { GREETING } from "./menu";
+import {
+  endSession,
+  newSession,
+  sessionHasContent,
+  withFollowUp,
+  withHelpRequest,
+  withMenuUsed,
+  withOrder,
+  withTurn,
+  type CafeSession,
+} from "./cafe-session";
+import { logEvent } from "./saykind/log";
 import { EMPTY_ORDER, acknowledgement, nextSlot, type HistoryItem, type Order } from "./order";
 import { tappedPhrase, type Choice, type ChoiceSlot } from "./support";
 import { useAudioRecorder, MIC_MESSAGES, type MicProblem, type RecordedAudio } from "./use-audio-recorder";
@@ -47,6 +59,26 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
   const startingMicRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const ackIdRef = useRef(0);
+  const sessionRef = useRef<CafeSession>(newSession());
+  const sessionSavedRef = useRef(false);
+
+  const updateSession = useCallback((change: (session: CafeSession) => CafeSession) => {
+    sessionRef.current = change(sessionRef.current);
+  }, []);
+
+  /** Writes the visit to the practice log, once. `completed` is true when the order was confirmed, false when the person left. */
+  const saveSession = useCallback((completed: boolean) => {
+    if (sessionSavedRef.current || !sessionHasContent(sessionRef.current)) return;
+    sessionSavedRef.current = true;
+    const finished = endSession(withOrder(sessionRef.current, orderRef.current));
+    sessionRef.current = finished;
+    logEvent({ type: "cafe_session", ts: Date.now(), level: 3, completed, session: finished });
+  }, []);
+
+  const beginSession = useCallback(() => {
+    sessionRef.current = newSession();
+    sessionSavedRef.current = false;
+  }, []);
 
   const go = useCallback((next: Phase) => {
     phaseRef.current = next;
@@ -62,6 +94,8 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
   const sayBarista = useCallback(
     async (text: string, finished: boolean, run: number) => {
       historyRef.current.push({ role: "barista", text });
+      updateSession((session) => withTurn(session, "barista", text));
+      if (finished) saveSession(true);
       setMessages((all) => [...all, { id: ++messageIdRef.current, role: "barista", text }]);
       setCaption(text);
       go("speaking");
@@ -78,7 +112,7 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
       }
       go(finished ? "ended" : "yourTurn");
     },
-    [go, voice],
+    [go, saveSession, updateSession, voice],
   );
 
   const takeTurn = useCallback(
@@ -113,6 +147,9 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
         if (run !== runRef.current) return;
 
         historyRef.current.push({ role: "patient", text, via });
+        updateSession((session) => withTurn(session, "patient", text));
+        if (via === "tap") updateSession(withMenuUsed);
+        if (via === "silence" || reply.unclearStreak > streakRef.current) updateSession(withFollowUp);
         if (text) setMessages((all) => [...all, { id: ++messageIdRef.current, role: "patient", text, via }]);
         // A small "Got it" when the order itself changed, i.e. when their intent got through.
         const acknowledged = acknowledgement(orderRef.current, reply.order);
@@ -130,7 +167,7 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
         go("yourTurn"); // the question is still open; try again whenever ready
       }
     },
-    [go, sayBarista, signal],
+    [go, sayBarista, signal, updateSession],
   );
 
   /**
@@ -144,6 +181,8 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
     abortRef.current?.abort();
     abortRef.current = new AbortController();
 
+    saveSession(false); // starting again leaves the earlier visit in the log
+    beginSession();
     historyRef.current = [];
     orderRef.current = EMPTY_ORDER;
     streakRef.current = 0;
@@ -177,7 +216,7 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
         go("idle");
       }
     })();
-  }, [go, recorder, sayBarista, signal, voice]);
+  }, [beginSession, go, recorder, saveSession, sayBarista, signal, voice]);
 
   /** The microphone button: begins the patient's turn, and ends it. */
   const toggleMic = useCallback(async () => {
@@ -231,6 +270,7 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
 
   /** Leave the café: stop the voice and the microphone and forget this conversation. */
   const exit = useCallback(() => {
+    saveSession(false);
     runRef.current += 1;
     abortRef.current?.abort();
     abortRef.current = null;
@@ -246,7 +286,13 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
     setCaption("");
     setMessages([]);
     go("idle");
-  }, [go, recorder, voice]);
+  }, [go, recorder, saveSession, voice]);
+
+  /** The person opened the Help sheet. */
+  const noteHelpRequest = useCallback(() => updateSession(withHelpRequest), [updateSession]);
+  /** The person opened the menu pictures. */
+  const noteMenuUsed = useCallback(() => updateSession(withMenuUsed), [updateSession]);
+  const getSession = useCallback((): CafeSession => withOrder(sessionRef.current, orderRef.current), []);
 
   useEffect(() => {
     return () => {
@@ -275,5 +321,8 @@ export function useConversation(levelTarget: RefObject<HTMLElement | null>) {
     hearExample,
     dismissNotice,
     exit,
+    noteHelpRequest,
+    noteMenuUsed,
+    getSession,
   };
 }

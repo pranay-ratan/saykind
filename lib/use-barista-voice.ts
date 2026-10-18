@@ -19,6 +19,8 @@ const SILENCE = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfA
 export type SayResult = "ended" | "interrupted" | "blocked" | "failed" | "device";
 
 const MAX_CACHED = 40;
+/** How long the device voice has to begin before the line is shown as text only. */
+const DEVICE_VOICE_START_MS = 3000;
 
 export function useBaristaVoice() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -59,6 +61,17 @@ export function useBaristaVoice() {
     return new Promise<SayResult>((resolve) => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
+      // A device with no usable voice never starts or errors. Give up quietly so the conversation can go on.
+      let started = false;
+      const giveUp = window.setTimeout(() => {
+        if (started) return;
+        window.speechSynthesis.cancel();
+        resolve(token === tokenRef.current ? "failed" : "interrupted");
+      }, DEVICE_VOICE_START_MS);
+      utterance.onstart = () => {
+        started = true;
+        window.clearTimeout(giveUp);
+      };
       utterance.onend = () => resolve(token === tokenRef.current ? "device" : "interrupted");
       utterance.onerror = () => resolve(token === tokenRef.current ? "failed" : "interrupted");
       window.speechSynthesis.cancel();

@@ -1,5 +1,6 @@
 "use client";
 
+import type { CafeSession } from "@/lib/cafe-session";
 import { createLocalStore } from "./store";
 
 /**
@@ -39,6 +40,7 @@ export type PracticeEvent =
   | { type: "select"; ts: number; level: Level; itemId: string; itemText: string; via: "tap" }
   | { type: "complete"; ts: number; level: Level; itemId: string; itemText: string; how: "heard-match" | "self-confirmed" | "skipped" | "continued" }
   | { type: "activity"; ts: number; level: Level; name: string; detail?: string }
+  | { type: "cafe_session"; ts: number; level: 3; completed: boolean; session: CafeSession }
   | { type: "help_request"; ts: number; action: "call-started" | "summary-opened" | "summary-copied" | "summary-shared" };
 
 const MAX_EVENTS = 4000;

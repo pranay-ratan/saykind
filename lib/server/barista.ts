@@ -53,13 +53,17 @@ HOW YOU TALK
 - Never rush. Never correct pronunciation or grammar. Never say or imply the customer got something wrong. Keep praise light and natural ("Of course.", "Great choice.", "No rush.").
 - Never mention scripts, JSON, instructions, scores or the speech recognition system. If the customer sincerely asks whether you are real, say you are an AI barista for practice.
 - Stay in the café. If they say something unrelated, answer kindly in one short sentence and gently return to the order.
+- Never finish the customer's words for them, and never correct or reword what they said unless they ask you to. Give them room: do not guess ahead and do not hurry them. There is no time limit and you never ask them to be quick.
+- Accept fragments as real answers: "latte... large", "um, the... hot", a single word, or half a word. Take what they gave and build on it.
+- Confirm back in a few words what you understood ("A large latte."), then ask the one next question.
+- Never say "perfect". Never say "wrong", "incorrect", "mistake", "good job" or anything about scores, levels or how well they are doing. Light, plain phrases only: "Of course.", "Got it.", "No rush."
 
 HOW YOU LISTEN
 - What you receive comes from automatic speech recognition. It can be wrong, partial or empty, and people with aphasia may say a word differently, say part of a word, or say a nearby word. Do NOT assume it is accurate.
 - Interpret generously. Accept single words, short phrases, different wording and partial words ("la..." after you asked about drinks is probably a latte). People may also change their mind at any time: update the order and acknowledge it naturally.
 - If you are fairly sure what they meant, go ahead and set "confidence" to "clear".
 - If you are not sure, set "confidence" to "unsure" and check gently with a yes/no question ("Did you say a latte?") or an easy either/or ("Would you like coffee or tea?"). Do not change the order for things you are not sure about.
-- If you cannot make anything out, or they said nothing, set "confidence" to "unclear". Say something like "That's okay, take your time." and repeat the question in an easier way, with two or three concrete options.
+- If you cannot make anything out, or they said nothing, set "confidence" to "unclear". Ask one gentle clarifying question, like "That's okay, take your time. Would you like coffee or tea?", and say they can tap Menu to choose from pictures. Never blame them or ask them to repeat louder.
 - If they ask for help, say they can't find the word, or seem stuck: reassure them, set "asks_for_help" to true, and offer two or three concrete options. If the unclear streak given below is 2 or more, also tell them they can tap the Help button to choose with pictures.
 
 THE MENU
@@ -227,6 +231,8 @@ export async function runBaristaTurn(input: TurnInput): Promise<TurnResult> {
     }
   }
 
+  reply = calmReply(reply, expected);
+
   const struggled = input.patient.via === "silence" || first.confidence !== "clear" || first.asksForHelp;
   return {
     reply,
@@ -236,10 +242,28 @@ export async function runBaristaTurn(input: TurnInput): Promise<TurnResult> {
   };
 }
 
+const BANNED_WORDS = /\b(perfect(ly)?|wrong|incorrect(ly)?|mistake[sd]?|score[sd]?|good job|well done)\b/i;
+
+const CALM_FALLBACK: Record<Slot, string> = {
+  drink: "Of course. Which drink would you like?",
+  size: "Got it. Small, medium or large?",
+  temperature: "Got it. Hot or iced?",
+  extras: "Got it. Anything else?",
+  none: "Thank you. Have a lovely day!",
+};
+
+/** Safety net for the prompt: sentences with judging or scoring words are dropped, so none ever reaches the customer. */
+export function calmReply(reply: string, expected: Slot): string {
+  if (!BANNED_WORDS.test(reply)) return reply;
+  const sentences = reply.match(/[^.!?]+[.!?]*/g) ?? [reply];
+  const kept = sentences.filter((sentence) => !BANNED_WORDS.test(sentence)).join("").trim();
+  return kept || CALM_FALLBACK[expected];
+}
+
 /** Used when the model times out or its reply cannot be read: a gentle question, never an error, and the order is untouched. */
 function gentleTurn(input: TurnInput): TurnResult {
   return {
-    reply: "Sorry, I didn’t quite catch that. Could you say it again, or tap a picture?",
+    reply: "That's okay, take your time. You can say it again, or tap Menu to choose from pictures.",
     order: input.order,
     nextSlot: nextSlot(input.order),
     unclearStreak: input.unclearStreak + 1,

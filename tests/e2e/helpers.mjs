@@ -33,12 +33,12 @@ export const MOCKS = {
   },
 };
 
-export function mockFor(url, overrides = {}) {
+export function mockFor(url, overrides = {}, body = "") {
   const path = new URL(url).pathname;
   if (path === "/api/speak") return { status: 200, contentType: "audio/mpeg", body: SILENT_MP3 };
   if (path === "/api/tts") return { status: 200, contentType: "audio/mpeg", body: SILENT_MP3 };
   const override = overrides[path];
-  if (typeof override === "function") return override();
+  if (typeof override === "function") return override({ url, body });
   const json = override ?? MOCKS[path];
   if (json) return { status: 200, contentType: "application/json", body: Buffer.from(JSON.stringify(json)) };
   return null;
@@ -88,7 +88,7 @@ export async function newPage(browser, { reducedMotion = false, width = 390, hei
   page.on("request", (request) => {
     const url = request.url();
     if (!url.startsWith(BASE_URL) || !new URL(url).pathname.startsWith("/api/")) return request.continue();
-    const mock = mockFor(url, mocks);
+    const mock = mockFor(url, mocks, request.postData() ?? "");
     if (!mock) return request.continue();
     return request.respond({ status: mock.status, contentType: mock.contentType, body: mock.body });
   });
