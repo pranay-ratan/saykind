@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "check:perceptron": "node scripts/check-perceptron.mjs",
-    "check:elevenlabs": "node scripts/check-elevenlabs.mjs"
+    "check:elevenlabs": "node scripts/check-elevenlabs.mjs",
+    "check:env": "node scripts/check-env.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",
