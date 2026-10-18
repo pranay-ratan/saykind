@@ -117,6 +117,10 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
           {x.pronunciation.ipa ? <span style={{ fontWeight: 600, color: "#7A8594", letterSpacing: 0.5 }}>{x.pronunciation.ipa}</span> : null}
         </p>
 
+        {x.adaptiveMessage ? (
+          <p aria-live="polite" style={{ margin: 0, fontSize: 16, fontWeight: 600, color: MUTED, textAlign: "center", maxWidth: 360 }}>{x.adaptiveMessage}</p>
+        ) : null}
+
         {/* hear it */}
         <div style={{ display: "flex", gap: 30, marginTop: 6 }}>
           <RoundAction label={`Hear ${word.text}`} caption="Listen" active={x.isPlayingAudio} onClick={x.playPronunciation} bg={GREEN} fg="#FFFFFF" ring={GREEN_DARK}>

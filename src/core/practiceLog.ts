@@ -1,4 +1,4 @@
-export type PracticeEventType = 'identified' | 'replay' | 'slow' | 'attempt' | 'corrected';
+export type PracticeEventType = 'identified' | 'replay' | 'slow' | 'attempt' | 'corrected' | 'self-reported';
 
 export interface PracticeEvent {
   word: string;

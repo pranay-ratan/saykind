@@ -5,6 +5,7 @@ import type { LearnItem } from "../items";
 import type { Level, Recognition } from "../log";
 import { saveSetProgress, useSetProgress } from "../progress";
 import { usePractice, type Subject } from "../use-practice";
+import { useAdaptive } from "./use-adaptive";
 
 /**
  * EXERCISE CONTROLLER: everything a "see it, hear it, say it" screen needs, with no visuals at all.
@@ -72,6 +73,8 @@ export type ExerciseController = {
   latestFeedback: Feedback | null;
   /** Number of recording attempts for this word during this visit. */
   attemptCount: number;
+  /** A short, calm line from the adaptive layer. Show it as small text only; it never states a score. */
+  adaptiveMessage: string | null;
 
   /* ---- optional help (each use is recorded) ---- */
   syllablesShown: boolean;
@@ -143,12 +146,13 @@ export function useExercise({ id, level, items, persist = true }: Options): Exer
   const finished = state.index >= total;
   const index = Math.min(Math.max(state.index, 0), total - 1);
   const currentWord = items[index];
+  const adaptive = useAdaptive({ enabled: id === "level1", word: currentWord, status: practice.status, heard: practice.outcome?.heard ?? null, attemptCount: practice.attemptsFor(currentWord.id) });
   const subject = useMemo(() => subjectOf(currentWord), [currentWord]);
   const write = (next: { index: number; completed: string[] }) => (persist ? saveSetProgress(id, next) : setTransient(next));
 
   // Per-word help state resets whenever the word changes.
   const [helpState, setHelpState] = useState({ word: "", syllables: false, firstSound: false });
-  const help = helpState.word === currentWord.id ? helpState : { word: currentWord.id, syllables: false, firstSound: false };
+  const help = helpState.word === currentWord.id ? helpState : { word: currentWord.id, syllables: adaptive.cueSupport === "syllables", firstSound: adaptive.cueSupport === "firstSound" };
 
   const latestFeedback = useMemo(
     () => (practice.status === "result" && practice.outcome ? describe(practice.outcome.recognition, practice.outcome.heard, currentWord.text, practice.problemText) : null),
@@ -184,20 +188,33 @@ export function useExercise({ id, level, items, persist = true }: Options): Exer
     micLevelRef,
     latestFeedback,
     attemptCount,
+    adaptiveMessage: adaptive.message,
 
     syllablesShown: help.syllables,
     firstSoundShown: help.firstSound,
     toggleSyllables: () => {
-      if (!help.syllables) practice.help(subject, "syllables");
+      if (!help.syllables) {
+        practice.help(subject, "syllables");
+        adaptive.recordHint();
+      }
       setHelpState({ ...help, syllables: !help.syllables });
     },
     toggleFirstSound: () => {
-      if (!help.firstSound) practice.help(subject, "first-sound");
+      if (!help.firstSound) {
+        practice.help(subject, "first-sound");
+        adaptive.recordHint();
+      }
       setHelpState({ ...help, firstSound: !help.firstSound });
     },
 
-    playPronunciation: () => practice.play(subject, false),
-    playSlowPronunciation: () => practice.play(subject, true),
+    playPronunciation: () => {
+      adaptive.recordReplay(false);
+      practice.play(subject, adaptive.autoSlow);
+    },
+    playSlowPronunciation: () => {
+      adaptive.recordReplay(true);
+      practice.play(subject, true);
+    },
     stopAudio: practice.stop,
     startRecording: async () => {
       if (practice.status === "idle") await practice.toggle(subject);
@@ -213,6 +230,7 @@ export function useExercise({ id, level, items, persist = true }: Options): Exer
     confirmHeard: () => advance("self-confirmed"),
     continueToNextWord: () => advance(latestFeedback?.kind === "heard-match" ? "heard-match" : "continued"),
     skipWord: () => {
+      adaptive.recordAbandon();
       practice.help(subject, "skip");
       advance("skipped");
     },

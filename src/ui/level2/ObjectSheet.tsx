@@ -254,6 +254,10 @@ export function ObjectSheet({
           isRecording={isRecording}
           lastRecording={lastAttemptUrl}
           onReplayLast={replayAttempt}
+          onSaidIt={(said) => {
+            // Self-reported: the person ticked "I said it". Nothing is scored.
+            if (said) logEvent('self-reported', word);
+          }}
         />
 
         {micNote && (
