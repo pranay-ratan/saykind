@@ -73,7 +73,7 @@ export function StartScreen({ status, photoBusy, photoMessage, onOpenCamera, onC
         </button>
       </header>
 
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center gap-5 px-5 pb-6 pt-4">
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center gap-5 px-5 pt-4" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 0px))' }}>
         <h1 className="font-display text-[2rem] font-bold leading-tight">{TITLE}</h1>
 
         {(notice || photoMessage) && (

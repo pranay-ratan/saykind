@@ -42,7 +42,7 @@ export default function CaregiverSheet({ open, onClose, contact, onSettings }: {
             borderTopRightRadius: 28,
             backgroundColor: color.bg,
             padding: 20,
-            paddingBottom: `calc(${safe.bottom} + 20px)`,
+            paddingBottom: `max(20px, ${safe.bottom})`,
             gap: 14,
             overflowY: "auto",
             visibility: open ? "visible" : "hidden",

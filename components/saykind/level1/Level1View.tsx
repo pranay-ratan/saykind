@@ -94,7 +94,7 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
       </header>
 
       {/* middle: the picture, the word, how to say it, how to hear it */}
-      <main style={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center", padding: "6px 20px 12px" }}>
+      <main style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", display: "flex", flexDirection: "column", alignItems: "center", padding: "6px 20px 16px" }}>
         <div style={{ margin: "auto 0", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
         {!feedback ? (
           <p aria-live="polite" className="[@media(max-height:760px)]:hidden" style={{ margin: "6px 0 0", fontSize: 20, fontWeight: 700, color: MUTED }}>
@@ -102,7 +102,8 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
           </p>
         ) : null}
 
-        <div key={`art-${word.id}`} className={feedback ? "l1-enter [@media(max-height:700px)]:hidden" : "l1-enter"} style={{ width: feedback ? "min(34vw, 130px, 13vh)" : "min(50vw, 190px, max(21vh, 120px))", aspectRatio: "1", borderRadius: "50%", background: "rgba(246,201,176,0.45)", display: "grid", placeItems: "center", flex: "none", transition: "width 300ms, max-height 300ms" }}>
+        {/* Capped by the viewport height so the word and the two buttons always sit above the microphone panel. */}
+        <div key={`art-${word.id}`} data-testid="picture" className={feedback ? "l1-enter [@media(max-height:700px)]:hidden" : "l1-enter"} style={{ width: feedback ? "clamp(96px, 15dvh, 130px)" : "clamp(120px, 23dvh, 190px)", aspectRatio: "1", borderRadius: "50%", background: "rgba(246,201,176,0.45)", display: "grid", placeItems: "center", flex: "none", transition: "width 300ms, max-height 300ms" }}>
           <div style={{ width: "80%", height: "80%" }}>
             <ChairArt />
           </div>
@@ -163,12 +164,13 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
       </main>
 
       {/* bottom: the microphone, or what to do next */}
-      <footer style={{ padding: "12px 20px calc(env(safe-area-inset-bottom, 0px) + 14px)", borderTop: `1px solid ${LINE}`, background: "#FFFFFF" }}>
+      {/* Pinned to the bottom; the padding clears the home indicator once, never on top of other padding. */}
+      <footer data-testid="bottom-panel" style={{ flex: "none", padding: "12px 20px max(16px, env(safe-area-inset-bottom, 0px))", borderTop: `1px solid ${LINE}`, background: "#FFFFFF" }}>
         {feedback ? (
           <div style={{ display: "grid", gap: 10 }}>
             <BigButton label={x.isLast ? "Finish" : "Continue"} onClick={x.continueToNextWord} primary />
             <div style={{ display: "flex", gap: 10 }}>
-              <BigButton label="Try again" onClick={x.retryWord} grow={feedback.canConfirm ? 0.8 : 1} />
+              <BigButton label="Again" onClick={x.retryWord} grow={feedback.canConfirm ? 0.8 : 1} />
               {feedback.canConfirm ? <BigButton label="That's what I said" onClick={x.confirmHeard} grow={1.4} hint="You know best. This moves on and is noted." /> : null}
             </div>
           </div>
@@ -189,7 +191,7 @@ export default function Level1View({ exercise: x, onMenu, onCaregiver }: { exerc
               </button>
               <div ref={micLevelRef} style={{ display: "grid", placeItems: "center" }}>
                 <VoicePill
-                  size={72}
+                  size={96}
                   shape="pill"
                   mode="toggle"
                   background={GREEN}

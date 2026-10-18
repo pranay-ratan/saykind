@@ -44,3 +44,6 @@ next-env.d.ts
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# phone layout screenshots from tests/e2e/layout-mobile.mjs
+/tests/e2e/screenshots/

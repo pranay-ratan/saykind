@@ -79,7 +79,7 @@ export default function ReportSheet({ onClose, reportId }: { onClose: () => void
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="report-title" className="fixed inset-0 z-[80] overflow-y-auto bg-cream font-sans text-plum">
-      <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 pb-16 pt-8" style={{ paddingTop: "max(2rem, env(safe-area-inset-top))" }}>
+      <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 pt-8" style={{ paddingTop: "max(2rem, env(safe-area-inset-top))", paddingBottom: "max(4rem, calc(env(safe-area-inset-bottom, 0px) + 2rem))" }}>
         <header className="flex items-start justify-between gap-4">
           <div>
             <h1 id="report-title" ref={headingRef} tabIndex={-1} className="font-display text-4xl font-bold leading-tight outline-none">

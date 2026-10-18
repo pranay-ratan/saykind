@@ -248,13 +248,12 @@ body {
 .app {
   position: relative;
   width: 100%;
-  height: 100dvh;
   /*
-   * The small viewport, not the dynamic one: on a phone the browser's toolbar grows and shrinks the dynamic viewport
-   * as it collapses, and anything anchored to the bottom (the microphone, the status line) would slide with it.
-   * Sized to the small viewport the app never moves; any extra space below stays the page's own cream.
+   * The dynamic viewport. 100svh was tried to stop a collapsing toolbar moving the bottom panel, but on an iPhone
+   * it left a blank band under the microphone and pushed the word behind the panel, so the shell follows dvh and
+   * each screen keeps its own bottom panel flush with the viewport instead.
    */
-  height: 100svh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--night);
 }
@@ -278,8 +277,8 @@ body {
 
 @media (min-width: 768px) {
   .frame {
-    width: calc((100svh - 3rem) * 390 / 844);
-    height: calc(100svh - 3rem);
+    width: calc((100dvh - 3rem) * 390 / 844);
+    height: calc(100dvh - 3rem);
     border-radius: 2rem;
     box-shadow:
       0 40px 90px rgba(10, 5, 2, 0.6),
@@ -2500,7 +2499,7 @@ body {
 .desk-note {
   position: absolute;
   top: 50%;
-  left: max(2rem, calc(50% - (100svh - 3rem) * 390 / 844 / 2 - 22rem));
+  left: max(2rem, calc(50% - (100dvh - 3rem) * 390 / 844 / 2 - 22rem));
   display: none;
   width: 17rem;
   transform: translateY(-50%);

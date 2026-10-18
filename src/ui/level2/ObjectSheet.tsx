@@ -173,7 +173,7 @@ export function ObjectSheet({
         role="dialog"
         aria-modal="true"
         aria-labelledby="object-sheet-title"
-        className="w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-t-[2rem] bg-cream p-6 pb-10 shadow-2xl motion-safe:animate-[sheet-up_300ms_ease-out]"
+        className="w-full max-w-lg max-h-[92dvh] overflow-y-auto overscroll-contain rounded-t-[2rem] bg-cream px-6 pt-6 shadow-2xl motion-safe:animate-[sheet-up_300ms_ease-out]"
       >
         <div className="flex items-center justify-between mb-4">
           <h2 id="object-sheet-title" className="text-2xl font-semibold text-plum">
@@ -240,8 +240,8 @@ export function ObjectSheet({
           }}
         />
 
-        {/* The microphone: the Level 1 recorder and its live ring, large, bottom centre. */}
-        <div className="mt-2 flex flex-col items-center gap-2">
+        {/* The microphone: the Level 1 recorder and its live ring, large, bottom centre. It stays pinned to the bottom of the sheet while the card scrolls above; the padding clears the home indicator once. */}
+        <div data-testid="bottom-panel" className="sticky bottom-0 -mx-6 mt-2 flex flex-col items-center gap-2 bg-cream px-6 pt-2" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 0px))' }}>
           <MicButton state={mic} size={MIC_SIZE} levelRef={levelRef} busy={practice.requesting} onPress={pressMic} />
           <p role="status" aria-live="polite" className="flex min-h-[32px] items-center gap-2 text-xl font-bold text-muted">
             {status === 'recording' ? (
