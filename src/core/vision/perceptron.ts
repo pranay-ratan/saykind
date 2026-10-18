@@ -63,14 +63,19 @@ export function buildPerceptronBody(model: string, imageDataUrl: string, mode: P
 
 /** Returns the model's text reply. Parsing happens in parseModelOutput.ts (json) or parseAnnotations.ts (box). */
 export async function detectWithPerceptron(options: PerceptronCallOptions): Promise<string> {
+  return callPerceptronChat(options.apiKey, buildPerceptronBody(options.model, options.imageDataUrl, options.mode), options.signal);
+}
+
+/** One chat completion. Returns the assistant text; HTTP failures carry the status and Perceptron's error code. */
+export async function callPerceptronChat(apiKey: string, body: Record<string, unknown>, signal: AbortSignal): Promise<string> {
   const response = await fetch(PERCEPTRON_CHAT_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${options.apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
     },
-    body: JSON.stringify(buildPerceptronBody(options.model, options.imageDataUrl, options.mode)),
-    signal: options.signal,
+    body: JSON.stringify(body),
+    signal,
   });
 
   if (!response.ok) {

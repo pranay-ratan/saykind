@@ -20,6 +20,49 @@ export interface DetectInput {
   purpose?: DetectPurpose;
 }
 
+export interface ConfirmInput {
+  /** The object's crop as data:image/jpeg;base64,... */
+  imageDataUrl: string;
+}
+
+export interface ConfirmResponse {
+  label: string;
+  alternatives: string[];
+  confidence: number;
+  model?: string;
+  latencyMs?: number;
+}
+
+function isConfirmResponse(value: unknown): value is ConfirmResponse {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Record<string, unknown>;
+  return typeof record.label === 'string' && Array.isArray(record.alternatives) && typeof record.confidence === 'number';
+}
+
+/** Asks the server what one tapped object is. Same route and key handling as a detection; the crop is never stored. */
+export async function confirmObject(input: ConfirmInput): Promise<ConfirmResponse> {
+  const match = DATA_URL_PATTERN.exec(input.imageDataUrl);
+  if (!match) throw new DetectClientError('bad-photo');
+
+  try {
+    const response = await fetch('/api/detect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: match[2], mimeType: match[1], purpose: 'confirm' }),
+      signal: AbortSignal.timeout(CAMERA_CONFIG.detectClientTimeoutMs),
+    });
+
+    if (response.status === 429) throw new DetectClientError('rate-limited');
+    if (!response.ok) throw new DetectClientError('failed');
+
+    const data: unknown = await response.json();
+    if (!isConfirmResponse(data)) throw new DetectClientError('failed');
+    return data;
+  } catch (error) {
+    throw new DetectClientError(failureFor(error));
+  }
+}
+
 function isDetectResponse(value: unknown): value is DetectResponse {
   if (typeof value !== 'object' || value === null) return false;
   const record = value as Record<string, unknown>;

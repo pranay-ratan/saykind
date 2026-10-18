@@ -3,7 +3,8 @@ import { detectWithGemini } from './gemini';
 import { normalizeDetections, toRawObjects } from './normalize';
 import { hasBoxMarkup, parseBoxAnnotations } from './parseAnnotations';
 import { parseModelOutput, ModelOutputError } from './parseModelOutput';
-import { detectWithPerceptron, isModelRejected, ProviderHttpError, type PerceptronMode } from './perceptron';
+import { buildConfirmBody, parseConfirmReply, type ConfirmResult } from './confirmObject';
+import { callPerceptronChat, detectWithPerceptron, isModelRejected, ProviderHttpError, type PerceptronMode } from './perceptron';
 import type { DetectRequest } from './requestBody';
 import type { DetectPurpose, DetectResponse, RawDetection, VisionProvider } from './types';
 
@@ -182,6 +183,42 @@ function parseReply(content: string, mode: PerceptronMode): RawDetection[] {
     if (error instanceof ModelOutputError) throw new DetectError('unreadable', 502, 'Trying again.');
     throw error;
   }
+}
+
+export interface ConfirmResponse extends ConfirmResult {
+  provider: VisionProvider;
+  model: string;
+  latencyMs: number;
+}
+
+/** The confirm slot: Perceptron only, JSON schema answer. Gemini (a development fallback) has no confirm path. */
+function resolveConfirmProvider(env: Env): ResolvedProvider {
+  const apiKey = env.PERCEPTRON_API_KEY;
+  if ((env.VISION_PROVIDER ?? 'perceptron') !== 'perceptron' || !apiKey) {
+    throw new DetectError('config', 500, 'Looking is not set up yet.');
+  }
+  const { model, fallbackModel } = perceptronModels(env, 'confirm');
+  return {
+    provider: 'perceptron',
+    model,
+    fallbackModel,
+    mode: 'json',
+    call: (signal, request, chosenModel) =>
+      callPerceptronChat(apiKey, buildConfirmBody(chosenModel, `data:${request.mimeType};base64,${request.imageBase64}`), signal),
+  };
+}
+
+/**
+ * Names one tapped object (its crop) with a confidence and up to two alternatives. Same timeout, retry and
+ * rejected-model fallback as a detection. The image is never stored or logged.
+ */
+export async function runConfirm(request: DetectRequest, env: Env): Promise<ConfirmResponse> {
+  const resolved = resolveConfirmProvider(env);
+  const startedAt = Date.now();
+  const { content, model } = await callWithRetry(resolved, request);
+  const result = parseConfirmReply(content);
+  if (!result) throw new DetectError('unreadable', 502, 'Trying again.');
+  return { ...result, provider: resolved.provider, model, latencyMs: Date.now() - startedAt };
 }
 
 /**

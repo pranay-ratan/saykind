@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { SERVER_LIMITS } from '../../../src/config/camera';
 import { createFixedWindowLimiter } from '../../../src/core/http/rateLimiter';
-import { DetectError, runDetection } from '../../../src/core/vision/runDetection';
+import { DetectError, runConfirm, runDetection } from '../../../src/core/vision/runDetection';
 import { parseDetectRequest } from '../../../src/core/vision/requestBody';
 
 export const maxDuration = 60;
@@ -53,7 +53,8 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   try {
-    const result = await runDetection(parsed.value, process.env);
+    // purpose "confirm": name one tapped object (its crop) with a confidence; otherwise find boxes in a frame.
+    const result = parsed.value.purpose === 'confirm' ? await runConfirm(parsed.value, process.env) : await runDetection(parsed.value, process.env);
     return NextResponse.json(result, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     // Log the failure code only. Never log the request, the image, or provider response bodies.

@@ -9,6 +9,8 @@ import { cropFrame } from '../../core/camera/frames';
 import { logPracticeEvent, type PracticeEventType } from '../../core/practiceLog';
 import { getSyllables } from '../../core/pronunciation';
 import { speak, type TtsProvider } from '../../core/speech';
+import { needsConfirmation } from '../../core/vision/confirmObject';
+import { confirmObject } from '../../core/vision/detectObjects';
 import type { DetectedObject } from '../../core/vision/types';
 import { WordCard } from '../WordCard';
 import { useAutoStop } from './useAutoStop';
@@ -33,12 +35,19 @@ interface ObjectSheetProps {
 }
 
 const MAX_TYPED_WORD = 30;
+/** Boxes from Perceptron's native box mode carry no confidence and arrive as 1: those get a confirm call. */
+const PLACEHOLDER_CONFIDENCE = 1;
+const MAX_CANDIDATES = 4;
 /** The microphone: at least 96 px, the primary action, bottom centre of the sheet. */
 const MIC_SIZE = 96;
 const LEVEL = 2;
 
 function cleanTypedWord(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, ' ').slice(0, MAX_TYPED_WORD);
+}
+
+function unique(words: readonly string[]): string[] {
+  return [...new Set(words.filter((word) => word.length > 0))];
 }
 
 /** The same shape Level 1 practices: the server voice says free words, and plain plurals count as the word. */
@@ -62,6 +71,9 @@ export function ObjectSheet({
   const [isLowConfidence, setIsLowConfidence] = useState(object.confidence < CAMERA_CONFIG.lowConfidenceThreshold);
   const [showChoices, setShowChoices] = useState(false);
   const [typedWord, setTypedWord] = useState('');
+  /** The confirm call's answer: its label first, then its alternatives. Empty until it answers, or when not needed. */
+  const [confirmed, setConfirmed] = useState<string[]>([]);
+  const confirmedRef = useRef(false);
 
   const spokenRef = useRef(false);
   const levelRef = useRef<HTMLDivElement>(null);
@@ -101,6 +113,26 @@ export function ObjectSheet({
       cancelled = true;
     };
   }, [loadCropSource, object]);
+
+  // A box from native box mode has no real confidence: ask Perceptron what the crop is, once, and offer
+  // "Is it a ___?" only when the answer is unsure or differs from the box's label. Failures change nothing.
+  useEffect(() => {
+    if (!crop || object.confidence < PLACEHOLDER_CONFIDENCE || confirmedRef.current) return;
+    confirmedRef.current = true;
+    let cancelled = false;
+    confirmObject({ imageDataUrl: crop })
+      .then((result) => {
+        if (cancelled) return;
+        if (result.label !== object.label || needsConfirmation(result)) {
+          setConfirmed(unique([result.label, ...result.alternatives]));
+          setIsLowConfidence(true);
+        }
+      })
+      .catch((error: unknown) => console.warn('The object could not be checked', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [crop, object.confidence, object.label]);
 
   // Speak once on open. The ref guards against a second run from React's dev-mode effect replay.
   useEffect(() => {
@@ -145,10 +177,11 @@ export function ObjectSheet({
   }
 
   function chooseWord(next: string): void {
-    practice.reset(subject);
-    setWord(next);
     setIsLowConfidence(false);
     setShowChoices(false);
+    if (next === word) return;
+    practice.reset(subject);
+    setWord(next);
     logEvent('corrected', next);
     say(next, voiceRate, 'identified');
   }
@@ -164,6 +197,8 @@ export function ObjectSheet({
 
   const syllables = getSyllables(word);
   const otherLabels = alternatives.filter((item) => item !== word);
+  /** What to offer: the confirm call's label first, then its alternatives, then the box's own label and neighbours. */
+  const candidates = unique([...confirmed, word, ...otherLabels]).slice(0, MAX_CANDIDATES);
   const mic: MicVisual = status === 'recording' ? 'recording' : status === 'processing' ? 'processing' : 'ready';
   const heard = outcome?.heard.replace(/[.!?]+$/, '') ?? '';
 
@@ -200,23 +235,24 @@ export function ObjectSheet({
               />
             ) : (
               <>
-                <p className="text-xl text-plum mb-4">
-                  I think this might be a <strong>{word}</strong>. Is that right?
-                </p>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsLowConfidence(false)}
-                    className="flex-1 min-h-[64px] rounded-full bg-deep-teal text-white text-xl font-bold hover:opacity-90 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
-                  >
-                    Yes
-                  </button>
+                <p className="mb-4 text-2xl font-bold text-plum">Is it a {candidates[0]}?</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {candidates.map((candidate) => (
+                    <button
+                      key={candidate}
+                      type="button"
+                      onClick={() => chooseWord(candidate)}
+                      className="min-h-[64px] rounded-full bg-deep-teal px-4 text-xl font-bold text-white hover:opacity-90 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
+                    >
+                      {candidate}
+                    </button>
+                  ))}
                   <button
                     type="button"
                     onClick={() => setShowChoices(true)}
-                    className="flex-1 min-h-[64px] rounded-full border-2 border-deep-teal bg-cream text-plum text-xl font-bold hover:bg-lavender/25 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
+                    className="min-h-[64px] rounded-full border-2 border-deep-teal bg-cream px-4 text-xl font-bold text-plum hover:bg-lavender/25 focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-deep-teal"
                   >
-                    Not quite
+                    Other
                   </button>
                 </div>
               </>

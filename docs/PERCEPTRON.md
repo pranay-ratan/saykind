@@ -40,7 +40,25 @@ The reply's `message.content` is markup, one tag per object, for example:
 <point_box mention="mouse"> (411,575) (456,594) </point_box>
 ```
 
-**JSON mode (a confirm call, or `PERCEPTRON_BOX_MODE=json`):** the older prompt (`src/core/vision/prompt.ts`) that asks for a JSON array of `{label, confidence, box}`; `temperature: 0`, `max_completion_tokens: 600`.
+**JSON mode (`PERCEPTRON_BOX_MODE=json`):** the older prompt (`src/core/vision/prompt.ts`) that asks for a JSON array of `{label, confidence, box}`; `temperature: 0`, `max_completion_tokens: 600`.
+
+**Confirm call (a tapped object, `purpose: "confirm"` on `POST /api/detect`):** the crop of the tapped box, on the `PERCEPTRON_MODEL_CONFIRM` slot, with a strict JSON schema answer (`src/core/vision/confirmObject.ts`):
+
+```json
+{
+  "model": "perceptron-mk1.5",
+  "messages": [{ "role": "user", "content": [
+    { "type": "image_url", "image_url": { "url": "data:image/jpeg;base64,..." } },
+    { "type": "text", "text": "What is the main everyday object in this photo? Answer with one common lowercase noun (1 or 2 words), up to 2 alternative nouns, and your confidence from 0 to 1." }
+  ]}],
+  "max_completion_tokens": 200,
+  "temperature": 0,
+  "reasoning_effort": "none",
+  "response_format": { "type": "json_schema", "json_schema": { "name": "object_name", "strict": true, "schema": { "type": "object", "additionalProperties": false, "required": ["label", "alternatives", "confidence"], "properties": { "label": { "type": "string" }, "alternatives": { "type": "array", "items": { "type": "string" }, "maxItems": 2 }, "confidence": { "type": "number", "minimum": 0, "maximum": 1 } } } } }
+}
+```
+
+The reply is `{"label": "mug", "alternatives": ["cup"], "confidence": 0.42}` (measured live at about 0.7 s). The sheet asks "Is it a mug?" with big buttons for the label, the alternatives and the box's own word only when the confidence is under 0.5 or the label differs from the box; otherwise nothing changes. The same timeout, retry and rejected-model fallback apply.
 
 ## Normalization
 
@@ -73,7 +91,6 @@ The reply's `message.content` is markup, one tag per object, for example:
 
 ## Not done
 
-- The confirm call for a tapped object (JSON schema with alternatives) is measured above and the server supports `purpose: "confirm"`, but the sheet does not call it yet.
 - "Find it" (speak a Level 1 word, sweep the camera until Perceptron finds it) is not built.
 - Nothing has been run on a real phone.
 

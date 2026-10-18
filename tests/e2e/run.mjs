@@ -8,6 +8,7 @@ const SUITES = [
   { file: "welcome.mjs" },
   { file: "level1-shift.mjs" },
   { file: "level2-mic.mjs" },
+  { file: "level2-confirm.mjs" },
   { file: "flow.mjs" },
   { file: "conversation.mjs" },
   { file: "report.mjs" },

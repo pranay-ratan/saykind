@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_PERCEPTRON_MODEL, forgetRejectedModels, perceptronMode, perceptronModels, rejectedModelNames, runDetection } from './runDetection';
+import { DEFAULT_PERCEPTRON_MODEL, forgetRejectedModels, perceptronMode, perceptronModels, rejectedModelNames, runConfirm, runDetection } from './runDetection';
 
 const JPEG = '/9j/4AAQSkZJRgABAQ==';
 const request = { imageBase64: JPEG, mimeType: 'image/jpeg' as const, frame: { width: 640, height: 480 } };
@@ -83,5 +83,27 @@ describe('runDetection with Perceptron', () => {
     stubFetch([() => ok('Nothing clear is visible.')]);
     const result = await runDetection(request, { PERCEPTRON_API_KEY: 'test-key' });
     expect(result.objects).toEqual([]);
+  });
+});
+
+describe('runConfirm with Perceptron', () => {
+  it('sends the schema request on the confirm slot and reads the answer', async () => {
+    stubFetch([() => ok('{"label": "mug", "alternatives": ["cup"], "confidence": 0.42}')]);
+    const result = await runConfirm({ ...request, purpose: 'confirm' }, { PERCEPTRON_API_KEY: 'test-key', PERCEPTRON_MODEL_CONFIRM: 'perceptron-mk1.5' });
+    expect(bodies[0]).toMatchObject({ model: 'perceptron-mk1.5', reasoning_effort: 'none' });
+    expect(bodies[0].response_format).toMatchObject({ type: 'json_schema' });
+    expect(result).toMatchObject({ label: 'mug', alternatives: ['cup'], confidence: 0.42, model: 'perceptron-mk1.5', provider: 'perceptron' });
+  });
+
+  it('falls back to PERCEPTRON_MODEL when the confirm model is rejected', async () => {
+    stubFetch([notFound, () => ok('{"label": "mug", "alternatives": [], "confidence": 0.9}')]);
+    const result = await runConfirm({ ...request, purpose: 'confirm' }, { PERCEPTRON_API_KEY: 'test-key', PERCEPTRON_MODEL_CONFIRM: 'ghost-confirm' });
+    expect(bodies.map((body) => body.model)).toEqual(['ghost-confirm', DEFAULT_PERCEPTRON_MODEL]);
+    expect(result.model).toBe(DEFAULT_PERCEPTRON_MODEL);
+  });
+
+  it('reports an unreadable answer as a calm retry', async () => {
+    stubFetch([() => ok('I am not sure.')]);
+    await expect(runConfirm({ ...request, purpose: 'confirm' }, { PERCEPTRON_API_KEY: 'test-key' })).rejects.toMatchObject({ code: 'unreadable' });
   });
 });
