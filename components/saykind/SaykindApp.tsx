@@ -19,6 +19,7 @@ import LevelMenu, { type LevelId } from "./LevelMenu";
 import Level1View from "./level1/Level1View";
 import PhrasesView from "./PhrasesView";
 import SettingsView from "./SettingsView";
+import WelcomeView from "./WelcomeView";
 
 const IRIS_MS = 1900;
 
@@ -37,6 +38,7 @@ const REDESIGNED_WORDS: readonly string[] = ["chair"];
  */
 export default function SaykindApp() {
   const router = useRouter();
+  const [welcomed, setWelcomed] = useState(false);
   const reduced = useReducedMotion();
   const level1 = useExercise({ id: "level1", level: 1, items: OBJECTS });
   const discovery = useDiscovery();
@@ -116,7 +118,9 @@ export default function SaykindApp() {
   return (
     <Frame>
       <View style={StyleSheet.absoluteFill as ViewStyle}>
-        {settings ? (
+        {!welcomed ? (
+          <WelcomeView onStart={() => setWelcomed(true)} />
+        ) : settings ? (
           <SettingsView onBack={() => setSettings(false)} />
         ) : level === 1 ? (
           level1.isFinished ? (

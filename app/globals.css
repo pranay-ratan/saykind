@@ -2591,34 +2591,33 @@ body {
 /* ========================================================================== */
 
 :root {
-  --font-display: var(--font-ui);
   --focus: #1a73e8;
 }
 
 html,
 body {
-  background: #ffffff;
-  color: #1b2430;
+  background: #FDFBF7;
+  color: #2D1E2F;
 }
 
 .app {
-  background: #eef2f0;
+  background: #FDFBF7;
 }
 
 .frame {
-  background: #ffffff;
+  background: #FDFBF7;
 }
 
 @media (min-width: 768px) {
   .frame {
     box-shadow:
       0 24px 60px rgba(27, 36, 48, 0.18),
-      0 0 0 1px #d5dee0;
+      0 0 0 1px #E6DCD6;
   }
 }
 
 .stage {
-  background: #ffffff;
+  background: #FDFBF7;
 }
 
 /* ---- café controls ---- */
@@ -2631,60 +2630,60 @@ body {
 .round-btn.glass,
 .icon-button {
   background: rgba(255, 255, 255, 0.94);
-  border: 2px solid #d5ded9;
-  color: #1b2430;
+  border: 2px solid #E6DCD6;
+  color: #2D1E2F;
   box-shadow: 0 2px 8px rgba(27, 36, 48, 0.12);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
 .round-btn[aria-pressed="true"] {
-  background: #e3f2ec;
-  border-color: #1f7a5a;
-  color: #17614a;
+  background: #F6EFEA;
+  border-color: #0E6967;
+  color: #0E6967;
 }
 
 .pill {
-  background: #ffffff;
-  color: #1b2430;
-  border: 2px solid #d5ded9;
+  background: #FDFBF7;
+  color: #2D1E2F;
+  border: 2px solid #E6DCD6;
   box-shadow: 0 2px 8px rgba(27, 36, 48, 0.12);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
 .pill:hover {
-  background: #f1f5f3;
+  background: #F6F1EC;
 }
 
 .pill[aria-expanded="true"] {
-  background: #e3f2ec;
-  color: #17614a;
-  border-color: #1f7a5a;
+  background: #F6EFEA;
+  color: #0E6967;
+  border-color: #0E6967;
 }
 
 .pill-attention {
-  border-color: #b4530f;
+  border-color: #9A442D;
   box-shadow: 0 0 0 4px rgba(180, 83, 15, 0.25);
 }
 
 .bubble {
-  background: #ffffff;
-  color: #1b2430;
-  border: 2px solid #d5ded9;
+  background: #FDFBF7;
+  color: #2D1E2F;
+  border: 2px solid #E6DCD6;
   box-shadow: 0 6px 20px rgba(27, 36, 48, 0.16);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 
 .bubble::before {
-  background: #ffffff;
-  border-top: 2px solid #d5ded9;
-  border-left: 2px solid #d5ded9;
+  background: #FDFBF7;
+  border-top: 2px solid #E6DCD6;
+  border-left: 2px solid #E6DCD6;
 }
 
 .bubble-name {
-  color: #1f7a5a;
+  color: #0E6967;
 }
 
 .bubble-text {
@@ -2695,29 +2694,29 @@ body {
 }
 
 .speaking span {
-  background: #1f7a5a;
+  background: #0E6967;
 }
 
 .ack {
-  background: #1f7a5a;
+  background: #0E6967;
   border: 0;
-  color: #ffffff;
+  color: #FDFBF7;
 }
 
 .ack-check {
-  background: #ffffff;
-  color: #1f7a5a;
+  background: #FDFBF7;
+  color: #0E6967;
 }
 
 .toast {
-  background: #ffffff;
-  border: 2px solid #d5ded9;
-  color: #1b2430;
+  background: #FDFBF7;
+  border: 2px solid #E6DCD6;
+  color: #2D1E2F;
   box-shadow: 0 6px 20px rgba(27, 36, 48, 0.16);
 }
 
 .toast > svg {
-  color: #b4530f;
+  color: #9A442D;
 }
 
 .controls {
@@ -2737,7 +2736,7 @@ body {
 .mic-caption {
   margin: -0.5rem 0 0;
   text-align: center;
-  color: #1b2430;
+  color: #2D1E2F;
   font-size: 1rem;
   font-weight: 700;
   white-space: nowrap;
@@ -2746,14 +2745,14 @@ body {
 
 /* ---- the picture-and-word sheet (Help and Menu) ---- */
 .sheet {
-  background: #ffffff;
-  border: 2px solid #d5ded9;
-  color: #1b2430;
+  background: #FDFBF7;
+  border: 2px solid #E6DCD6;
+  color: #2D1E2F;
   box-shadow: 0 10px 40px rgba(27, 36, 48, 0.22);
 }
 
 .sheet-eyebrow {
-  color: #66727e;
+  color: #6B5C6D;
 }
 
 .sheet-title {
@@ -2764,38 +2763,38 @@ body {
 }
 
 .chip {
-  background: #ffffff;
-  border: 2px solid #d5ded9;
-  color: #1b2430;
+  background: #FDFBF7;
+  border: 2px solid #E6DCD6;
+  color: #2D1E2F;
   font-weight: 700;
 }
 
 .chip:hover:not(:disabled) {
-  background: #f1f5f3;
+  background: #F6F1EC;
 }
 
 .chip[aria-pressed="true"] {
-  background: #e3f2ec;
-  border-color: #1f7a5a;
-  color: #17614a;
+  background: #F6EFEA;
+  border-color: #0E6967;
+  color: #0E6967;
 }
 
 .chip.light {
-  background: #1f7a5a;
-  border-color: #1f7a5a;
-  color: #ffffff;
+  background: #0E6967;
+  border-color: #0E6967;
+  color: #FDFBF7;
 }
 
 .tile {
-  background: #f1f5f3;
-  border: 2px solid #d5ded9;
-  color: #1b2430;
+  background: #F6F1EC;
+  border: 2px solid #E6DCD6;
+  color: #2D1E2F;
 }
 
 .tile[aria-pressed="true"] {
-  background: #e3f2ec;
-  border-color: #1f7a5a;
-  color: #17614a;
+  background: #F6EFEA;
+  border-color: #0E6967;
+  color: #0E6967;
 }
 
 .item-name {
@@ -2805,43 +2804,43 @@ body {
 }
 
 .item-price {
-  color: #66727e;
+  color: #6B5C6D;
 }
 
 .item-first {
-  color: #b4530f;
+  color: #9A442D;
 }
 
 .syll span {
-  color: #1b2430;
+  color: #2D1E2F;
 }
 
 .syll span + span::before {
-  background: #b4530f;
+  background: #9A442D;
 }
 
 .say-btn {
-  background: #1f7a5a;
+  background: #0E6967;
   border: 0;
-  color: #ffffff;
+  color: #FDFBF7;
 }
 
 .say-btn[data-live="true"] {
-  background: #b3261e;
+  background: #9A442D;
 }
 
 .say-feedback {
-  color: #44505c;
+  color: #6B5C6D;
 }
 
 .choose-btn {
-  background: #1f7a5a;
-  color: #ffffff;
+  background: #0E6967;
+  color: #FDFBF7;
 }
 
 .choose-btn:disabled {
   background: #e4ece8;
-  color: #66727e;
+  color: #6B5C6D;
 }
 
 /* RNW: the turning ring while the microphone is processing */

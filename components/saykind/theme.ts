@@ -3,25 +3,25 @@
  * of this. A small, bright, high-contrast palette (all text pairs are at least 4.5:1).
  */
 export const color = {
-  bg: "#FFFFFF",
-  page: "#F4F7F6",
-  surface: "#F1F5F3",
-  surfaceStrong: "#E4ECE8",
-  line: "#D5DED9",
-  ink: "#1B2430",
-  inkSoft: "#44505C",
-  inkMuted: "#66727E",
-  primary: "#1F7A5A",
-  primaryDark: "#17614A",
-  primarySoft: "#E3F2EC",
+  bg: "#FDFBF7",
+  page: "#FDFBF7",
+  surface: "#FFFFFF",
+  surfaceStrong: "#F6F1EC",
+  line: "#E6DCD6",
+  ink: "#2D1E2F",
+  inkSoft: "#6B5C6D",
+  inkMuted: "#6B5C6D",
+  primary: "#0E6967",
+  primaryDark: "#0E6967",
+  primarySoft: "#F6EFEA",
   onPrimary: "#FFFFFF",
-  accent: "#B4530F",
-  accentSoft: "#FDEFE0",
-  danger: "#B3261E",
-  dangerSoft: "#FBEAE8",
+  accent: "#9A442D",
+  accentSoft: "#FBE3D9",
+  danger: "#9A442D",
+  dangerSoft: "#FBE3D9",
 } as const;
 
-/** One friendly sans-serif (DM Sans, loaded by next/font in app/layout.tsx). */
+/** Body text: Atkinson Hyperlegible Next. Headings: Bricolage Grotesque (both loaded by next/font in app/layout.tsx). */
 export const font = {
   ui: "var(--font-ui), system-ui, -apple-system, 'Segoe UI', sans-serif",
 } as const;
