@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Pressable, ScrollView, Text, View, type ViewStyle } from "react-native";
 import { relativeTime, useCaregiverReport, type WordSummary } from "@/lib/saykind";
 import { color, font } from "./theme";
+import ReportsPanel from "@/components/report/ReportsPanel";
 import CountUp from "@/components/reactbits/CountUp";
 import { useReducedMotion } from "@/lib/use-presence";
 
@@ -213,6 +214,8 @@ export default function CaregiverReportView() {
               )}
             </>
           )}
+
+          <ReportsPanel />
 
           <View style={{ gap: 6, paddingTop: 10, borderTopWidth: 1, borderColor: color.line }}>
             <Text style={{ fontFamily: font.ui, fontSize: 15, fontWeight: "800", color: color.ink }}>How this works, and what isn't built yet</Text>

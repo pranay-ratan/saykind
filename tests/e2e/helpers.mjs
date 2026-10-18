@@ -139,3 +139,61 @@ export async function unlockLevels(page) {
   await page.evaluate(() => localStorage.setItem("saykind.progress.v1", JSON.stringify({ "level2-camera": { index: 1, completed: ["practiced-a-word"] } })));
   await page.reload({ waitUntil: "domcontentloaded" });
 }
+
+// ---- the café conversation, shared by the conversation and report suites ----
+export const json = (value) => ({ status: 200, contentType: "application/json", body: Buffer.from(JSON.stringify(value)) });
+const EMPTY = { drink: null, size: null, temperature: null, extras: [], finished: false };
+export const BANNED = /perfect|wrong|incorrect|mistake|score|good job/i;
+
+/** A stateless stand-in for the barista: it reads the client's order and what the person said. */
+export function converseMock({ body }) {
+  const request = JSON.parse(body);
+  const order = { ...EMPTY, ...request.order, extras: [...(request.order?.extras ?? [])] };
+  const text = (request.patient?.text ?? "").toLowerCase();
+  if (request.patient?.via === "tap" && request.tapped?.slot === "temperature") {
+    order.temperature = request.tapped.id;
+    return json({ reply: "Got it. Anything else?", order, nextSlot: "extras", unclearStreak: 0 });
+  }
+  if (request.patient?.via === "silence" || !text) {
+    return json({ reply: "That's okay, take your time. Hot or iced? You can tap Menu to choose from pictures.", order, nextSlot: "temperature", unclearStreak: (request.unclearStreak ?? 0) + 1 });
+  }
+  if (/no thank/.test(text)) {
+    order.finished = true;
+    return json({ reply: "You're welcome! A large hot tea. Have a lovely day!", order, nextSlot: "none", unclearStreak: 0 });
+  }
+  if (/tea/.test(text)) order.drink = "hot-tea";
+  else if (/latte/.test(text)) order.drink = "latte";
+  if (/large/.test(text)) order.size = "large";
+  const reply = order.drink === "hot-tea" ? "Hot tea instead. Hot or iced?" : "A large latte. Hot or iced?";
+  return json({ reply, order, nextSlot: "temperature", unclearStreak: 0 });
+}
+
+export function transcribeQueue(texts) {
+  let index = 0;
+  return () => json({ text: texts[Math.min(index++, texts.length - 1)] });
+}
+
+export const label = (text) => `[aria-label="${text}"]`;
+
+export async function waitForMicReady(page) {
+  await page.waitForSelector(label("Tap to speak"), { timeout: 25000 });
+}
+
+export async function speakTurn(page) {
+  await waitForMicReady(page);
+  await page.click(label("Tap to speak"));
+  await page.waitForSelector(label("Finish speaking"), { timeout: 8000 });
+  await sleep(800);
+  await page.click(label("Finish speaking"));
+}
+
+export async function enterCafe(page) {
+  await page.goto(BASE_URL, { waitUntil: "domcontentloaded" });
+  await unlockLevels(page);
+  await page.waitForFunction(() => [...document.querySelectorAll("button")].some((b) => b.textContent?.trim() === "Start"), { timeout: 15000 });
+  await clickByText(page, "Start", "button");
+  await waitForText(page, "Listen, then say the word");
+  await openMenu(page);
+  await clickByText(page, "At the Café");
+}
+

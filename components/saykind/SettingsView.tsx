@@ -4,7 +4,8 @@ import { useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Pressable, ScrollView, Switch, Text, TextInput, View, type ViewStyle } from "react-native";
 import { ShieldIcon, TrashIcon } from "@/components/cafe/icons";
-import { clearLog, clearProgress, deleteAllSamples, deleteSample, playSample, resetSettings, setApproved, setCaregiver, setKeepPracticeAudio, setShareCategory, useSamples, useSettings } from "@/lib/saykind";
+import { clearReports } from "@/lib/report/store";
+import { clearLog, clearProgress, deleteAllSamples, deleteSample, playSample, resetSettings, setApproved, setCaregiver, setDoctor, setKeepPracticeAudio, setShareCategory, useSamples, useSettings } from "@/lib/saykind";
 import { Body, Button, Chip, Heading, Label, Panel, Screen, ScreenHeader } from "./kit";
 import { color, font, safe } from "./theme";
 
@@ -66,6 +67,14 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
             <Field label="Name" value={settings.caregiverName} onChange={(v) => setCaregiver(v, settings.caregiverPhone)} placeholder="For example, Sam" />
             <Field label="Phone number" value={settings.caregiverPhone} onChange={(v) => setCaregiver(settings.caregiverName, v)} placeholder="For the call button" keyboard="phone-pad" />
             <Body size={14}>Kept only on this device. It's used for the phone button, and nowhere else.</Body>
+          </Panel>
+        </Section>
+
+        <Section title="Your doctor">
+          <Panel>
+            <Field label="Doctor's name" value={settings.doctorName} onChange={(v) => setDoctor(v, settings.doctorEmail)} placeholder="For example, Dr. Lee" />
+            <Field label="Doctor's email" value={settings.doctorEmail} onChange={(v) => setDoctor(settings.doctorName, v)} placeholder="For the report email" keyboard="email-address" />
+            <Body size={14}>Kept only on this device. It's used to start an email when you tap "Email to my doctor", and nowhere else.</Body>
           </Panel>
         </Section>
 
@@ -135,6 +144,7 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
                   kind="danger"
                   onPress={() => {
                     clearLog();
+                    clearReports();
                     clearProgress();
                     resetSettings();
                     void deleteAllSamples();

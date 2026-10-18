@@ -10,6 +10,7 @@ import { OBJECTS, isLevelUnlocked, logEvent, parseLevelReturn, useCafe, useCareg
 import type { Order } from "@/lib/order";
 import { useReducedMotion } from "@/lib/use-presence";
 import { unlockWordAudio } from "@/lib/word-audio";
+import ReportSheet from "@/components/report/ReportSheet";
 import CafeDoneView from "./CafeDoneView";
 import CaregiverSheet from "./CaregiverSheet";
 import DiscoverView from "./DiscoverView";
@@ -58,6 +59,7 @@ export default function SaykindApp() {
   const [cafeStage, setCafeStage] = useState<"cafe" | "done">("cafe");
   const [order, setOrder] = useState<Order | null>(null);
   const [irisOpen, setIrisOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const timers = useRef<number[]>([]);
   const { unlockAudio } = cafe;
   const levelOpen = (id: LevelId) => isLevelUnlocked(id, { level2Complete });
@@ -144,7 +146,7 @@ export default function SaykindApp() {
           <DiscoverView discovery={discovery} onMenu={openMenu} onCaregiver={openCaregiver} />
         ) : level === 3 ? (
           cafeStage === "done" && order ? (
-            <CafeDoneView order={order} onAgain={() => enterCafe(false)} onHome={() => selectLevel(1)} />
+            <CafeDoneView order={order} onAgain={() => enterCafe(false)} onHome={() => selectLevel(1)} onReport={() => setReportOpen(true)} />
           ) : (
             <div className="stage iris" data-open={irisOpen ? "true" : "false"}>
               <CafeExperience
@@ -154,6 +156,7 @@ export default function SaykindApp() {
                   setOrder(finalOrder);
                   logEvent({ type: "activity", ts: Date.now(), level: 3, name: "order-completed" });
                   setCafeStage("done");
+                  setReportOpen(true);
                 }}
                 onRetryStart={() => enterCafe(false)}
                 onExit={openMenu}
@@ -182,6 +185,7 @@ export default function SaykindApp() {
           window.open("/caregiver", "_self");
         }}
       />
+      {reportOpen && <ReportSheet onClose={() => setReportOpen(false)} />}
       <CaregiverSheet
         open={caregiverOpen}
         onClose={() => setCaregiverOpen(false)}

@@ -10,7 +10,7 @@ import { Body, Button, Heading, IconButton, Label, Screen } from "./kit";
 import { color, font, safe } from "./theme";
 
 /** TEMPORARY end-of-café screen: what was ordered, and a large card to use in a real café. */
-export default function CafeDoneView({ order, onAgain, onHome }: { order: Order; onAgain: () => void; onHome: () => void }) {
+export default function CafeDoneView({ order, onAgain, onHome, onReport }: { order: Order; onAgain: () => void; onHome: () => void; onReport?: () => void }) {
   const card = useOrderCard(order);
   const [showing, setShowing] = useState(false);
   return (
@@ -37,7 +37,8 @@ export default function CafeDoneView({ order, onAgain, onHome }: { order: Order;
         ) : null}
         <View style={{ flex: 1 }} />
         <View style={{ alignSelf: "stretch", gap: 10, paddingTop: 20 }}>
-          {card.hasOrder ? <Button label="Use in a real café" onPress={() => setShowing(true)} style={{ alignSelf: "stretch" }} /> : null}
+          {onReport ? <Button label="Make a report for my doctor" onPress={onReport} style={{ alignSelf: "stretch" }} /> : null}
+          {card.hasOrder ? <Button label="Use in a real café" kind={onReport ? "secondary" : "primary"} onPress={() => setShowing(true)} style={{ alignSelf: "stretch" }} /> : null}
           <Button label="Order again" kind="secondary" onPress={onAgain} style={{ alignSelf: "stretch" }} />
           <Button label="Back to learning" kind="secondary" onPress={onHome} style={{ alignSelf: "stretch" }} />
         </View>

@@ -12,7 +12,7 @@ export { usePractice, type Subject, type Outcome } from "./use-practice";
 export { OBJECTS, CAFE_WORDS, type LearnItem, type ObjectId } from "./items";
 export { PHRASES, phraseAudioKey, type Phrase } from "./phrases";
 export { learnItemFromDiscovery, registerRecognizer, recognizeObject, hasRecognizer, type DiscoveryInput, type ObjectRecognizer, type RecognitionResult } from "./discover";
-export { useSettings, setCaregiver, setShareCategory, setKeepPracticeAudio, resetSettings, type Settings } from "./settings";
+export { useSettings, setCaregiver, setDoctor, setShareCategory, setKeepPracticeAudio, resetSettings, type Settings } from "./settings";
 export { relativeTime, mightBenefit, useLog, logEvent, summarise, clearLog, type PracticeEvent, type WordSummary, type Recognition, type Level } from "./log";
 export { useSamples, deleteSample, deleteAllSamples, setApproved, saveSample, playSample, type Sample } from "./samples";
 export { useSetProgress, clearProgress, markLevel2Complete, useLevel2Complete } from "./progress";

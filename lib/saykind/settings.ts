@@ -9,6 +9,9 @@ import { createLocalStore } from "./store";
 export type Settings = {
   caregiverName: string;
   caregiverPhone: string;
+  /** Used only to start an email or label a report when the person taps. Never sent anywhere on its own. */
+  doctorName: string;
+  doctorEmail: string;
   /** Save recordings of practice attempts on this device (needed before any sample can be shared). */
   keepPracticeAudio: boolean;
   share: {
@@ -26,6 +29,8 @@ export type Settings = {
 export const DEFAULT_SETTINGS: Settings = {
   caregiverName: "",
   caregiverPhone: "",
+  doctorName: "",
+  doctorEmail: "",
   keepPracticeAudio: false,
   share: { progress: false, assistance: false, audio: false, helpRequests: false },
 };
@@ -45,5 +50,6 @@ export const resetSettings = () => store.set(DEFAULT_SETTINGS);
 
 /* ---- small actions for the settings UI (so components never touch storage directly) ---- */
 export const setCaregiver = (caregiverName: string, caregiverPhone: string) => updateSettings((s) => ({ ...s, caregiverName, caregiverPhone }));
+export const setDoctor = (doctorName: string, doctorEmail: string) => updateSettings((s) => ({ ...s, doctorName, doctorEmail }));
 export const setShareCategory = (category: keyof Settings["share"], value: boolean) => updateSettings((s) => ({ ...s, share: { ...s.share, [category]: value } }));
 export const setKeepPracticeAudio = (keepPracticeAudio: boolean) => updateSettings((s) => ({ ...s, keepPracticeAudio }));

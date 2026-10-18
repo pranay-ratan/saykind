@@ -83,6 +83,9 @@ export async function claudeJson<T>(options: {
   messages: readonly ChatTurn[];
   schemaText: string;
   schema: ZodType<T>;
+  /** Defaults suit one short café turn. A longer reply, such as a report, passes its own. */
+  maxTokens?: number;
+  timeoutMs?: number;
 }): Promise<T> {
   const { system, turns } = splitForClaude(options.messages);
   const client = new Anthropic({ apiKey: options.apiKey });
@@ -92,11 +95,11 @@ export async function claudeJson<T>(options: {
     const response = await client.messages.create(
       {
         model: options.model || DEFAULT_CLAUDE_MODEL,
-        max_tokens: MAX_TOKENS,
+        max_tokens: options.maxTokens ?? MAX_TOKENS,
         system: `${system}\n\nReturn only one JSON object that matches this JSON Schema. No prose, no code fences.\n${options.schemaText}`,
         messages: turns,
       },
-      { timeout: CLAUDE_TIMEOUT_MS },
+      { timeout: options.timeoutMs ?? CLAUDE_TIMEOUT_MS },
     );
     text = response.content.map((block) => (block.type === "text" ? block.text : "")).join("");
   } catch (error) {
