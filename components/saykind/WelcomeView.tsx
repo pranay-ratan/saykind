@@ -16,9 +16,9 @@ const STATIC_GLOW =
 const TAGLINE = "Find your words. At your pace.";
 /** How present the aurora is at the start: it fills the whole screen behind the logo, the tagline and Start. */
 const AURORA_OPACITY = 0.75;
-/** The PNG is 1280 x 1276, so the box keeps that ratio (a mismatched box makes Next warn about the image). */
+/** The PNG is square (755 x 755), so the box is too (a mismatched box makes Next warn about the image). */
 const LOGO_WIDTH = 168;
-const LOGO_HEIGHT = 167;
+const LOGO_HEIGHT = 168;
 /** Two lines of the tagline at its largest size, reserved up front so nothing moves when the font arrives. */
 const TAGLINE_MIN_HEIGHT = 104;
 
