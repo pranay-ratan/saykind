@@ -1,10 +1,28 @@
 # Saykind
 
-A calm, untimed place for adults with aphasia to practice everyday words and use them in real conversations. A website that feels like a phone app: Next.js, TypeScript, React, and React Native Web (no Expo, no native project). It opens in a normal browser on iPhone Safari, Android Chrome and desktop.
+A calm, untimed web app where adults with aphasia practise everyday words and then use them in a spoken café conversation, with a plain-language progress report they can share with their speech therapist or doctor.
 
-**It opens straight into Level 1, Exercise 1** (a chair: hear it, hear it slowly with the snail, say it). A small menu button reaches all four levels and never disturbs progress.
+**Live demo:** https://saykind-one.vercel.app · **Code:** this repo
 
-> **For the UI team:** read `docs/UI_INTEGRATION.md`. The functionality is in `lib/saykind/` (controllers, no visuals); the current screens in `components/saykind/` are temporary and meant to be replaced. The café artwork must not change.
+![Saykind screenshot](docs/screenshot-welcome.png)
+<!-- TODO: add docs/screenshot-welcome.png (Welcome screen), and optionally Level 1 word practice and the café conversation -->
+
+**Stack:** Next.js · TypeScript · React + React Native Web · Anthropic Claude (conversation, report) · ElevenLabs (voice in/out) · Perceptron (object detection) · Vitest + browser e2e tests · Vercel
+
+**Team project.** The base app, café artwork and Level 1 screens are Devvrat Vaishnav's; Piyush Sharda contributed too. My part: the Level 2 live-camera practice, the adaptive-difficulty engine, the Welcome screen and merging it all together (see [Credits](#credits) and [`docs/AUTHORSHIP.md`](docs/AUTHORSHIP.md)).
+
+## Key results
+- Works end to end in a desktop and mobile browser; the [Status](#status) table says exactly what is verified, what is a prototype and what is not done.
+- Accessibility: the axe (WCAG A/AA) browser suite reports no serious or critical findings on the main screens; touch targets are 64 px and body text 20 px.
+- No usage or clinical-outcome numbers yet: it has not been tested with people with aphasia.
+
+## Run it locally
+
+```bash
+cp .env.example .env.local     # add the keys you need; see "Environment variables" below
+npm install
+npm run dev                    # http://localhost:3000
+```
 
 ## Status
 
@@ -90,6 +108,10 @@ Dev's `npm run deploy` (see `docs/DEPLOY.md`) publishes to the existing private 
 ## Built before vs during the event
 
 See [`docs/AUTHORSHIP.md`](docs/AUTHORSHIP.md). Short version: the git history starts at the "as deployed" baseline commit, which is timestamped after the 12:30 PT cutoff, so git cannot show what predates the event. The merged Level 2 work is attributed to the repository owner. The 20 largest tracked files and their introducing commits are listed there.
+
+## For contributors
+
+> **For the UI team:** read `docs/UI_INTEGRATION.md`. The functionality is in `lib/saykind/` (controllers, no visuals); the current screens in `components/saykind/` are temporary and meant to be replaced. The café artwork must not change.
 
 ## Credits
 
