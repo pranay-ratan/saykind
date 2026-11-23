@@ -9,7 +9,7 @@ A calm, untimed web app where adults with aphasia practise everyday words and th
 
 **Stack:** Next.js · TypeScript · React + React Native Web · Anthropic Claude (conversation, report) · ElevenLabs (voice in/out) · Perceptron (object detection) · Vitest + browser e2e tests · Vercel
 
-**Team project.** The base app, café artwork and Level 1 screens are Devvrat Vaishnav's; Piyush Sharda contributed too. My part: the Level 2 live-camera practice, the adaptive-difficulty engine, the Welcome screen and merging it all together (see [Credits](#credits) and [`docs/AUTHORSHIP.md`](docs/AUTHORSHIP.md)).
+**Team project.** The base app, café artwork and Level 1 screens are Devvrat Vaishnav's, with commits from Piyush Sharda. My part: the Level 2 live-camera practice, the adaptive-difficulty engine, the Welcome screen and merging it all together (see [Credits](#credits) and [`docs/AUTHORSHIP.md`](docs/AUTHORSHIP.md)).
 
 ## Key results
 - Works end to end in a desktop and mobile browser; the [Status](#status) table says exactly what is verified, what is a prototype and what is not done.
@@ -57,13 +57,7 @@ Each line says what has been checked and how. **WORKING** means it ran in a real
 - **On the device:** the practice log, café sessions, progress, settings (caregiver and doctor details) and saved reports are kept in the browser's storage on that device.
 - **Keys** are read on the server only and never sent to the browser. `npm run check:env` prints names and yes or no, never values.
 
-## Run it
-
-```bash
-cp .env.example .env.local     # add the keys you need; see the env table below
-npm install
-npm run dev                    # http://localhost:3000
-```
+## More run options
 
 Level 2 is at `http://localhost:3000/level-2?debug=1`. The camera needs `https` or `localhost`.
 
