@@ -5,7 +5,6 @@ A calm, untimed web app where adults with aphasia practise everyday words and th
 **Live demo:** https://saykind-one.vercel.app · **Code:** this repo
 
 ![Saykind screenshot](docs/screenshot-welcome.png)
-<!-- TODO: add docs/screenshot-welcome.png (Welcome screen), and optionally Level 1 word practice and the café conversation -->
 
 **Stack:** Next.js · TypeScript · React + React Native Web · Anthropic Claude (conversation, report) · ElevenLabs (voice in/out) · Perceptron (object detection) · Vitest + browser e2e tests · Vercel
 
